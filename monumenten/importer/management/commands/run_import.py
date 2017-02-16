@@ -2,7 +2,7 @@ import sys
 import logging
 
 from django.core.management import BaseCommand, call_command
-
+from monumenten.importer import import_amis_xml
 log = logging.getLogger(__name__)
 
 
@@ -14,3 +14,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Run import.")
+

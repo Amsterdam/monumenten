@@ -3,9 +3,10 @@ from monumenten.settings_databases import *
 
 INSTALLED_APPS += [
     'monumenten.api',
-    'monumenten.import',
-    'monumenten.health',
     'monumenten.dataset',
+    'monumenten.importer',
+    'monumenten.health',
+    'monumenten.objectstore',
 
 ]
 
