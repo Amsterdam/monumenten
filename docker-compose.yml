@@ -1,0 +1,26 @@
+version: "3.0"
+services:
+  database:
+    image: build.datapunt.amsterdam.nl:5000/atlas/postgres
+    ports:
+      - "5412:5432"
+    environment:
+      POSTGRES_DB: monumenten
+      POSTGRES_USER: monumenten
+      POSTGRES_PASSWORD: insecure
+
+  web:
+    build: .
+    ports:
+      - "8109:8000"
+    links:
+      - database
+    environment:
+      - DATAPUNT_API_URL=${DATAPUNT_API_URL:-https://api.datapunt.amsterdam.nl/}
+      - SECRET_KEY=hoi
+      - DATABASE_NAME=monumenten
+      - DATABASE_USER=monumenten
+      - DATABASE_PASSWORD=insecure
+      - OBJECTSTORE_PASSWORD=insecure
+      - CONSUL_HOST=${CONSUL_HOST:-notset}
+      - CONSUL_PORT=${CONSUL_PORT:-8500}
