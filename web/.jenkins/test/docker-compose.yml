@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: monumenten
 
   tests:
-    build: ../..
+    build: ../../
     links:
       - database
     environment:
@@ -15,4 +15,4 @@ services:
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
     command: >
-      bash -c "/app/ci/docker-wait.sh && cd /app/ci/test/  && ./docker-code-check.sh && ./docker-test.sh"
+      bash -c "/app/.jenkins/docker-wait.sh && cd /app/.jenkins/test/  && ./docker-code-check.sh && ./docker-test.sh"
