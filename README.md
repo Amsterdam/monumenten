@@ -20,16 +20,16 @@ API and import  module.
 ### Local dockers and local server
     # start the local docker containers
 	docker-compose up -d --build
-	
+
 	# create virtual environment (use the appropiate python binary)
 	virtualenv -p /usr/local/bin/python3 venv
     source venv/bin/activate
     
     # install the requirements in the virtual env
-    pip install -r requirements.txt
+    pip install -r web/requirements.txt
     
     # run database migrations
-    export DJANGO_SETTINGS_MODULE=monumenten.settings
+    cd web
     ./manage.py migrate
     
     # start server
@@ -51,9 +51,9 @@ Login to https://stack.cloudvps.com/
 
 #### Run the import
 
-    export OBJECTSTORE_USER=cultuur
-    export OBJECTSTORE_PASSWORD=XXX_from_step_above_XXX
-    ./manage.py run_import
+    export CULTUUR_OBJECTSTORE_PASSWORD=XXX_from_step_above_XXX
+    web/manage.py run_import
     
 Check out the database tool pgadmin on host 'localhost' , port 5412.
+
 
