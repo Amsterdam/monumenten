@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: tellus
 
   tests:
-    build: .
+    build: ../..
     links:
       - database
     environment:

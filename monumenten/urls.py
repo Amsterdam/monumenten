@@ -17,8 +17,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 
-from monumenten import health
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^status/', include('monumenten.health.urls', namespace='health')),

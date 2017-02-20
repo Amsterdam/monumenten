@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-flake8 --config=./flake.cfg ../..
+flake8 --config=./flake.cfg ../../monumenten

@@ -63,8 +63,6 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -80,9 +78,6 @@ TEMPLATES = [
         },
     },
 ]
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -242,6 +237,3 @@ LOGGING = {
 
     },
 }
-
-
-

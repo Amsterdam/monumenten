@@ -1,5 +1,11 @@
-from monumenten.settings_common import *
-from monumenten.settings_databases import *
+from monumenten.settings_common import * # noqa F403
+from monumenten.settings_common import INSTALLED_APPS, DEBUG
+from monumenten.settings_databases import Location_key,\
+    get_docker_host,\
+    get_database_key,\
+    OVERRIDE_HOST_ENV_VAR,\
+    OVERRIDE_PORT_ENV_VAR
+import os
 
 INSTALLED_APPS += [
     'monumenten.api',
@@ -48,7 +54,6 @@ DATABASES = {
 }
 
 # SWAGGER
-
 SWAG_PATH = 'api-acc.datapunt.amsterdam.nl/monumenten/docs'
 
 if DEBUG:

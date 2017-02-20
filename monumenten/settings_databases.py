@@ -1,6 +1,7 @@
 import os
 import re
 
+
 def get_docker_host():
     """
     Looks for the DOCKER_HOST environment variable to find the VM
@@ -33,6 +34,7 @@ def in_docker():
 OVERRIDE_HOST_ENV_VAR = 'DATABASE_HOST_OVERRIDE'
 OVERRIDE_PORT_ENV_VAR = 'DATABASE_PORT_OVERRIDE'
 
+
 class Location_key:
     local = 'local'
     docker = 'docker'
@@ -46,4 +48,3 @@ def get_database_key():
         return Location_key.docker
 
     return Location_key.local
-
