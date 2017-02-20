@@ -27,11 +27,11 @@ node {
     stage('Test') {
         tryStep "test", {
             withCredentials([[$class: 'StringBinding', credentialsId: 'OBJECTSTORE_PASSWORD', variable: 'OBJECTSTORE_PASSWORD']]) {
-            sh "docker-compose -p monumenten -f scripts/test/docker-compose.yml build && " +
-                    "docker-compose -p monumenten -f scripts/test/docker-compose.yml run -u root --rm tests"
+            sh "docker-compose -p monumenten -f ci/test/docker-compose.yml build && " +
+                    "docker-compose -p monumenten -f ci/test/docker-compose.yml run -u root --rm tests"
         }
         }, {
-            sh "docker-compose -p monumenten -f scripts/test/docker-compose.yml down"
+            sh "docker-compose -p monumenten -f ci/test/docker-compose.yml down"
         }
     }
 
