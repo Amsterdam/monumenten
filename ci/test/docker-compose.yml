@@ -4,15 +4,15 @@ services:
     image: build.datapunt.amsterdam.nl:5000/atlas/postgres
     environment:
       POSTGRES_PASSWORD: insecure
-      POSTGRES_USER: tellus
+      POSTGRES_USER: monumenten
 
   tests:
     build: ../..
     links:
       - database
     environment:
-      DATABASE_NAME: tellus
-      DATABASE_USER: tellus
+      DATABASE_NAME: monumenten
+      DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
     command: >
       bash -c "cd /app/ci/test/ && ./docker-code-check.sh && ./docker-test.sh"

@@ -44,16 +44,16 @@ API and import  module.
 docker-compose exec database update-db.sh monumenten
 
 ### Monumenten import
-#### Location of the datafiles
-Login to Rattic and retrieve the tellus objectstore password for CloudVPS Monumenten.
 
-Login to https://stack.cloudvps.com/ with the user 'monumenten'.
+#### Location of the datafiles
+Login to Rattic and retrieve the objectstore user and password for CloudVPS Cultuur.
+Login to https://stack.cloudvps.com/
 
 #### Run the import
 
-    export DJANGO_SETTINGS_MODULE=monumenten.settings
+    export OBJECTSTORE_USER=cultuur
     export OBJECTSTORE_PASSWORD=XXX_from_step_above_XXX
     ./manage.py run_import
     
-Check out the database tool pgadmin on host 'localhost' , port 5409.
+Check out the database tool pgadmin on host 'localhost' , port 5412.
 

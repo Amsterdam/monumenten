@@ -13,7 +13,7 @@ logging.getLogger("swiftclient").setLevel(logging.WARNING)
 os_connect = {
     'auth_version': '2.0',
     'authurl': 'https://identity.stack.cloudvps.com/v2.0',
-    'user': 'cultuur',
+    'user': os.getenv('OBJECTSTORE_USER', 'cultuur'),
     'key': os.getenv('OBJECTSTORE_PASSWORD', 'insecure'),
     'tenant_name': 'BGE000081_Cultuur',
     'os_options': {
