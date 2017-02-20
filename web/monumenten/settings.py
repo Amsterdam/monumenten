@@ -93,4 +93,4 @@ SWAGGER_SETTINGS = {
     'doc_expansion': 'list',
 }
 
-HEALTH_MODEL = 'dataset.Dummy'
+HEALTH_MODEL = 'dataset.Monument'
