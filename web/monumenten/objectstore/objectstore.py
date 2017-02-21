@@ -29,7 +29,7 @@ import_folder = 'Import'
 
 @lru_cache(maxsize=None)
 def get_conn():
-    assert os.getenv('OBJECTSTORE_PASSWORD')
+    assert os.getenv('CULTUUR_OBJECTSTORE_PASSWORD')
     return Connection(**os_connect)
 
 
