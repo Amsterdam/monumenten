@@ -1,4 +1,3 @@
-import os
 import xmltodict
 from monumenten.dataset.models import Monument
 

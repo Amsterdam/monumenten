@@ -1,7 +1,7 @@
 import logging
 
 from django.core.management import BaseCommand
-from monumenten.importer import xml_importer
+# from monumenten.importer import xml_importer
 log = logging.getLogger(__name__)
 
 
