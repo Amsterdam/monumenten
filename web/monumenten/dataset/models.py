@@ -10,7 +10,7 @@ class Complex(models.Model):
 
     beschrijving = models.TextField(null=True)
     monumentnummer = models.IntegerField(null=True)
-    naam = models.CharField(max_length=255, null=True)
+    complex_naam = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=128, null=True)
 
     def __str__(self):
@@ -72,3 +72,7 @@ class Situering(models.Model):
 
     def __str__(self):
         return "Complex {}".format(self.id)
+
+    def __unicode__(self):
+        samengesteld_adres = [self.straat, self.huisnummer, self.huisletter]
+        return ' '.join(samengesteld_adres)
