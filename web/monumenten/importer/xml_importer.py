@@ -8,7 +8,8 @@ log = logging.getLogger(__name__)
 
 def get_complex_id(parent):
     if 'Type' in parent and parent['Type'] == 'Complex':
-        return parent['Id']
+        complex = Complex.objects.get(id=parent['Id'])
+        return complex
     return None
 
 
@@ -93,7 +94,7 @@ def update_create_monument(item):
             'afbeelding': 'Afbeelding' in item and 'Id' in item['Afbeelding'] and item['Afbeelding']['Id'] or None,
             'architect': item.get('Architect', None),
             'beschrijving': get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-            'complex_id': 'ParentObject' in item and get_complex_id(item['ParentObject']),
+            'complex': 'ParentObject' in item and get_complex_id(item['ParentObject']) or None,
             'coordinaten': 'Punt' in item and get_coordinates(item['Punt']) or None,
             'functie': item.get('Functie', None),
             'geometrie': get_geometry(item),
@@ -115,8 +116,8 @@ def handle(_, item):
     if 'Type' in item and item['Type'] == 'Complex':
         update_create_complex(item)
     else:
-        update_create_monument(item)
         'ParentObject' in item and update_create_complex(item['ParentObject'])
+        update_create_monument(item)
     return True
 
 

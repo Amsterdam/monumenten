@@ -94,6 +94,7 @@ class TestObjectStore(TestCase):
 
         # Identificerende sleutel complex
         self.assertEqual(monument.complex_id, '9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', 'Complex Id')
+        self.assertEqual(monument.complex.id, '9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', 'Complex Id')
 
         # Identificerende sleutel situering
         # TODO
