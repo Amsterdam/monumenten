@@ -1,16 +1,14 @@
 import xmltodict
 import logging
-from monumenten.dataset.models import Monument
-from django.contrib.gis.geos import GEOSGeometry
+from monumenten.dataset.models import Monument, Complex
+from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 
 log = logging.getLogger(__name__)
 
 
-def get_attribute_from_parent(item, parent, parent_type, attribute):
-    if parent not in item:
-        return None
-    if 'Type' in item[parent] and item[parent]['Type'] == parent_type:
-        return item[parent][attribute]
+def get_complex_id(parent):
+    if 'Type' in parent and parent['Type'] == 'Complex':
+        return parent['Id']
     return None
 
 
@@ -55,19 +53,50 @@ def get_in_onderzoek(tags):
     return False
 
 
-def handle(_, item):
-    log.info('Importing object with id: {}'.format(item['Id']))
+def get_geometry(item):
+    if 'Polygoon' in item:
+        gm = GEOSGeometry(item['Polygoon'])
+        if gm.geom_type == 'GeometryCollection':
+            return gm
+        geometry = GeometryCollection(gm)
+    elif 'Punt' in item and type(item['Punt']) == list:
+        geometry = GeometryCollection()
+        for p in item['Punt']:
+            geometry.append(GEOSGeometry(p))
+    else:
+        geometry = None
+    return geometry
+
+
+def update_create_complex(item):
+    Complex.objects.update_or_create(
+        defaults={
+            'id': item['Id'],
+            'beschrijving': get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            'monumentnummer': item.get('Monumentnummer', None),
+            'naam': item.get('Naam', None),
+            'status': item.get('Status', None),
+        }, id=item['Id'])
+
+
+def get_coordinates(point):
+    if type(point) == list:
+        return GEOSGeometry(point[0], srid=28992)
+    return GEOSGeometry(point, srid=28992)
+
+
+def update_create_monument(item):
     Monument.objects.update_or_create(
         defaults={
             'id': item['Id'],
             'aanwijzingsdatum': item.get('AanwijzingsDatum', None),
+            'afbeelding': 'Afbeelding' in item and 'Id' in item['Afbeelding'] and item['Afbeelding']['Id'] or None,
             'architect': item.get('Architect', None),
             'beschrijving': get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-            'complex_id': get_attribute_from_parent(item, 'ParentObject', 'Complex', 'Id'),
-            'complex_naam': get_attribute_from_parent(item, 'ParentObject', 'Complex', 'Naam'),
-            'complex_nummer': get_attribute_from_parent(item, 'ParentObject', 'Complex', 'Monumentnummer'),
-            'afbeelding': 'Afbeelding' in item and 'Id' in item['Afbeelding'] and item['Afbeelding']['Id'] or None,
+            'complex_id': 'ParentObject' in item and get_complex_id(item['ParentObject']),
+            'coordinaten': 'Punt' in item and get_coordinates(item['Punt']) or None,
             'functie': item.get('Functie', None),
+            'geometrie': get_geometry(item),
             'in_onderzoek': 'Tag' in item and get_in_onderzoek(item['Tag']) and 'Ja' or 'Nee',
             'monumentnummer': item.get('Monumentnummer', None),
             'naam': item.get('Naam', None),
@@ -75,17 +104,25 @@ def handle(_, item):
             'pand_sleutel': item.get('PandSleutel', 0),
             'periode_start': item.get('PeriodeStart', None),
             'periode_eind': item.get('PeriodeEind', None),
-            'punt': 'Punt' in item and GEOSGeometry(item['Punt'], srid=28992) or None,
-            'polygoon': 'Polygoon' in item and GEOSGeometry(item['Polygoon'], srid=28992) or None,
             'redengevende_omschrijving': get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
             'status': item.get('Status', None),
             'type': item.get('Type', None),
         }, id=item['Id'])
 
+
+def handle(_, item):
+    log.info('Importing object with id: {}'.format(item['Id']))
+    if 'Type' in item and item['Type'] == 'Complex':
+        update_create_complex(item)
+    else:
+        update_create_monument(item)
+        'ParentObject' in item and update_create_complex(item['ParentObject'])
     return True
 
 
 def import_file(filename):
+    log.info('Start import')
     Monument.objects.all().delete()
     with open(filename, "r", encoding='utf-16') as fd:
         xmltodict.parse(fd.read(), item_depth=2, item_callback=handle)
+    log.info('Import done')
