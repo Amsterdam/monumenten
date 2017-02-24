@@ -46,7 +46,7 @@ def health(request):
 
 def check_data(request):
 
-    if model.objects.all().count() < 30000:
+    if model.objects.all().count() < 3000:
         return HttpResponse(
             "Too few monumenten data in the database",
             content_type="text/plain", status=500)
