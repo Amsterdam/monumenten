@@ -26,10 +26,10 @@ node {
 
     stage('Test') {
         tryStep "test", {
-        {
+
             sh "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml build && " +
                     "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml run -u root --rm tests"
-        }
+
         }, {
             sh "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml down"
         }
