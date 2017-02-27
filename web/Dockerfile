@@ -26,6 +26,9 @@ WORKDIR /app
 
 COPY . /app/
 
+# see .jenkins/README.TXT
+COPY .jenkins-import /.jenkins-import/
+
 RUN pip install --no-cache-dir -r requirements.txt
 USER datapunt
 
