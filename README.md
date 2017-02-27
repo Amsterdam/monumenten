@@ -52,7 +52,8 @@ Login to https://stack.cloudvps.com/
 #### Run the import
 
     export CULTUUR_OBJECTSTORE_PASSWORD=XXX_from_step_above_XXX
-    web/manage.py run_import
+    cd web
+    ./manage.py run_import
     
 Check out the database tool pgadmin on host 'localhost' , port 5412.
 
