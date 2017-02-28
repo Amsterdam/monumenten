@@ -35,7 +35,7 @@ services:
               && chmod 600 ~/.pgpass \
               && pg_dump --clean \
                           -Fc \
-                          -t monumenten* \
+                          -t dataset* \
                           -t geo*  \
                           -t django_migrations  \
                           -t django_site \

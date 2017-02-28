@@ -9,6 +9,6 @@ This structure prevents that web/ contains CI related scripts.
 
 NOOT:
 In the main Dockerfile, the following are copied for backwards compatability reasons.
- * .jenkins/import is copied into .jenkins-improt
- * .jenkins/docker-migrate.sh into web/docker-migrate.sh
- In future CI should point to .jenkins-import and .jenkins/docker-migrate.sh
+ * .jenkins/import copied into /.jenkins-import
+ * .jenkins/docker-migrate.sh copied into /app/docker-migrate.sh
+ In future CI can be switched over to point to /app/.jenkins/import and /app/.jenkins/docker-migrate.sh
