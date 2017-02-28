@@ -16,13 +16,12 @@ class TestObjectStore(TestCase):
     def test_import(self):
 
         import_file(filename='tests/files/01_object_attributes.xml')
-        #import_file(filename='/Users/patrickberkhout/Downloads/AMISExport.xml')
 
-        monument = Monument.objects.get(id='d5cc6402-d211-4981-b965-08a559837218')
-        monument_2 = Monument.objects.get(id='d5cc6402-d211-4981-b965-08a559837219')
-        monument_3 = Monument.objects.get(id='d5cc6402-d211-4981-b965-08a559837220')
-        monument_4 = Monument.objects.get(id='d5cc6402-d211-4981-b965-08a559837221')
-        complex = Complex.objects.get(id='9d278d0d-c5c0-4c8d-9f4e-081d7706b42e')
+        monument = Monument.objects.get(external_id='d5cc6402-d211-4981-b965-08a559837218')
+        monument_2 = Monument.objects.get(external_id='d5cc6402-d211-4981-b965-08a559837219')
+        monument_3 = Monument.objects.get(external_id='d5cc6402-d211-4981-b965-08a559837220')
+        monument_4 = Monument.objects.get(external_id='d5cc6402-d211-4981-b965-08a559837221')
+        complex = Complex.objects.get(external_id='9d278d0d-c5c0-4c8d-9f4e-081d7706b42e')
 
         # Monumentnummer
         self.assertEqual(monument.monumentnummer, 123456, 'Monumentnummer')
@@ -87,21 +86,29 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.afbeelding, '27eb9135-b68e-4a51-b197-3a3299fb5dbc', 'Afbeelding')
 
         # Adressen
-        # TODO
+        adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.external_id)
+        self.assertEqual(adresses[0].external_id, '2f4546b5-7528-443b-9474-ef3c31a2f018', 'Adres id')
+        self.assertEqual(adresses[0].betreft, 3630000177987, 'Adres betreft = BAG sleutel')
+        self.assertEqual(adresses[0].situering_nummeraanduiding, 'Conversie', 'Adres situering')
+        self.assertEqual(adresses[0].eerste_situering, 'Ja', 'Adres eerste_situering')
+        self.assertEqual(adresses[0].huisletter, 'A', 'Adres huisletter')
+        self.assertEqual(adresses[0].huisnummer, 52, 'Adres huisnummer')
+        self.assertEqual(adresses[0].huisnummertoevoeging, '3', 'Adres huisnummertoevoeging')
+        self.assertEqual(adresses[0].postcode, '1000AA', 'Adres postcode')
+        self.assertEqual(adresses[0].straat, 'Straatje', 'Adres straat')
 
         # Identificerende sleutel monument
-        self.assertEqual(monument.id, 'd5cc6402-d211-4981-b965-08a559837218', 'Id')
+        self.assertIsNotNone(monument.id, 'Id')
 
         # Identificerende sleutel complex
-        self.assertEqual(monument.complex_id, '9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', 'Complex Id')
-        self.assertEqual(monument.complex.id, '9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', 'Complex Id')
+        self.assertIsNotNone(monument.id, 'Complex Id')
 
         # Identificerende sleutel situering
-        # TODO
-
+        adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.id)
+        self.assertIsNotNone(adresses[0].id, 'Adres id')
 
         # Identificerende sleutel complex complex
-        self.assertEqual(complex.id, '9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', 'Complex Id')
+        self.assertIsNotNone(complex.id, 'Complex id')
 
         # Monumentnummer complex
         self.assertEqual(complex.monumentnummer, 518301, 'Complex nummer')

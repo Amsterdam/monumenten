@@ -21,6 +21,6 @@ services:
       - DATABASE_NAME=monumenten
       - DATABASE_USER=monumenten
       - DATABASE_PASSWORD=insecure
-      - OBJECTSTORE_PASSWORD=insecure
+      - CULTUUR_OBJECTSTORE_PASSWORD=insecure
       - CONSUL_HOST=${CONSUL_HOST:-notset}
       - CONSUL_PORT=${CONSUL_PORT:-8500}

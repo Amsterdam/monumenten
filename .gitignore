@@ -106,6 +106,7 @@ pip-selfcheck.json
 .idea/
 .jenkins/backups/
 *.iml
+.DS_Store
 
 # static files
 web/static/
