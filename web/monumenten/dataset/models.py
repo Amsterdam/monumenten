@@ -48,8 +48,6 @@ class Monument(models.Model):
         return "Monument {}".format(self.id)
 
 
-
-
 class Situering(models.Model):
     """
     Situering model
