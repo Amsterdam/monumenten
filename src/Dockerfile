@@ -28,7 +28,7 @@ COPY . /app/
 
 # CI hook - see .jenkins/README.TXT
 COPY .jenkins/import /.jenkins-import/
-COPY .jenkins/docker-migrate.sh /app/web/
+COPY .jenkins/docker-migrate.sh /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
 USER datapunt

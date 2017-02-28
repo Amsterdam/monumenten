@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: insecure
 
   web:
-    build: web/
+    build: src/
     ports:
       - "8109:8000"
     links:
