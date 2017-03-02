@@ -20,8 +20,7 @@ def get_note(item, text_list, text_type, text_status):
 
 def get_note_text(text_list, text_type, text_status):
     def get_note(text):
-        if match(text, 'Type', text_type) and match(text, 'Status',
-                                            text_status) and 'Notitie' in text:
+        if match(text, 'Type', text_type) and match(text, 'Status', text_status) and 'Notitie' in text:
             return text['Notitie']
         return None
 
