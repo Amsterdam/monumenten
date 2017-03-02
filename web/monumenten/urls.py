@@ -14,12 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.contrib import admin
 from django.conf import settings
+import monumenten.health.views
+import monumenten.api.views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^status/', include('monumenten.health.urls', namespace='health')),
+    url(r'^status/health$', monumenten.health.views.health),
+    url(r'^status/data$', monumenten.health.views.check_data),
+    url(r'^monumenten/monument/$', monumenten.api.views.MonumentList.as_view(), name='monumenten-list'),
+    url(r'^monumenten/monument/(?P<pk>[0-9]+)/', monumenten.api.views.MonumentDetail.as_view(), name='monumenten-detail'),
+    url(r'^monumenten/monument/(?P<pk>[0-9]+)/situering/', monumenten.api.views.SitueringList.as_view(), name='situering-list'),
+    url(r'^monumenten/situering/(?P<pk>[0-9]+)', monumenten.api.views.SitueringList.as_view(), name='situering-detail'),
 
 ]
 

@@ -114,7 +114,7 @@ class TestObjectStore(TestCase):
         self.assertEqual(complex.monumentnummer, 518301, 'Complex nummer')
 
         # Complexnaam
-        self.assertEqual(complex.naam, 'Complex1999', 'Complex naam')
+        self.assertEqual(complex.complex_naam, 'Complex1999', 'Complex naam')
 
         # Beschrijving complex
         self.assertEqual(complex.beschrijving, 'Notitie4', 'Complex beschrijving')

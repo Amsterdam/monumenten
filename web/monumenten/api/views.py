@@ -2,10 +2,40 @@
 
 # Create your views here.
 
-from rest_framework import generics
-from monumenten.dataset.models import Monument
+from rest_framework import mixins, generics
+from monumenten.dataset.models import Monument, Situering
+from monumenten.api import rest, serializers
+from authorization_django import levels as authorization_levels
 
 
-#TODO selectie van de rest api?
-class MonumentList(generics.ListAPIView):
-    queryset = Monument.objects.select_related('complex', depth=1)
+class MonumentList(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = Monument.objects.select_related('complex')
+
+    def get_serializer_class(self):
+        if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE) or True:
+            return serializers.MonumentSerializer_Auth
+        else:
+            return serializers.MonumentSerializer_NonAuth
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class MonumentDetail(mixins.ListModelMixin, generics.GenericAPIView):
+    pass
+
+
+class SitueringDetail(mixins.ListModelMixin, generics.GenericAPIView):
+    pass
+
+
+class SitueringList(mixins.ListModelMixin, generics.GenericAPIView):
+    # queryset = Situering.objects.all()
+    serializer_class = serializers.SitueringSerializer
+
+    def get_queryset(self):
+        monumentnummer = self.request.query_params.get('monumentnummer', None)
+        if monumentnummer:
+            return Situering.objects.filter(monumentnummer=monumentnummer)
+        else:
+            return Situering.objects.all()

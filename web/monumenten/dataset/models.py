@@ -34,7 +34,6 @@ class Monument(models.Model):
     beperking = models.IntegerField(null=True)
     beschrijving = models.TextField(null=True)
     coordinaten = models.PointField(null=True, srid=28992)
-    complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
     afbeelding = models.CharField(max_length=36, null=True)
     functie = models.CharField(max_length=128, null=True)
     geometrie = models.GeometryCollectionField(null=True, srid=28992)
@@ -49,6 +48,8 @@ class Monument(models.Model):
     status = models.CharField(max_length=128, null=True)
     type = models.CharField(max_length=128, null=True)
 
+    complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
+
     def __str__(self):
         return "Monument {}".format(self.id)
 
@@ -62,9 +63,6 @@ class Situering(models.Model):
     external_id: id conform AMISExport.xml
     """
     external_id = models.CharField(max_length=36, null=True)
-
-    monument = models.ForeignKey(Monument, related_name='situeringen')
-
     betreft = models.BigIntegerField(null=True)
     situering_nummeraanduiding = models.CharField(max_length=128, null=True)
     eerste_situering = models.CharField(max_length=3, null=True)
@@ -75,9 +73,7 @@ class Situering(models.Model):
     postcode = models.CharField(max_length=6, null=True)
     straat = models.CharField(max_length=80, null=True)
 
+    monument = models.ForeignKey(Monument, related_name='situeringen')
+
     def __str__(self):
         return "Situering {}".format(self.id)
-
-    def __unicode__(self):
-        samengesteld_adres = [self.straat, self.huisnummer, self.huisletter]
-        return ' '.join(samengesteld_adres)

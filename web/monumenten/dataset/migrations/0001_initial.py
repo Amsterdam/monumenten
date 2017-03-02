@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('external_id', models.CharField(db_index=True, max_length=36, null=True)),
                 ('beschrijving', models.TextField(null=True)),
                 ('monumentnummer', models.IntegerField(null=True)),
-                ('naam', models.CharField(max_length=255, null=True)),
+                ('complex_naam', models.CharField(max_length=255, null=True)),
                 ('status', models.CharField(max_length=128, null=True)),
             ],
         ),
