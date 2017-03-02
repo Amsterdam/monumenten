@@ -88,11 +88,29 @@ def get_coordinates(point):
     return GEOSGeometry(point, srid=28992)
 
 
+def convert_to_landelijk_id(id, id_code):
+    """3630000092647 --> 0363200000092647
+    Landelijke identificatiecode
+Lijst
+Een landelijke identificatiecode bestaat uit 16 cijfers.
+De eerste 4 zijn gereserveerd voor de gemeentecode (0363).
+De 2 cijfers daarna duiden een type BAG object aan:
+10 = een pand, 20 = een nummeraanduiding
+30 = een openbare ruimte
+01 = een verblijfsobject
+02 = een ligplaats
+03 = een standplaats
+De laatste 10 cijfers zijn gereserveerd voor het volgnummer
+"""
+    assert id.__len__() == 13
+    return id.replace('363', '0363' + id_code, 1)
+
+
 def update_create_adress(monument, adress):
     Situering.objects.create(
             external_id=adress['Id'],
             monument=monument,
-            betreft='VerzendSleutel' in adress and int(adress['VerzendSleutel']) or None,
+            betreft='VerzendSleutel' in adress and convert_to_landelijk_id(adress['VerzendSleutel'], '20') or None,
             situering_nummeraanduiding='KoppelStatus' in adress and adress['KoppelStatus'] or None,
             eerste_situering='KoppelEerste' in adress and adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
             huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
@@ -126,7 +144,7 @@ def update_create_monument(item, created_complex):
             monumentnummer=item.get('Monumentnummer', None),
             naam=item.get('Naam', None),
             opdrachtgever=item.get('Opdrachtgever', None),
-            pand_sleutel=item.get('PandSleutel', 0),
+            pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(item['PandSleutel'], '10') or None,
             periode_start=item.get('PeriodeStart', None),
             periode_eind=item.get('PeriodeEind', None),
             redengevende_omschrijving=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
