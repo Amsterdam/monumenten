@@ -26,10 +26,10 @@ API and import  module.
     source venv/bin/activate
     
     # install the requirements in the virtual env
-    pip install -r web/requirements.txt
+    pip install -r src/requirements.txt
     
     # run database migrations
-    cd web
+    cd src
     ./manage.py migrate
     
     # start server
@@ -52,7 +52,7 @@ Login to https://stack.cloudvps.com/
 #### Run the import
 
     export CULTUUR_OBJECTSTORE_PASSWORD=XXX_from_step_above_XXX
-    cd web
+    cd src
     ./manage.py run_import
     
 Check out the database tool pgadmin on host 'localhost' , port 5412.

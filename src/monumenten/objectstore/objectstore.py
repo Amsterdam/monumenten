@@ -1,6 +1,8 @@
 import logging
 import os
 from functools import lru_cache
+from PIL import Image
+import io
 
 from swiftclient.client import Connection
 
@@ -25,6 +27,7 @@ os_connect = {
 
 container = 'monumenten'
 import_folder = 'Import'
+images_folder = 'Images'
 download_dir = '/tmp/cultuur/'
 
 
@@ -78,3 +81,8 @@ def fetch_import_file_names():
             log.info("Found file {}".format(file_object['name']))
             files.append(file_object['name'])
     return files
+
+
+def get_image(file_name):
+    byte_array = get_conn().get_object(container, file_name)[1]
+    return Image.open(io.BytesIO(byte_array))
