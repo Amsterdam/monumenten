@@ -14,9 +14,9 @@ class MonumentList(mixins.ListModelMixin, generics.GenericAPIView):
 
     def get_serializer_class(self):
         if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE) or True:
-            return serializers.MonumentSerializer_Auth
+            return serializers.MonumentSerializerAuth
         else:
-            return serializers.MonumentSerializer_NonAuth
+            return serializers.MonumentSerializerNonAuth
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

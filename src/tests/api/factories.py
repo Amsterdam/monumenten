@@ -3,11 +3,13 @@ from datetime import datetime, timedelta
 import factory
 import random
 from django.contrib.gis.geos import Point
-from factory import fuzzy, post_generation
+from factory import fuzzy
 
 from monumenten.dataset import models
 
 JANEE = 'ja'
+
+
 def gen_janee():
     global JANEE
     JANEE = 'nee'
@@ -19,10 +21,10 @@ def create_testset(nr=10):
 
     for n0 in range(nr):
         complex = ComplexFactory()
-        for n1 in range(random.randint(1,10)):
-            monument = MonumentenDataFactory(complex = complex, coordinaten=point)
-            for n2 in range(random.randint(1,10)):
-                SitueringFactory(monument = monument)
+        for n1 in range(random.randint(1, 10)):
+            monument = MonumentenDataFactory(complex=complex, coordinaten=point)
+            for n2 in range(random.randint(1, 10)):
+                SitueringFactory(monument=monument)
 
 
 class SitueringFactory(factory.DjangoModelFactory):
@@ -34,9 +36,9 @@ class SitueringFactory(factory.DjangoModelFactory):
     eerste_situering = fuzzy.FuzzyAttribute(gen_janee)
 
     huisnummer = fuzzy.FuzzyInteger(low=1)
-    if random.randint(0,50) % 3 == 0:
+    if random.randint(0, 50) % 3 == 0:
         huisletter = fuzzy.FuzzyText(length=1)
-    if random.randint(0,50) % 3 == 0:
+    if random.randint(0, 50) % 3 == 0:
         huisnummertoevoeging = fuzzy.FuzzyText(length=4)
     postcode = fuzzy.FuzzyText(length=6)
     straat = fuzzy.FuzzyText(length=80)
@@ -46,10 +48,12 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Monument
 
-    if random.randint(0,50) % 3 == 0:           # one in 3 is filled
-        aanwijzingsdatum = fuzzy.FuzzyDate(start_date=datetime.today() - timedelta(days=random.randint(10, 9000)), end_date=datetime.today())
+    if random.randint(0, 50) % 3 == 0:  # one in 3 is filled
+        aanwijzingsdatum = fuzzy.FuzzyDate(
+            start_date=datetime.today() - timedelta(
+                days=random.randint(10, 9000)), end_date=datetime.today())
     architect = fuzzy.FuzzyText(length=128)
-    if random.randint(0,50) % 3 == 0:
+    if random.randint(0, 50) % 3 == 0:
         beperking = fuzzy.FuzzyInteger(low=0)
     beschrijving = fuzzy.FuzzyText()
     coordinaten = fuzzy.FuzzyInteger(low=1)
@@ -59,9 +63,9 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     naam = fuzzy.FuzzyText(length=255)
     opdrachtgever = fuzzy.FuzzyText(length=128)
     pand_sleutel = fuzzy.FuzzyInteger(low=110284012933)
-    if random.randint(0,50) % 4:
+    if random.randint(0, 50) % 4:
         redengevende_omschrijving = fuzzy.FuzzyText()
-    if random.randint(0,50) % 4:
+    if random.randint(0, 50) % 4:
         status = fuzzy.FuzzyText(length=128)
     type = fuzzy.FuzzyText(length=128)
 

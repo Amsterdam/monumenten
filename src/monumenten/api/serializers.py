@@ -3,32 +3,32 @@ from rest_framework import serializers
 
 from monumenten.api.rest import DataSetSerializerMixin, HALSerializer
 
-OPENFIELDS =    ['id',               # Identificerende sleutel monument
-                'monumentnummer',   # Monumentnummer
-                'naam',             # Monumentnaam
-                'status',           # Monumentstatus
-                'aanwijzingsdatum', # Monument aanwijzingsdatum
-                'pand_sleutel',     # Betreft [BAG:Pand] (Sleutelverzendend)
-                # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
-                # 'bag_nummeraanduiding', # [BAG:Nummeraanduiding] ophalen uit BAG
-                'coordinaten',      # Monumentcoördinaten
-                'complex_id',       # Identificerende sleutel complex
-                'complex_naam',     # Complexnaam)
-                'beperking',        # Heeft als grondslag [Wkpb:Beperking]
-                'situering',        # De situering (adressen) van de panden
-                 ]
+OPENFIELDS = ['id',  # Identificerende sleutel monument
+              'monumentnummer',  # Monumentnummer
+              'naam',  # Monumentnaam
+              'status',  # Monumentstatus
+              'aanwijzingsdatum',  # Monument aanwijzingsdatum
+              'pand_sleutel',  # Betreft [BAG:Pand] (Sleutelverzendend)
+              # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
+              # 'bag_nummeraanduiding', # [BAG:Nummeraanduiding] ophalen uit BAG
+              'coordinaten',  # Monumentcoördinaten
+              'complex_id',  # Identificerende sleutel complex
+              'complex_naam',  # Complexnaam)
+              'beperking',  # Heeft als grondslag [Wkpb:Beperking]
+              'situering',  # De situering (adressen) van de panden
+              ]
 
 NON_OPENFIELDS = ['architect',
-                'type',
-                'opdrachtgever',
-                'periode_start',
-                'functie',
-                'geometrie',
-                'in_onderzoek',
-                'beschrijving',
-                'redengevende_omschrijving',
-                'afbeelding'
-]
+                  'type',
+                  'opdrachtgever',
+                  'periode_start',
+                  'functie',
+                  'geometrie',
+                  'in_onderzoek',
+                  'beschrijving',
+                  'redengevende_omschrijving',
+                  'afbeelding'
+                  ]
 
 
 # Ligt in [Complex]     Is al gedekt met complex_id en complex_naam
@@ -42,7 +42,7 @@ class MonumentMixin(DataSetSerializerMixin):
     dataset = 'dataset'
 
 
-class MonumentSerializer_NonAuth(MonumentMixin, HALSerializer):
+class MonumentSerializerNonAuth(MonumentMixin, HALSerializer):
     complex_id = serializers.SerializerMethodField()
     complex_naam = serializers.SerializerMethodField()
     situering = serializers.SerializerMethodField()
@@ -52,20 +52,23 @@ class MonumentSerializer_NonAuth(MonumentMixin, HALSerializer):
         model = Monument
         fields = OPENFIELDS
 
-    def get_complex_id(self, obj):
+    @staticmethod
+    def get_complex_id(obj):
         return str(obj.complex.external_id)
 
-    def get_complex_naam(self, obj):
+    @staticmethod
+    def get_complex_naam(obj):
         return str(obj.complex.complex_naam)
 
-    def get_situering(self, obj):
+    @staticmethod
+    def get_situering(obj):
         nr_of_situeringen = obj.situeringen.count()
         api_address = '/monumenten/monument/{}/situering'
         return {"count": nr_of_situeringen,
                 "href": api_address.format(str(obj.monumentnummer))}
 
 
-class MonumentSerializer_Auth(MonumentSerializer_NonAuth):
+class MonumentSerializerAuth(MonumentSerializerNonAuth):
     class Meta:
         model = Monument
         fields = OPENFIELDS + NON_OPENFIELDS
@@ -76,12 +79,13 @@ class SitueringSerializer(MonumentMixin, HALSerializer):
 
     class Meta:
         model = Situering
-        fields = (  '_display',
-                    'situering_nummeraanduiding',
-                    'eerste_situering'
-                    )
+        fields = ('_display',
+                  'situering_nummeraanduiding',
+                  'eerste_situering'
+                  )
 
-    def get__display(self, obj):
+    @staticmethod
+    def get__display(obj):
         """
         Gekopieerd vanuit BAG, straat voor toegevoegd
 

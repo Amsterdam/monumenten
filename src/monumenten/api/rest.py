@@ -13,7 +13,6 @@ class DataSetSerializerMixin(object):
 
 
 class LinksField(serializers.HyperlinkedIdentityField):
-
     def to_representation(self, value):
         request = self.context.get('request')
 

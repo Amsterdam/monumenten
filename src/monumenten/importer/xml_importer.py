@@ -20,7 +20,8 @@ def get_note(item, text_list, text_type, text_status):
 
 def get_note_text(text_list, text_type, text_status):
     def get_note(text):
-        if match(text, 'Type', text_type) and match(text, 'Status', text_status) and 'Notitie' in text:
+        if match(text, 'Type', text_type) and match(text, 'Status',
+                                            text_status) and 'Notitie' in text:
             return text['Notitie']
         return None
 
@@ -70,15 +71,19 @@ def update_create_complex(item):
         return Complex.objects.get(external_id=complex_id)
     except Complex.DoesNotExist:
         if 'Type' in item and item['Type'] != 'Complex':
-            functional_errors.append('Unexpected Type {} for ParentObject : {}'.format(item['Type'], complex_id))
+            functional_errors.append(
+                'Unexpected Type {} for ParentObject : {}'.format(item['Type'],
+                                                                  complex_id))
         if 'Punt' in item or 'Adres' in item:
-            functional_errors.append('Unexpected elements Punt and/or Adres for Complex:' + complex_id)
+            functional_errors.append(
+                'Unexpected elements Punt and/or Adres for Complex:' +
+                complex_id)
         return Complex.objects.create(
-                external_id=complex_id,
-                beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-                monumentnummer=item.get('Monumentnummer', None),
-                complex_naam=item.get('Naam', None),
-                status=item.get('Status', None)
+            external_id=complex_id,
+            beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            monumentnummer=item.get('Monumentnummer', None),
+            complex_naam=item.get('Naam', None),
+            status=item.get('Status', None)
         )
 
 
@@ -108,17 +113,21 @@ De laatste 10 cijfers zijn gereserveerd voor het volgnummer
 
 def update_create_adress(monument, adress):
     Situering.objects.create(
-            external_id=adress['Id'],
-            monument=monument,
-            betreft='VerzendSleutel' in adress and convert_to_landelijk_id(adress['VerzendSleutel'], '20') or None,
-            situering_nummeraanduiding='KoppelStatus' in adress and adress['KoppelStatus'] or None,
-            eerste_situering='KoppelEerste' in adress and adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
-            huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
-            huisletter='Huisletter' in adress and adress['Huisletter'] or None,
-            huisnummertoevoeging='Toevoeging' in adress and adress['Toevoeging'] or None,
-            postcode='Postcode' in adress and adress['Postcode'] or None,
-            straat='Straat' in adress and adress['Straat'] or None
-        )
+        external_id=adress['Id'],
+        monument=monument,
+        betreft='VerzendSleutel' in adress and convert_to_landelijk_id(
+            adress['VerzendSleutel'], '20') or None,
+        situering_nummeraanduiding='KoppelStatus' in adress and adress[
+            'KoppelStatus'] or None,
+        eerste_situering='KoppelEerste' in adress
+                         and adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
+        huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
+        huisletter='Huisletter' in adress and adress['Huisletter'] or None,
+        huisnummertoevoeging='Toevoeging' in adress and adress[
+            'Toevoeging'] or None,
+        postcode='Postcode' in adress and adress['Postcode'] or None,
+        straat='Straat' in adress and adress['Straat'] or None
+    )
 
 
 def update_create_adresses(monument, adress):
@@ -131,25 +140,30 @@ def update_create_adresses(monument, adress):
 
 def update_create_monument(item, created_complex):
     monument = Monument.objects.create(
-            external_id=item['Id'],
-            aanwijzingsdatum=item.get('AanwijzingsDatum', None),
-            afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and item['Afbeelding']['Id'] or None,
-            architect=item.get('Architect', None),
-            beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-            complex=created_complex,
-            coordinaten='Punt' in item and get_coordinates(item['Punt']) or None,
-            functie=item.get('Functie', None),
-            geometrie=get_geometry(item),
-            in_onderzoek='Tag' in item and get_in_onderzoek(item['Tag']) and 'Ja' or 'Nee',
-            monumentnummer=item.get('Monumentnummer', None),
-            naam=item.get('Naam', None),
-            opdrachtgever=item.get('Opdrachtgever', None),
-            pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(item['PandSleutel'], '10') or None,
-            periode_start=item.get('PeriodeStart', None),
-            periode_eind=item.get('PeriodeEind', None),
-            redengevende_omschrijving=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
-            status=item.get('Status', None),
-            type=item.get('Type', None))
+        external_id=item['Id'],
+        aanwijzingsdatum=item.get('AanwijzingsDatum', None),
+        afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
+                   item['Afbeelding']['Id'] or None,
+        architect=item.get('Architect', None),
+        beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+        complex=created_complex,
+        coordinaten='Punt' in item and get_coordinates(item['Punt']) or None,
+        functie=item.get('Functie', None),
+        geometrie=get_geometry(item),
+        in_onderzoek='Tag' in item and get_in_onderzoek(
+            item['Tag']) and 'Ja' or 'Nee',
+        monumentnummer=item.get('Monumentnummer', None),
+        naam=item.get('Naam', None),
+        opdrachtgever=item.get('Opdrachtgever', None),
+        pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(
+            item['PandSleutel'], '10') or None,
+        periode_start=item.get('PeriodeStart', None),
+        periode_eind=item.get('PeriodeEind', None),
+        redengevende_omschrijving=get_note(item, 'Tekst',
+                                           'Redengevende omschrijving',
+                                           'Vastgesteld'),
+        status=item.get('Status', None),
+        type=item.get('Type', None))
     'Adres' in item and update_create_adresses(monument, item['Adres'])
     return monument
 

@@ -23,7 +23,7 @@ class TestAPIEndpoints(APITestCase):
     ]
 
     def setUp(self):
-        create_testset()            # builds 10 complexex with 1 to 10 monuments and 1 to 10 situeringen
+        create_testset()  # builds 10 complexex with 1 to 10 monuments and 1 to 10 situeringen
 
     def valid_response(self, url, response):
         """
@@ -62,7 +62,7 @@ class TestAPIEndpoints(APITestCase):
                 response.data['count'],
                 0, 'Wrong result count for {}'.format(url))
 
-    # def test_details(self):
-    #     for url in self.reverse_detail_urls:
-    #         log.debug("test {} => {}".format(url, reverse(url, [1])))
-    #         self.valid_response(url, self.client.get(reverse(url, [1])))
+            # def test_details(self):
+            #     for url in self.reverse_detail_urls:
+            #         log.debug("test {} => {}".format(url, reverse(url, [1])))
+            #         self.valid_response(url, self.client.get(reverse(url, [1])))
