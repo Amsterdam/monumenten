@@ -1,7 +1,7 @@
 from monumenten.dataset.models import Situering, Monument
 from rest_framework import serializers
 
-from src.monumenten.api.rest import DataSetSerializerMixin, HALSerializer
+from monumenten.api.rest import DataSetSerializerMixin, HALSerializer
 
 OPENFIELDS =    ['id',               # Identificerende sleutel monument
                 'monumentnummer',   # Monumentnummer

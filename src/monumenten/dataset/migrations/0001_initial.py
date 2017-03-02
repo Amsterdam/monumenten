@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('monumentnummer', models.IntegerField(null=True)),
                 ('naam', models.CharField(max_length=255, null=True)),
                 ('opdrachtgever', models.CharField(max_length=128, null=True)),
-                ('pand_sleutel', models.BigIntegerField(default=0)),
+                ('pand_sleutel', models.CharField(max_length=16, null=True)),
                 ('periode_start', models.IntegerField(null=True)),
                 ('periode_eind', models.IntegerField(null=True)),
                 ('redengevende_omschrijving', models.TextField(null=True)),
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('external_id', models.CharField(max_length=36, null=True)),
-                ('betreft', models.BigIntegerField(null=True)),
+                ('betreft', models.CharField(max_length=16, null=True)),
                 ('situering_nummeraanduiding', models.CharField(max_length=128, null=True)),
                 ('eerste_situering', models.CharField(max_length=3, null=True)),
                 ('huisnummer', models.IntegerField(null=True)),
