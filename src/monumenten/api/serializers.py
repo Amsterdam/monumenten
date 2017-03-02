@@ -1,7 +1,7 @@
 from monumenten.dataset.models import Situering, Monument
 from rest_framework import serializers
 
-from src.monumenten.api.rest import DataSetSerializerMixin, HALSerializer
+from monumenten.api.rest import DataSetSerializerMixin, HALSerializer
 
 OPENFIELDS =    ['id',               # Identificerende sleutel monument
                 'monumentnummer',   # Monumentnummer
@@ -81,27 +81,27 @@ class SitueringSerializer(MonumentMixin, HALSerializer):
                     'eerste_situering'
                     )
 
-        def get__display(self, obj):
-            """
-            Gekopieerd vanuit BAG, straat voor toegevoegd
+    def get__display(self, obj):
+        """
+        Gekopieerd vanuit BAG, straat voor toegevoegd
 
-            :param obj:
-            :return: displayfield met adres
-            """
+        :param obj:
+        :return: displayfield met adres
+        """
 
-            toevoegingen = [obj.straat]
+        toevoegingen = [obj.straat]
 
-            toevoeging = obj.huisnummer_toevoeging
+        toevoeging = obj.huisnummer_toevoeging
 
-            if obj.huisnummer:
-                toevoegingen.append(str(obj.huisnummer))
+        if obj.huisnummer:
+            toevoegingen.append(str(obj.huisnummer))
 
-            if obj.huisletter:
-                toevoegingen.append(str(obj.huisletter))
+        if obj.huisletter:
+            toevoegingen.append(str(obj.huisletter))
 
-            if toevoeging:
-                tv = str(toevoeging)
-                split_tv = " ".join([c for c in tv])
-                toevoegingen.append(split_tv)
+        if toevoeging:
+            tv = str(toevoeging)
+            split_tv = " ".join([c for c in tv])
+            toevoegingen.append(split_tv)
 
-            return ' '.join(toevoegingen)
+        return ' '.join(toevoegingen)

@@ -6,7 +6,7 @@ from authorization_django import levels as authorization_levels
 from monumenten.dataset.models import Monument, Situering
 from rest_framework import mixins, generics
 
-from src.monumenten.api import serializers
+from monumenten.api import serializers
 
 
 class MonumentList(mixins.ListModelMixin, generics.GenericAPIView):
@@ -31,7 +31,7 @@ class SitueringDetail(mixins.ListModelMixin, generics.GenericAPIView):
 
 
 class SitueringList(mixins.ListModelMixin, generics.GenericAPIView):
-    # queryset = Situering.objects.all()
+    queryset = Situering.objects.all()
     serializer_class = serializers.SitueringSerializer
 
     def get_queryset(self):
