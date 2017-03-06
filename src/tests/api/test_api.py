@@ -15,7 +15,7 @@ class TestAPIEndpoints(APITestCase):
 
     reverse_list_urls = [
         ('monumenten-list', None),
-        ('situering-list', [10])
+        # ('situering-list', [10])
     ]
     reverse_detail_urls = [
         ('monumenten-detail', [5]),
