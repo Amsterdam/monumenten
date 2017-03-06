@@ -10,12 +10,13 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'aanwijzingsdatum',  # Monument aanwijzingsdatum
               'pand_sleutel',  # Betreft [BAG:Pand] (Sleutelverzendend)
               # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
-              # 'bag_nummeraanduiding', # [BAG:Nummeraanduiding] ophalen uit BAG
-              'coordinaten',  # Monumentcoördinaten
+              # 'bag_nummeraanduiding',  # [BAG:Nummeraanduiding]
               'complex_id',  # Identificerende sleutel complex
               'complex_naam',  # Complexnaam)
               'beperking',  # Heeft als grondslag [Wkpb:Beperking]
               'situering',  # De situering (adressen) van de panden
+              'coordinaten',  # Monumentcoördinaten
+              'geometrie',  # Geometrie van document
               ]
 
 NON_OPENFIELDS = ['architect',
@@ -37,16 +38,15 @@ NON_OPENFIELDS = ['architect',
 # Situering nummeraanduiding
 # Betreft [BAG:Nummeraanduiding]
 
+#
+# class MonumentMixin(DataSetSerializerMixin):
+#     dataset = 'dataset'
 
-class MonumentMixin(DataSetSerializerMixin):
-    dataset = 'dataset'
 
-
-class MonumentSerializerNonAuth(MonumentMixin, HALSerializer):
+class MonumentSerializerNonAuth(HALSerializer):
     complex_id = serializers.SerializerMethodField()
     complex_naam = serializers.SerializerMethodField()
     situering = serializers.SerializerMethodField()
-    lookup_field = 'document_id'
 
     class Meta:
         model = Monument
@@ -74,15 +74,15 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
         fields = OPENFIELDS + NON_OPENFIELDS
 
 
-class SitueringSerializer(MonumentMixin, HALSerializer):
-    _display = serializers.SerializerMethodField
+class SitueringSerializer(HALSerializer):
+    _display = serializers.SerializerMethodField()
 
     class Meta:
         model = Situering
-        fields = ('_display',
+        fields = ['_display',
                   'situering_nummeraanduiding',
                   'eerste_situering'
-                  )
+                  ]
 
     @staticmethod
     def get__display(obj):
@@ -95,7 +95,7 @@ class SitueringSerializer(MonumentMixin, HALSerializer):
 
         toevoegingen = [obj.straat]
 
-        toevoeging = obj.huisnummer_toevoeging
+        toevoeging = obj.huisnummertoevoeging
 
         if obj.huisnummer:
             toevoegingen.append(str(obj.huisnummer))

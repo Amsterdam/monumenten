@@ -1,4 +1,5 @@
 import logging
+
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -13,13 +14,12 @@ class TestAPIEndpoints(APITestCase):
     """
 
     reverse_list_urls = [
-        # 'docs',
         ('monumenten-list', None),
-        # ('situering-list', [10])
+        ('situering-list', [10])
     ]
     reverse_detail_urls = [
-        'monumenten-detail',
-        'situering-detail',
+        ('monumenten-detail', [5]),
+        ('situering-detail', [2]),
     ]
 
     def setUp(self):
@@ -62,7 +62,8 @@ class TestAPIEndpoints(APITestCase):
                 response.data['count'],
                 0, 'Wrong result count for {}'.format(url))
 
-            # def test_details(self):
-            #     for url in self.reverse_detail_urls:
-            #         log.debug("test {} => {}".format(url, reverse(url, [1])))
-            #         self.valid_response(url, self.client.get(reverse(url, [1])))
+    def test_details(self):
+        for url, arguments in self.reverse_detail_urls:
+            log.debug("test {} => {}".format(url, reverse(url, arguments)))
+            response = self.client.get(reverse(url, arguments))
+            self.valid_response(url, response)

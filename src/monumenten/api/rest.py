@@ -60,3 +60,12 @@ class HALPagination(pagination.PageNumberPagination):
             ('count', self.page.paginator.count),
             ('results', data)
         ]))
+
+class DisplayField(serializers.Field):
+    def __init__(self, *args, **kwargs):
+        kwargs['source'] = '*'
+        kwargs['read_only'] = True
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, value):
+        return str(value)
