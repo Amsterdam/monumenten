@@ -1,7 +1,7 @@
+import random
 from datetime import datetime, timedelta
 
 import factory
-import random
 from django.contrib.gis.geos import Point
 from factory import fuzzy
 
@@ -63,7 +63,7 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     naam = fuzzy.FuzzyText(length=255)
     opdrachtgever = fuzzy.FuzzyText(length=128)
     pand_sleutel = fuzzy.FuzzyInteger(low=110284012933)
-    if random.randint(0, 50) % 4:
+    if random.randint(0, 50) % 4:  # one in 4 is NOT filled
         redengevende_omschrijving = fuzzy.FuzzyText()
     if random.randint(0, 50) % 4:
         status = fuzzy.FuzzyText(length=128)

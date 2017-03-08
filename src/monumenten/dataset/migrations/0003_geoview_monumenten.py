@@ -1,5 +1,6 @@
-from django.db import migrations
 from django.contrib.sites.models import Site
+from django.db import migrations
+
 from monumenten import settings
 
 API_DOMAIN = 'API Domain'
@@ -12,6 +13,7 @@ def create_site(apps, *args, **kwargs):
         domain=settings.DATAPUNT_API_URL,
         name=API_DOMAIN
     )
+
 
 def delete_site(apps, *args, **kwargs):
     Site.objects.filter(name='API Domain').delete()

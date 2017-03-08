@@ -1,7 +1,9 @@
-import xmltodict
 import logging
-from monumenten.dataset.models import Monument, Complex, Situering
+
+import xmltodict
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+
+from monumenten.dataset.models import Monument, Complex, Situering
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +22,8 @@ def get_note(item, text_list, text_type, text_status):
 
 def get_note_text(text_list, text_type, text_status):
     def get_note(text):
-        if match(text, 'Type', text_type) and match(text, 'Status', text_status) and 'Notitie' in text:
+        if match(text, 'Type', text_type) and \
+                match(text, 'Status', text_status) and 'Notitie' in text:
             return text['Notitie']
         return None
 
@@ -118,8 +121,8 @@ def update_create_adress(monument, adress):
             adress['VerzendSleutel'], '20') or None,
         situering_nummeraanduiding='KoppelStatus' in adress and adress[
             'KoppelStatus'] or None,
-        eerste_situering='KoppelEerste' in adress
-                         and adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
+        eerste_situering='KoppelEerste' in adress and
+                         adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
         huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
         huisletter='Huisletter' in adress and adress['Huisletter'] or None,
         huisnummertoevoeging='Toevoeging' in adress and adress[

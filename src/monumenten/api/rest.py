@@ -61,6 +61,7 @@ class HALPagination(pagination.PageNumberPagination):
             ('results', data)
         ]))
 
+
 class DisplayField(serializers.Field):
     def __init__(self, *args, **kwargs):
         kwargs['source'] = '*'

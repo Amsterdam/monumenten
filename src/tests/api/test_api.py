@@ -15,11 +15,11 @@ class TestAPIEndpoints(APITestCase):
 
     reverse_list_urls = [
         ('monumenten-list', None),
-        # ('situering-list', [10])
+        ('situering-list', [60])
     ]
     reverse_detail_urls = [
         ('monumenten-detail', [5]),
-        ('situering-detail', [2]),
+        ('situering-detail', [42]),
     ]
 
     def setUp(self):
@@ -51,6 +51,12 @@ class TestAPIEndpoints(APITestCase):
             'text/html; charset=utf-8', response['Content-Type'],
             'Wrong Content-Type for {}'.format(url))
 
+    def test_details(self):
+        for url, arguments in self.reverse_detail_urls:
+            log.debug("test {} => {}".format(url, reverse(url, arguments)))
+            response = self.client.get(reverse(url, arguments))
+            self.valid_response(url, response)
+
     def test_lists(self):
         for url, arguments in self.reverse_list_urls:
             log.debug("test {} => {}".format(url, reverse(url, arguments)))
@@ -61,9 +67,3 @@ class TestAPIEndpoints(APITestCase):
             self.assertNotEqual(
                 response.data['count'],
                 0, 'Wrong result count for {}'.format(url))
-
-    def test_details(self):
-        for url, arguments in self.reverse_detail_urls:
-            log.debug("test {} => {}".format(url, reverse(url, arguments)))
-            response = self.client.get(reverse(url, arguments))
-            self.valid_response(url, response)
