@@ -76,7 +76,8 @@ def copy_file_from_objectstore(file_name):
 
 def fetch_import_file_names():
     files = []
-    for file_object in get_full_container_list(container, prefix=import_folder):
+    for file_object in get_full_container_list(container,
+                                               prefix=import_folder):
         if file_object['content_type'] != 'application/directory':
             log.info("Found file {}".format(file_object['name']))
             files.append(file_object['name'])

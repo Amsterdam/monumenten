@@ -22,8 +22,9 @@ class Complex(models.Model):
 class Monument(models.Model):
     """
     Monument model
-    NOTE: 'geometrie' type is GeometryCollectionField, possibly in future (e.g. for searching)
-    this needs to be split out in various Geometry types (POLYGON, MULTIPOLYGON, LINESTRING).
+    NOTE: 'geometrie' type is GeometryCollectionField, possibly in future
+    (e.g. for searching) this needs to be split out in various Geometry types
+    (POLYGON, MULTIPOLYGON, LINESTRING).
     -- aanvulling op stelselpedia --
     external_id: id conform AMISExport.xml
     """

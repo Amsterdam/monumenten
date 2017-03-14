@@ -10,7 +10,6 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'aanwijzingsdatum',  # Monument aanwijzingsdatum
               'pand_sleutel',  # Betreft [BAG:Pand] (Sleutelverzendend)
               # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
-              # 'bag_nummeraanduiding',  # [BAG:Nummeraanduiding]
               'complex_id',  # Identificerende sleutel complex
               'complex_naam',  # Complexnaam)
               'beperking',  # Heeft als grondslag [Wkpb:Beperking]
@@ -32,23 +31,10 @@ NON_OPENFIELDS = ['architect',
                   ]
 
 
-# Ligt in [Complex]     Is al gedekt met complex_id en complex_naam
-# Heeft [Situering]     Is al gedekt met situering
-# Identificerende sleutel situering
-# Situering nummeraanduiding
-# Betreft [BAG:Nummeraanduiding]
-
-#
-# class MonumentMixin(DataSetSerializerMixin):
-#     dataset = 'dataset'
-
-
 class MonumentSerializerNonAuth(HALSerializer):
     complex_id = serializers.SerializerMethodField()
     complex_naam = serializers.SerializerMethodField()
     situering = serializers.SerializerMethodField()
-
-    # situeringen = RelatedField()
 
     class Meta:
         model = Monument
@@ -64,12 +50,15 @@ class MonumentSerializerNonAuth(HALSerializer):
         if obj.complex:
             return str(obj.complex.complex_naam)
 
-    @staticmethod
-    def get_situering(obj):
+    def get_situering(self, obj):
         nr_of_situeringen = obj.situeringen.count()
-        api_address = '/monumenten/monument/{}/situering'
+        servername = self.context['request']._request.META['SERVER_NAME']
+        serverport = self.context['request']._request.META['SERVER_PORT']
+        api_address = 'https://{}:{}/monumenten/situeringen/?monumenten_id={}'
         return {"count": nr_of_situeringen,
-                "href": api_address.format(str(obj.monumentnummer))}
+                "href": api_address.format(servername,
+                                           serverport,
+                                           str(obj.monumentnummer))}
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):

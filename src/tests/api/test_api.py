@@ -1,6 +1,5 @@
 import logging
 
-from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from .factories import create_testset
@@ -14,29 +13,37 @@ class TestAPIEndpoints(APITestCase):
     """
 
     reverse_list_urls = [
-        ('monumenten-list', None),
-        ('situering-list', [60])
+        ('health', None),
+        ('situeringen', [60])
     ]
-    reverse_detail_urls = [
-        ('monumenten-pand', ((None,
-                              {'pand_id': 12552}),
-                             (None, {'pand_id': 'nietbestaand'}),
-                             (None, {'nietbestaand': 'bla'}))),
-        ('monumenten-detail', ([5], None)),
-        ('situering-detail', ([42], None)),
+    detail_urls = [
+        ('monumenten', (('', 200),
+                        ('?pand_sleutel=10', 200),
+                        ('?pand_sleutel=192048', 200),
+                        ('?pand_sleutel=bla', 200),
+                        ('?nietbestaand=bla', 200),
+                        ('5/', 200))),
+        ('situeringen', (('42/', 200),
+                         ('?monument_id=23', 200),
+                         ('?monument_id=nietbestaand', 200)
+                         )),
     ]
 
     def setUp(self):
-        create_testset()  # builds 10 complexex with 1 to 10 monuments and 1 to 10 situeringen
+        # builds 10 complexes with 1 to 10 monuments and 1 to 10 situeringen
+        create_testset()
 
-    def valid_response(self, url, response):
+    def valid_response(self, url, response, ret_code):
         """
         Helper method to check common status/json
         """
 
         self.assertEqual(
-            200, response.status_code,
-            'Wrong response code for {}'.format(url))
+            ret_code, response.status_code,
+            'Expected response code {} '
+            'received {} for {}'.format(ret_code,
+                                        response.status_code,
+                                        url))
 
         self.assertEqual(
             'application/json', response['Content-Type'],
@@ -56,20 +63,10 @@ class TestAPIEndpoints(APITestCase):
             'Wrong Content-Type for {}'.format(url))
 
     def test_details(self):
-        for url, arguments in self.reverse_detail_urls:
-            for args, kwargs in arguments:
+        for url, arguments in self.detail_urls:
+            for args, ret_code in arguments:
+                get_url = '/monumenten/{}/{}'.format(url, args)
                 log.debug(
-                    "test {} => {}".format(url, reverse(url, args, kwargs)))
-                response = self.client.get(reverse(url, args))
-                self.valid_response(url, response)
-
-    def test_lists(self):
-        for url, arguments in self.reverse_list_urls:
-            log.debug("test {} => {}".format(url, reverse(url, arguments)))
-            response = self.client.get(reverse(url, arguments))
-            self.valid_response(url, response)
-            self.assertIn(
-                'count', response.data, 'No count attribute in {}'.format(url))
-            self.assertNotEqual(
-                response.data['count'],
-                0, 'Wrong result count for {}'.format(url))
+                    "test {}".format(get_url))
+                response = self.client.get(get_url)
+                self.valid_response(url, response, ret_code)

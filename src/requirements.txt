@@ -20,9 +20,7 @@ sqlparse==0.2.2
 uritemplate==3.0.0
 urllib3==1.18.1
 python_swiftclient==3.2.0
-openpyxl==2.4.1
 Pillow==3.4.2
-scipy==0.18.1
 python-keystoneclient==3.8.0
 dateutils==0.6.6
 python-dateutil==2.6.0

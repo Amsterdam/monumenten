@@ -25,8 +25,8 @@ from monumenten.api import urls
 
 grouped_url_patterns = {
     'base_patterns': [
-        url(r'^status/',
-            include('monumenten.health.urls', namespace='health')),
+        url(r'^status/', include('monumenten.health.urls',
+                                 namespace='health')),
     ],
     'monumenten_patterns': [
         url(r'^monumenten/', include(urls.monumenten.urls)),
@@ -49,29 +49,6 @@ urlpatterns = [
                       monumenten_schema_view),
               ] + [url for pattern_list in grouped_url_patterns.values()
                    for url in pattern_list]
-
-# monumenten.register(r'^monumenten/monument/([0-9]+)/$', api_views.MonumentDetail.as_view())
-# monumenten.register(r'^monumenten/monument/([0-9]+)/situering/$',
-#                     api_views.SitueringList.as_view())
-# monumenten.register(r'^monumenten/situering/([0-9]+)/$',
-#                     api_views.SitueringDetail.as_view())
-# urlpatterns = [
-#     url(r'^', include(router.urls)),
-#     url(r'^monumenten/docs', schema_view, name='docs'),
-#     url(r'^status/health$', health_views.health),
-#     url(r'^status/data$', health_views.check_data),
-#     url(r'^monumenten/monument/$', api_views.MonumentList.as_view(),
-#         name='monumenten-list'),
-#     url(r'^monumenten/monument/([0-9]+)/$', api_views.MonumentDetail.as_view(),
-#         name='monumenten-detail'),
-#     url(r'^monumenten/monument/(?P<pand_id>[0-9]\w+)/$', api_views.MonumentPand.as_view(),
-#         name='monumenten-pand'),
-#     url(r'^monumenten/monument/([0-9]+)/situering/$',
-#         api_views.SitueringList.as_view(), name='situering-list'),
-#     url(r'^monumenten/situering/([0-9]+)/$',
-#         api_views.SitueringDetail.as_view(),
-#         name='situering-detail')
-# ]
 
 if settings.DEBUG:
     import debug_toolbar
