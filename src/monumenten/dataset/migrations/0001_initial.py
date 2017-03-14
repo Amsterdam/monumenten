@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
                 ('in_onderzoek', models.CharField(max_length=3, null=True)),
                 ('monumentnummer', models.IntegerField(null=True)),
                 ('naam', models.CharField(max_length=255, null=True)),
+                ('display_naam', models.CharField(max_length=255, null=True)),
                 ('opdrachtgever', models.CharField(max_length=128, null=True)),
                 ('pand_sleutel', models.CharField(max_length=16, null=True)),
                 ('periode_start', models.IntegerField(null=True)),

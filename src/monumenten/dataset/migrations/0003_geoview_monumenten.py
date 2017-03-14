@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             f"""
                 CREATE VIEW geo_monument_point AS
                 SELECT
-                  m.naam as display,
+                  m.display_naam as display,
                   cast('monumenten/monument' as varchar(30)) as type,
                   site.domain || 'monumenten/monument/' || m.id || '/' AS uri,
                   m.coordinaten AS geometrie

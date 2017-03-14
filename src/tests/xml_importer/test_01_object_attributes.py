@@ -31,6 +31,10 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.naam, 'Monumentje', 'Naam')
         self.assertEqual(monument_3.naam, None, 'Naam')
 
+        self.assertEqual(monument.display_naam, 'Monumentje', 'Naam')
+        self.assertEqual(monument_2.display_naam, 'Straatje2 50-H', 'Naam')
+        self.assertEqual(monument_4.display_naam, 'Straatje4 50-H', 'Naam')
+
         # Monumenttype
         self.assertEqual(monument.type, 'Pand', 'Type')
 

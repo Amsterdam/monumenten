@@ -114,7 +114,7 @@ De laatste 10 cijfers zijn gereserveerd voor het volgnummer
 
 
 def update_create_adress(monument, adress):
-    Situering.objects.create(
+    return Situering.objects.create(
         external_id=adress['Id'],
         monument=monument,
         betreft='VerzendSleutel' in adress and convert_to_landelijk_id(
@@ -133,11 +133,27 @@ def update_create_adress(monument, adress):
 
 
 def update_create_adresses(monument, adress):
+    main = None
     if type(adress) == list:
         for a in adress:
-            update_create_adress(monument, a)
+            situering = update_create_adress(monument, a)
+            if main is None or situering.eerste_situering == 'Ja':
+                main = situering
+
     else:
-        update_create_adress(monument, adress)
+        main = update_create_adress(monument, adress)
+    if main.eerste_situering == 'Nee':
+        msg = "Did not find an address labeled 'KoppelEerste = true' for Monument: {}".format(monument.external_id)
+        functional_errors.append(msg)
+    return main
+
+
+def format_address(a):
+    straat = a.straat and a.straat + ' ' or ''
+    huisnummer = a.huisnummer or ''
+    huisletter = a.huisletter or ''
+    huisnummertoevoeging = a.huisnummertoevoeging and '-' + a.huisnummertoevoeging or ''
+    return straat + huisnummer + huisletter + huisnummertoevoeging
 
 
 def update_create_monument(item, created_complex):
@@ -156,6 +172,7 @@ def update_create_monument(item, created_complex):
             item['Tag']) and 'Ja' or 'Nee',
         monumentnummer=item.get('Monumentnummer', None),
         naam=item.get('Naam', None),
+        display_naam=item.get('Naam', None),
         opdrachtgever=item.get('Opdrachtgever', None),
         pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(
             item['PandSleutel'], '10') or None,
@@ -166,7 +183,12 @@ def update_create_monument(item, created_complex):
                                            'Vastgesteld'),
         status=item.get('Status', None),
         type=item.get('Type', None))
-    'Adres' in item and update_create_adresses(monument, item['Adres'])
+    if 'Adres' in item:
+        main_address = update_create_adresses(monument, item['Adres'])
+        if monument.display_naam is None:
+            monument.display_naam = format_address(main_address)
+            monument.save()
+
     return monument
 
 
