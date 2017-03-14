@@ -27,18 +27,18 @@ node {
     stage('Test') {
         tryStep "test", {
 
-            sh "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml build && " +
-                    "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml run -u root --rm tests"
+            sh "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml build && " +
+                    "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml run -u root --rm tests"
 
         }, {
-            sh "docker-compose -p monumenten -f web/.jenkins/test/docker-compose.yml down"
+            sh "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml down"
         }
     }
 
 
     stage("Build develop image") {
         tryStep "build", {
-            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${env.BUILD_NUMBER}", "web")
+            def image = docker.build("build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${env.BUILD_NUMBER}", "src")
             image.push()
             image.push("acceptance")
         }
