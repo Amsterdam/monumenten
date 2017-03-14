@@ -3,8 +3,9 @@ services:
   database:
     image: build.datapunt.amsterdam.nl:5000/atlas/postgres
     environment:
-      POSTGRES_PASSWORD: insecure
+      POSTGRES_DB: monumenten
       POSTGRES_USER: monumenten
+      POSTGRES_PASSWORD: insecure
 
   tests:
     build: ../../
@@ -15,4 +16,7 @@ services:
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
     command: >
-      bash -c "/app/.jenkins/docker-wait.sh && cd /app/.jenkins/test/  && ./docker-code-check.sh && ./docker-test.sh"
+      bash -c "/app/.jenkins/docker-wait.sh \
+              && cd /app/.jenkins/test/ \
+              && ./docker-code-check.sh \
+              && ./docker-test.sh"

@@ -44,11 +44,10 @@ def monumenten_schema_view(request):
     return response.Response(generator.get_schema(request=request))
 
 
-urlpatterns = [
-                  url('^monumenten/docs/api-docs/monumenten/$',
-                      monumenten_schema_view),
-              ] + [url for pattern_list in grouped_url_patterns.values()
-                   for url in pattern_list]
+urlpatterns = [url('^monumenten/docs/api-docs/monumenten/$',
+                   monumenten_schema_view),
+               ] + [url for pattern_list in grouped_url_patterns.values()
+                    for url in pattern_list]
 
 if settings.DEBUG:
     import debug_toolbar
