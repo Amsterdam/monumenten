@@ -29,7 +29,7 @@ API and import  module.
     pip install -r src/requirements.txt
     
     # run database migrations
-    cd web
+    cd src
     ./manage.py migrate
     
     # start server

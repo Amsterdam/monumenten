@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 import django.contrib.gis.db.models.fields
-import django.db.models.deletion
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -49,6 +49,7 @@ class Migration(migrations.Migration):
                 ('in_onderzoek', models.CharField(max_length=3, null=True)),
                 ('monumentnummer', models.IntegerField(null=True)),
                 ('naam', models.CharField(max_length=255, null=True)),
+                ('display_naam', models.CharField(max_length=255, null=True)),
                 ('opdrachtgever', models.CharField(max_length=128, null=True)),
                 ('pand_sleutel', models.CharField(max_length=16, null=True)),
                 ('periode_start', models.IntegerField(null=True)),
@@ -69,7 +70,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True,
                                         serialize=False, verbose_name='ID')),
                 ('external_id', models.CharField(max_length=36, null=True)),
-                ('betreft', models.BigIntegerField(null=True)),
+                ('betreft', models.CharField(max_length=16, null=True)),
                 ('situering_nummeraanduiding',
                  models.CharField(max_length=128, null=True)),
                 ('eerste_situering', models.CharField(max_length=3, null=True)),

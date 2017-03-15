@@ -20,7 +20,7 @@ services:
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.datapunt.amsterdam.nl/}
 
     command: >
-      bash -c ".jenkins/docker-wait.sh \
+      bash -c "/app/.jenkins/docker-wait.sh \
               && python manage.py migrate \
               && python manage.py run_import"
 
@@ -35,7 +35,7 @@ services:
               && chmod 600 ~/.pgpass \
               && pg_dump --clean \
                           -Fc \
-                          -t monumenten* \
+                          -t dataset* \
                           -t geo*  \
                           -t django_migrations  \
                           -t django_site \

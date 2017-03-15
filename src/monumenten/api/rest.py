@@ -20,7 +20,6 @@ FORMATS = [dict(format=r.format, type=r.media_type) for r in DEFAULT_RENDERERS]
 
 
 class LinksField(serializers.HyperlinkedIdentityField):
-
     def to_representation(self, value):
         request = self.context.get('request')
 
