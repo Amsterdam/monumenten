@@ -93,7 +93,8 @@ class TestObjectStore(TestCase):
         # Adressen
         adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.external_id)
         self.assertEqual(adresses[0].external_id, '2f4546b5-7528-443b-9474-ef3c31a2f018', 'Adres id')
-        self.assertEqual(adresses[0].betreft, '0363' + '20' + '0000177987', 'Adres betreft = BAG sleutel')
+        self.assertEqual(adresses[0].betreft, '0363' + '20' + '0000177987',
+                         'Adres betreft = BAG sleutel')
         self.assertEqual(adresses[0].situering_nummeraanduiding, 'Conversie', 'Adres situering')
         self.assertEqual(adresses[0].eerste_situering, 'Ja', 'Adres eerste_situering')
         self.assertEqual(adresses[0].huisletter, 'A', 'Adres huisletter')

@@ -2,8 +2,6 @@ import io
 import logging
 import os
 from functools import lru_cache
-from PIL import Image
-import io
 
 from PIL import Image
 from swiftclient.client import Connection
