@@ -22,7 +22,7 @@ class TestAPIEndpoints(APITestCase):
                         ('?pand_sleutel=192048', 0),
                         ('?pand_sleutel=bla', 0),
                         ('?nietbestaand=bla', '>'),
-                        ('5/', 'nr=12'))),
+                        ('5/', 'nr=13'))),
         ('situeringen', (('42/', 'nr=3'),
                          ('?monument_id=23', '>'),
                          ('?monument_id=nietbestaand', 0)

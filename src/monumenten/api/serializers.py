@@ -10,6 +10,7 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'aanwijzingsdatum',  # Monument aanwijzingsdatum
               'pand_sleutel',  # Betreft [BAG:Pand] (Sleutelverzendend)
               # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
+              'display_naam',  # Monumentnaam voor display
               'complex_id',  # Identificerende sleutel complex
               'complex_naam',  # Complexnaam)
               'beperking',  # Heeft als grondslag [Wkpb:Beperking]
