@@ -18,9 +18,9 @@ class TestAPIEndpoints(APITestCase):
     ]
     detail_urls = [
         ('monumenten', (('', '>'),
-                        ('?pand_sleutel=10', 1),
-                        ('?pand_sleutel=192048', 0),
-                        ('?pand_sleutel=bla', 0),
+                        ('?betreft=10', 1),
+                        ('?betreft=192048', 0),
+                        ('?betreft=bla', 0),
                         ('?nietbestaand=bla', '>'),
                         ('5/', 'nr=13'))),
         ('situeringen', (('42/', 'nr=3'),

@@ -23,7 +23,7 @@ def create_testset(nr=10):
         complex = ComplexFactory()
         for n1 in range(random.randint(1, 10)):
             monument = MonumentenDataFactory(complex=complex,
-                                             coordinaten=point)
+                                             monumentcoordinaten=point)
             for n2 in range(random.randint(1, 10)):
                 SitueringFactory(monument=monument)
 
@@ -50,25 +50,26 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
         model = models.Monument
 
     if random.randint(0, 50) % 3 == 0:  # one in 3 is filled
-        aanwijzingsdatum = fuzzy.FuzzyDate(
+        monument_aanwijzingsdatum = fuzzy.FuzzyDate(
             start_date=datetime.today() - timedelta(
                 days=random.randint(10, 9000)), end_date=datetime.today())
-    architect = fuzzy.FuzzyText(length=128)
+    architect_ontwerp_monument = fuzzy.FuzzyText(length=128)
     if random.randint(0, 50) % 3 == 0:
         beperking = fuzzy.FuzzyInteger(low=0)
-    beschrijving = fuzzy.FuzzyText()
-    coordinaten = fuzzy.FuzzyInteger(low=1)
-    functie = fuzzy.FuzzyText(length=128)
+    beschrijving_monument = fuzzy.FuzzyText()
+    monumentcoordinaten = fuzzy.FuzzyInteger(low=1)
+    oorspronkelijke_functie_monument = fuzzy.FuzzyText(length=128)
     in_onderzoek = fuzzy.FuzzyText(length=3)
     monumentnummer = factory.sequence(lambda n: n)
-    naam = fuzzy.FuzzyText(length=255)
-    opdrachtgever = fuzzy.FuzzyText(length=128)
-    pand_sleutel = factory.sequence(lambda n: n)
+    monumentnaam = fuzzy.FuzzyText(length=255)
+    monumentnaam = fuzzy.FuzzyText(length=255)
+    opdrachtgever_bouw_monument = fuzzy.FuzzyText(length=128)
+    betreft = factory.sequence(lambda n: n)
     if random.randint(0, 50) % 4:
-        redengevende_omschrijving = fuzzy.FuzzyText()
+        redengevende_omschrijving_monument = fuzzy.FuzzyText()
     if random.randint(0, 50) % 4:
-        status = fuzzy.FuzzyText(length=128)
-    type = fuzzy.FuzzyText(length=128)
+        monumentstatus = fuzzy.FuzzyText(length=128)
+    monumenttype = fuzzy.FuzzyText(length=128)
 
 
 class ComplexFactory(factory.DjangoModelFactory):
@@ -80,4 +81,4 @@ class ComplexFactory(factory.DjangoModelFactory):
     beschrijving = fuzzy.FuzzyText()
     monumentnummer = factory.sequence(lambda n: n)
     complex_naam = fuzzy.FuzzyText(length=255)
-    status = fuzzy.FuzzyText(length=128)
+    complexstatus = fuzzy.FuzzyText(length=128)

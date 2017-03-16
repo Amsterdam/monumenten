@@ -5,29 +5,30 @@ from monumenten.dataset.models import Situering, Monument
 
 OPENFIELDS = ['id',  # Identificerende sleutel monument
               'monumentnummer',  # Monumentnummer
-              'naam',  # Monumentnaam
-              'status',  # Monumentstatus
-              'aanwijzingsdatum',  # Monument aanwijzingsdatum
-              'pand_sleutel',  # Betreft [BAG:Pand] (Sleutelverzendend)
+              'monumentnaam',  # Monumentnaam
+              'monumentstatus',  # Monumentstatus
+              'monument_aanwijzingsdatum',  # Monument aanwijzingsdatum
+              'betreft',  # Betreft [BAG:Pand] (Sleutelverzendend)
               # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
               'display_naam',  # Monumentnaam voor display
               'complex_id',  # Identificerende sleutel complex
               'complex_naam',  # Complexnaam)
               'beperking',  # Heeft als grondslag [Wkpb:Beperking]
               'situering',  # De situering (adressen) van de panden
-              'coordinaten',  # Monumentcoördinaten
-              'geometrie',  # Geometrie van document
+              'monumentcoordinaten',  # Monumentcoördinaten
+              'monumentgeometrie',  # Geometrie van document
               ]
 
-NON_OPENFIELDS = ['architect',
-                  'type',
-                  'opdrachtgever',
-                  'periode_start',
-                  'functie',
+NON_OPENFIELDS = ['architect_ontwerp_monument',
+                  'monumenttype',
+                  'opdrachtgever_bouw_monument',
+                  'bouwjaar_start_bouwperiode_monument',
+                  'bouwjaar_eind_bouwperiode_monument',
+                  'oorspronkelijke_functie_monument',
                   'geometrie',
                   'in_onderzoek',
-                  'beschrijving',
-                  'redengevende_omschrijving',
+                  'beschrijving_monument',
+                  'redengevende_omschrijving_monument',
                   'afbeelding'
                   ]
 
@@ -55,11 +56,11 @@ class MonumentSerializerNonAuth(HALSerializer):
         nr_of_situeringen = obj.situeringen.count()
         servername = self.context['request']._request.META['SERVER_NAME']
         serverport = self.context['request']._request.META['SERVER_PORT']
-        api_address = 'https://{}:{}/monumenten/situeringen/?monumenten_id={}'
+        api_address = 'https://{}:{}/monumenten/situeringen/?monument_id={}'
         return {"count": nr_of_situeringen,
                 "href": api_address.format(servername,
                                            serverport,
-                                           str(obj.monumentnummer))}
+                                           str(obj.id))}
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
