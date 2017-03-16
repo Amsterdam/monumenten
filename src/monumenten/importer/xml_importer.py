@@ -150,10 +150,10 @@ def update_create_adresses(monument, adress):
 
 
 def format_address(a):
-    straat = a.straat and a.straat + ' ' or ''
-    huisnummer = a.huisnummer or ''
-    huisletter = a.huisletter or ''
-    huisnummertoevoeging = a.huisnummertoevoeging and '-' + a.huisnummertoevoeging or ''
+    straat = a.straat and a.straat  or ''
+    huisnummer = a.huisnummer and ' ' + a.huisnummer or ''
+    huisletter = a.huisletter and ' ' + a.huisletter or ''
+    huisnummertoevoeging = a.huisnummertoevoeging and ' ' + a.huisnummertoevoeging or ''
     return straat + huisnummer + huisletter + huisnummertoevoeging
 
 
