@@ -8,12 +8,11 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'monumentnaam',  # Monumentnaam
               'monumentstatus',  # Monumentstatus
               'monument_aanwijzingsdatum',  # Monument aanwijzingsdatum
-              'betreft',  # Betreft [BAG:Pand] (Sleutelverzendend)
-              # 'bag_pand',         # [BAG:Pand] ophalen uit BAG
+              'betreft_pand',  # Betreft [BAG:Pand] (Sleutelverzendend)
               'display_naam',  # Monumentnaam voor display
               'complex_id',  # Identificerende sleutel complex
               'complex_naam',  # Complexnaam)
-              'beperking',  # Heeft als grondslag [Wkpb:Beperking]
+              'heeft_als_grondslag_beperking',  # Heeft als grondslag [Wkpb:Beperking]
               'situering',  # De situering (adressen) van de panden
               'monumentcoordinaten',  # Monumentcoördinaten
               'monumentgeometrie',  # Geometrie van document

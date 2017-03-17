@@ -16,7 +16,7 @@ class MonumentFilter(FilterSet):
 
     class Meta:
         model = Monument
-        fields = ('betreft',)
+        fields = ('betreft_pand',)
 
 
 class MonumentViewSet(MonumentVS):

@@ -32,7 +32,7 @@ class SitueringFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Situering
 
-    betreft = fuzzy.FuzzyInteger(low=0)
+    betreft_nummeraanduiding = fuzzy.FuzzyInteger(low=0)
     # situering_nummeraanduiding = models.CharField(length=128, null=True)
     eerste_situering = fuzzy.FuzzyAttribute(gen_janee)
 
@@ -55,7 +55,7 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
                 days=random.randint(10, 9000)), end_date=datetime.today())
     architect_ontwerp_monument = fuzzy.FuzzyText(length=128)
     if random.randint(0, 50) % 3 == 0:
-        beperking = fuzzy.FuzzyInteger(low=0)
+        heeft_als_grondslag_beperking = fuzzy.FuzzyInteger(low=0)
     beschrijving_monument = fuzzy.FuzzyText()
     monumentcoordinaten = fuzzy.FuzzyInteger(low=1)
     oorspronkelijke_functie_monument = fuzzy.FuzzyText(length=128)
@@ -64,7 +64,7 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     monumentnaam = fuzzy.FuzzyText(length=255)
     monumentnaam = fuzzy.FuzzyText(length=255)
     opdrachtgever_bouw_monument = fuzzy.FuzzyText(length=128)
-    betreft = factory.sequence(lambda n: n)
+    betreft_pand = factory.sequence(lambda n: n)
     if random.randint(0, 50) % 4:
         redengevende_omschrijving_monument = fuzzy.FuzzyText()
     if random.randint(0, 50) % 4:

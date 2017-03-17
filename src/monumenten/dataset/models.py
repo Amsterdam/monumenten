@@ -43,13 +43,13 @@ class Monument(models.Model):
     monumentnaam = models.CharField(max_length=255, null=True)
     display_naam = models.CharField(max_length=255, null=True)
     opdrachtgever_bouw_monument = models.CharField(max_length=128, null=True)
-    betreft = models.CharField(max_length=16, null=True)
+    betreft_pand = models.CharField(max_length=16, null=True)
     bouwjaar_start_bouwperiode_monument = models.IntegerField(null=True)
     bouwjaar_eind_bouwperiode_monument = models.IntegerField(null=True)
     redengevende_omschrijving_monument = models.TextField(null=True)
     monumentstatus = models.CharField(max_length=128, null=True)
     monumenttype = models.CharField(max_length=128, null=True)
-    heeft_als_grondslag = models.CharField(max_length=36, null=True)
+    heeft_als_grondslag_beperking = models.CharField(max_length=36, null=True)
 
     complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
 
@@ -67,7 +67,7 @@ class Situering(models.Model):
     """
     external_id = models.CharField(max_length=36, null=True)
 
-    betreft = models.CharField(max_length=16, null=True)
+    betreft_nummeraanduiding = models.CharField(max_length=16, null=True)
     situering_nummeraanduiding = models.CharField(max_length=128, null=True)
     eerste_situering = models.CharField(max_length=3, null=True)
 

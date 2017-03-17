@@ -117,7 +117,7 @@ def update_create_adress(monument, adress):
     return Situering.objects.create(
         external_id=adress['Id'],
         monument=monument,
-        betreft='VerzendSleutel' in adress and convert_to_landelijk_id(
+        betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_landelijk_id(
             adress['VerzendSleutel'], '20') or None,
         situering_nummeraanduiding='KoppelStatus' in adress and adress[
             'KoppelStatus'] or None,
@@ -175,7 +175,7 @@ def update_create_monument(item, created_complex):
         monumentnaam=item.get('Naam', None),
         display_naam=item.get('Naam', None),
         opdrachtgever_bouw_monument=item.get('Opdrachtgever', None),
-        betreft='PandSleutel' in item and convert_to_landelijk_id(
+        betreft_pand='PandSleutel' in item and convert_to_landelijk_id(
             item['PandSleutel'], '10') or None,
         bouwjaar_start_bouwperiode_monument=item.get('PeriodeStart', None),
         bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),

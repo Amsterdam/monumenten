@@ -48,7 +48,7 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.monument_aanwijzingsdatum, date(2015, 1, 9), 'Aanwijzingsdatum')
 
         # Heeft als grondslag -- leeg, want staat niet in xml
-        self.assertEqual(monument.heeft_als_grondslag, None, 'Heeft als grondslag')
+        self.assertEqual(monument.heeft_als_grondslag_beperking, None, 'Heeft als grondslag')
 
         # Opdrachtgever bouw monument -- leeg want nog niet gevuld in xml
         self.assertEqual(monument.opdrachtgever_bouw_monument, None, 'Opdrachtgever')
@@ -63,7 +63,7 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.oorspronkelijke_functie_monument, None, 'Functie')
 
         # Betreft (BAG verwijzing - Pand)
-        self.assertEqual(monument.betreft, '0363' + '10' + '0013072812',
+        self.assertEqual(monument.betreft_pand, '0363' + '10' + '0013072812',
                          'Pand Sleutel')
 
         # Monumentcoördinaten
@@ -96,7 +96,7 @@ class TestObjectStore(TestCase):
         # Adressen
         adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.external_id)
         self.assertEqual(adresses[0].external_id, '2f4546b5-7528-443b-9474-ef3c31a2f018', 'Adres id')
-        self.assertEqual(adresses[0].betreft, '0363' + '20' + '0000177987',
+        self.assertEqual(adresses[0].betreft_nummeraanduiding, '0363' + '20' + '0000177987',
                          'Adres betreft = BAG sleutel')
         self.assertEqual(adresses[0].situering_nummeraanduiding, 'Conversie', 'Adres situering')
         self.assertEqual(adresses[0].eerste_situering, 'Ja', 'Adres eerste_situering')
