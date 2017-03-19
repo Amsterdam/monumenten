@@ -2,6 +2,9 @@ from rest_framework import serializers
 
 from monumenten.api.rest import HALSerializer
 from monumenten.dataset.models import Situering, Monument
+import json
+from monumenten import settings
+
 
 OPENFIELDS = ['id',  # Identificerende sleutel monument
               'monumentnummer',  # Monumentnummer
@@ -36,6 +39,7 @@ class MonumentSerializerNonAuth(HALSerializer):
     complex_id = serializers.SerializerMethodField()
     complex_naam = serializers.SerializerMethodField()
     situering = serializers.SerializerMethodField()
+    monumentgeometrie = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
@@ -51,14 +55,16 @@ class MonumentSerializerNonAuth(HALSerializer):
         if obj.complex:
             return str(obj.complex.complex_naam)
 
+    @staticmethod
+    def get_monumentgeometrie(obj):
+        if obj.monumentgeometrie:
+            return json.loads(obj.monumentgeometrie.geojson)
+
     def get_situering(self, obj):
         nr_of_situeringen = obj.situeringen.count()
-        servername = self.context['request']._request.META['SERVER_NAME']
-        serverport = self.context['request']._request.META['SERVER_PORT']
-        api_address = 'https://{}:{}/monumenten/situeringen/?monument_id={}'
+        api_address = '{}monumenten/situeringen/?monument_id={}'
         return {"count": nr_of_situeringen,
-                "href": api_address.format(servername,
-                                           serverport,
+                "href": api_address.format(settings.DATAPUNT_API_URL,
                                            str(obj.id))}
 
 

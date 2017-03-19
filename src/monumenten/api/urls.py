@@ -16,7 +16,6 @@ Including another URLconf
 from rest_framework import routers
 
 from monumenten.api import views as api_views
-from monumenten.health import views as health_views
 
 
 class MonumentenRouter(routers.DefaultRouter):
@@ -39,11 +38,9 @@ class MonumentenRouter(routers.DefaultRouter):
 
 monumenten = MonumentenRouter()
 
-monumenten.register(r'^status/health$', health_views.health,
-                    base_name='health')
-monumenten.register(r'^status/data$', health_views.check_data,
-                    base_name='data')
 monumenten.register(r'situeringen', api_views.SitueringList,
                     base_name='situeringen')
 monumenten.register(r'monumenten', api_views.MonumentViewSet,
                     base_name='monumenten')
+
+urls = monumenten.urls

@@ -21,7 +21,7 @@ from rest_framework.renderers import CoreJSONRenderer
 from rest_framework_swagger.renderers import OpenAPIRenderer
 from rest_framework_swagger.renderers import SwaggerUIRenderer
 
-from monumenten.api import urls
+from monumenten.api import urls as api_urls
 
 grouped_url_patterns = {
     'base_patterns': [
@@ -29,7 +29,7 @@ grouped_url_patterns = {
                                  namespace='health')),
     ],
     'monumenten_patterns': [
-        url(r'^monumenten/', include(urls.monumenten.urls)),
+        url(r'^monumenten/', include(api_urls.urls)),
     ],
 }
 
