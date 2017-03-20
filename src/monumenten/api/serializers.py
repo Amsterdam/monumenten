@@ -72,6 +72,8 @@ class MonumentSerializerNonAuth(HALSerializer):
 
     def get_afbeelding(self, obj):
         api_address = '{}://{}/monumenten/afbeeldingen/{}/'
+        if obj.afbeelding is None:
+            return {}
         return {"href": api_address.format(self.context['request'].scheme,
                                            self.context['request'].get_host(),
                                            str(obj.afbeelding))}
