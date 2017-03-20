@@ -13,24 +13,46 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
 from django.conf import settings
-import monumenten.health.views
-from monumenten.api import views
+from django.conf.urls import url, include
+from rest_framework import response, schemas
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import CoreJSONRenderer
+from rest_framework_swagger.renderers import OpenAPIRenderer
+from rest_framework_swagger.renderers import SwaggerUIRenderer
 
-urlpatterns = [
-    url(r'^status/health$', monumenten.health.views.health),
-    url(r'^status/data$', monumenten.health.views.check_data),
-    url(r'^monumenten/monument/$', views.MonumentList.as_view(), name='monumenten-list'),
-    url(r'^monumenten/monument/([0-9]+)/$', views.MonumentDetail.as_view(), name='monumenten-detail'),
-    url(r'^monumenten/monument/([0-9]+)/situering/$', views.SitueringList.as_view(), name='situering-list'),
-    url(r'^monumenten/situering/([0-9]+)/$', views.SitueringDetail.as_view(), name='situering-detail'),
+from monumenten.api import urls as api_urls
 
-]
+grouped_url_patterns = {
+    'base_patterns': [
+        url(r'^status/', include('monumenten.health.urls',
+                                 namespace='health')),
+    ],
+    'monumenten_patterns': [
+        url(r'^monumenten/', include(api_urls.urls)),
+    ],
+}
 
+
+@api_view()
+@renderer_classes([SwaggerUIRenderer, OpenAPIRenderer, CoreJSONRenderer])
+def monumenten_schema_view(request):
+    generator = schemas.SchemaGenerator(
+        title='Monumenten lists',
+        patterns=grouped_url_patterns['monumenten_patterns']
+    )
+    return response.Response(generator.get_schema(request=request))
+
+
+urlpatterns = [url('^monumenten/docs/api-docs/monumenten/$',
+                   monumenten_schema_view),
+               ] + [url for pattern_list in grouped_url_patterns.values()
+                    for url in pattern_list]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += [
+
+    urlpatterns.extend([
         url(r'^__debug__/', include(debug_toolbar.urls)),
-    ]
+        url(r'^explorer/', include('explorer.urls')),
+    ])

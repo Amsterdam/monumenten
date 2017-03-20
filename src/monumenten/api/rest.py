@@ -1,15 +1,22 @@
 from collections import OrderedDict
 
-from rest_framework import pagination, response
+from rest_framework import renderers, pagination, response, \
+    viewsets, filters
 from rest_framework import serializers
 from rest_framework.utils.urls import replace_query_param
+from rest_framework_extensions.mixins import DetailSerializerMixin
+
+DEFAULT_RENDERERS = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer)
+FORMATS = [dict(format=r.format, type=r.media_type) for r in DEFAULT_RENDERERS]
 
 
-class DataSetSerializerMixin(object):
-    def to_representation(self, obj):
-        result = super().to_representation(obj)
-        result['dataset'] = self.dataset
-        return result
+#
+# class DataSetSerializerMixin(object):
+#     def to_representation(self, obj):
+#         result = super().to_representation(obj)
+#         result['dataset'] = self.dataset
+#         return result
+#
 
 
 class LinksField(serializers.HyperlinkedIdentityField):
@@ -62,11 +69,7 @@ class HALPagination(pagination.PageNumberPagination):
         ]))
 
 
-class DisplayField(serializers.Field):
-    def __init__(self, *args, **kwargs):
-        kwargs['source'] = '*'
-        kwargs['read_only'] = True
-        super().__init__(*args, **kwargs)
-
-    def to_representation(self, value):
-        return str(value)
+class MonumentVS(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
+    renderer_classes = DEFAULT_RENDERERS
+    pagination_class = HALPagination
+    filter_backends = (filters.DjangoFilterBackend,)

@@ -85,12 +85,14 @@ def update_create_complex(item):
             beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
             monumentnummer=item.get('Monumentnummer', None),
             complex_naam=item.get('Naam', None),
-            status=item.get('Status', None)
+            complexstatus=item.get('Status', None)
         )
 
 
-def get_coordinates(point):
+def get_coordinates(point, id):
     if type(point) == list:
+        functional_errors.append(
+            'Object has more than 1 coordinate:' + id)
         return GEOSGeometry(point[0], srid=28992)
     return GEOSGeometry(point, srid=28992)
 
@@ -117,7 +119,7 @@ def update_create_adress(monument, adress):
     return Situering.objects.create(
         external_id=adress['Id'],
         monument=monument,
-        betreft='VerzendSleutel' in adress and convert_to_landelijk_id(
+        betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_landelijk_id(
             adress['VerzendSleutel'], '20') or None,
         situering_nummeraanduiding='KoppelStatus' in adress and adress[
             'KoppelStatus'] or None,
@@ -143,46 +145,45 @@ def update_create_adresses(monument, adress):
     else:
         main = update_create_adress(monument, adress)
     if main.eerste_situering == 'Nee':
-        msg = "Did not find an address labeled 'KoppelEerste = true' for Monument: {}".format(monument.external_id)
+        msg = "Did not find an address labeled 'KoppelEerste = true' for Monument: {}".format(
+            monument.external_id)
         functional_errors.append(msg)
     return main
 
 
 def format_address(a):
-    straat = a.straat and a.straat + ' ' or ''
-    huisnummer = a.huisnummer or ''
-    huisletter = a.huisletter or ''
-    huisnummertoevoeging = a.huisnummertoevoeging and '-' + a.huisnummertoevoeging or ''
+    straat = a.straat and a.straat or ''
+    huisnummer = a.huisnummer and ' ' + a.huisnummer or ''
+    huisletter = a.huisletter and ' ' + a.huisletter or ''
+    huisnummertoevoeging = a.huisnummertoevoeging and ' ' + a.huisnummertoevoeging or ''
     return straat + huisnummer + huisletter + huisnummertoevoeging
 
 
 def update_create_monument(item, created_complex):
     monument = Monument.objects.create(
         external_id=item['Id'],
-        aanwijzingsdatum=item.get('AanwijzingsDatum', None),
+        monument_aanwijzingsdatum=item.get('AanwijzingsDatum', None),
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
                    item['Afbeelding']['Id'] or None,
-        architect=item.get('Architect', None),
-        beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+        architect_ontwerp_monument=item.get('Architect', None),
+        beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
-        coordinaten='Punt' in item and get_coordinates(item['Punt']) or None,
-        functie=item.get('Functie', None),
-        geometrie=get_geometry(item),
+        monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
+        oorspronkelijke_functie_monument=item.get('Functie', None),
+        monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
             item['Tag']) and 'Ja' or 'Nee',
         monumentnummer=item.get('Monumentnummer', None),
-        naam=item.get('Naam', None),
+        monumentnaam=item.get('Naam', None),
         display_naam=item.get('Naam', None),
-        opdrachtgever=item.get('Opdrachtgever', None),
-        pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(
+        opdrachtgever_bouw_monument=item.get('Opdrachtgever', None),
+        betreft_pand='PandSleutel' in item and convert_to_landelijk_id(
             item['PandSleutel'], '10') or None,
-        periode_start=item.get('PeriodeStart', None),
-        periode_eind=item.get('PeriodeEind', None),
-        redengevende_omschrijving=get_note(item, 'Tekst',
-                                           'Redengevende omschrijving',
-                                           'Vastgesteld'),
-        status=item.get('Status', None),
-        type=item.get('Type', None))
+        bouwjaar_start_bouwperiode_monument=item.get('PeriodeStart', None),
+        bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),
+        redengevende_omschrijving_monument=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
+        monumentstatus=item.get('Status', None),
+        monumenttype=item.get('Type', None))
     if 'Adres' in item:
         main_address = update_create_adresses(monument, item['Adres'])
         if monument.display_naam is None:

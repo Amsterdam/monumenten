@@ -35,10 +35,10 @@ class Migration(migrations.Migration):
                   m.display_naam as display,
                   cast('monumenten/monument' as varchar(30)) as type,
                   site.domain || 'monumenten/monument/' || m.id || '/' AS uri,
-                  m.coordinaten AS geometrie
+                  m.monumentcoordinaten AS geometrie
                 FROM
                   dataset_monument m , django_site site
                 WHERE
-                  m.coordinaten IS NOT NULL and site.name = '{API_DOMAIN}';
+                  m.monumentcoordinaten IS NOT NULL and site.name = '{API_DOMAIN}';
             """)
     ]
