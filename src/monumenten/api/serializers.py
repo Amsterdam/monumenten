@@ -3,7 +3,6 @@ from rest_framework import serializers
 from monumenten.api.rest import HALSerializer
 from monumenten.dataset.models import Situering, Monument
 import json
-from monumenten import settings
 
 
 OPENFIELDS = ['id',  # Identificerende sleutel monument
@@ -65,14 +64,16 @@ class MonumentSerializerNonAuth(HALSerializer):
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
-        api_address = '{}monumenten/situeringen/?monument_id={}'
+        api_address = '{}://{}/monumenten/situeringen/?monument_id={}'
         return {"count": nr_of_situeringen,
-                "href": api_address.format(settings.DATAPUNT_API_URL,
+                "href": api_address.format(self.context['request'].scheme,
+                                           self.context['request'].get_host(),
                                            str(obj.id))}
 
     def get_afbeelding(self, obj):
-        api_address = '{}monumenten/afbeeldingen/{}/'
-        return {"href": api_address.format(settings.DATAPUNT_API_URL,
+        api_address = '{}://{}/monumenten/afbeeldingen/{}/'
+        return {"href": api_address.format(self.context['request'].scheme,
+                                           self.context['request'].get_host(),
                                            str(obj.afbeelding))}
 
 
