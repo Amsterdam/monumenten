@@ -75,9 +75,6 @@ class TestObjectStore(TestCase):
         self.assertEqual(str(monument_3.monumentgeometrie)[:50], 'SRID=28992;GEOMETRYCOLLECTION (POINT (121498.47019', 'Geometrie')
         self.assertEqual(str(monument_4.monumentgeometrie)[:50], 'SRID=28992;GEOMETRYCOLLECTION (LINESTRING (121556.', 'Geometrie')
 
-        # Beperking
-        self.assertEqual(monument.beperking, None, 'Beperking')
-
         # In onderzoek
         self.assertEqual(monument.in_onderzoek, 'Ja', 'In Onderzoek')
         self.assertEqual(monument_2.in_onderzoek, 'Ja', 'In Onderzoek')
