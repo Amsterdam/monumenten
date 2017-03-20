@@ -19,6 +19,7 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'heeft_als_grondslag_beperking',  # Heeft als grondslag [Wkpb:Beperking]
               'heeft_situeringen',  # De situering (adressen) van de panden
               'monumentcoordinaten',  # Monumentcoördinaten
+              'afbeelding',  # Monumentcoördinaten
               ]
 
 NON_OPENFIELDS = ['architect_ontwerp_monument',
@@ -41,6 +42,7 @@ class MonumentSerializerNonAuth(HALSerializer):
     complex_naam = serializers.SerializerMethodField()
     complex_monumentnummer = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
+    afbeelding = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
@@ -67,6 +69,11 @@ class MonumentSerializerNonAuth(HALSerializer):
         return {"count": nr_of_situeringen,
                 "href": api_address.format(settings.DATAPUNT_API_URL,
                                            str(obj.id))}
+
+    def get_afbeelding(self, obj):
+        api_address = '{}monumenten/afbeeldingen/{}/'
+        return {"href": api_address.format(settings.DATAPUNT_API_URL,
+                                           str(obj.afbeelding))}
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):

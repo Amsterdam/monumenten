@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from rest_framework import routers
+from django.conf.urls import url
 
 from monumenten.api import views as api_views
 
@@ -43,4 +44,5 @@ monumenten.register(r'situeringen', api_views.SitueringList,
 monumenten.register(r'monumenten', api_views.MonumentViewSet,
                     base_name='monumenten')
 
-urls = monumenten.urls
+urls = monumenten.urls + [url(r'^afbeeldingen/(?P<id>.*)/$', api_views.afbeeldingView)]
+

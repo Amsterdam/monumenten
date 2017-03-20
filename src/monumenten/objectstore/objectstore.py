@@ -85,5 +85,6 @@ def fetch_import_file_names():
 
 
 def get_image(file_name):
-    byte_array = get_conn().get_object(container, file_name)[1]
+    full_file_name = images_folder + '/' + file_name + '.jpg'
+    byte_array = get_conn().get_object(container, full_file_name)[1]
     return Image.open(io.BytesIO(byte_array))

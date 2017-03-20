@@ -5,10 +5,12 @@
 from authorization_django import levels as authorization_levels
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
+from django.http import HttpResponse
 
 from monumenten.api import serializers
 from monumenten.dataset.models import Monument, Situering
 from .rest import MonumentVS
+from monumenten.objectstore import objectstore
 
 
 class MonumentFilter(FilterSet):
@@ -49,3 +51,10 @@ class SitueringList(MonumentVS):
     serializer_class = serializers.SitueringSerializer
     filter_class = SitueringFilter
     queryset_detail = (Situering.objects.all())
+
+
+def afbeeldingView(request, id):
+    response = HttpResponse(content_type="image/jpeg")
+    image = objectstore.get_image(id)
+    image.save(response, "JPEG")
+    return response
