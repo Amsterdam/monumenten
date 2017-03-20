@@ -32,7 +32,6 @@ class Monument(models.Model):
 
     monument_aanwijzingsdatum = models.DateField(null=True)
     architect_ontwerp_monument = models.CharField(max_length=128, null=True)
-    beperking = models.IntegerField(null=True)
     beschrijving_monument = models.TextField(null=True)
     monumentcoordinaten = models.PointField(null=True, srid=28992)
     afbeelding = models.CharField(max_length=36, null=True)

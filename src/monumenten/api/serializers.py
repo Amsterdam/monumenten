@@ -14,11 +14,11 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'betreft_pand',  # Betreft [BAG:Pand] (Sleutelverzendend)
               'display_naam',  # Monumentnaam voor display
               'complex_id',  # Identificerende sleutel complex
-              'complex_naam',  # Complexnaam)
+              'complex_naam',  # Complexnaam
+              'complex_monumentnummer',  # Complexnaam
               'heeft_als_grondslag_beperking',  # Heeft als grondslag [Wkpb:Beperking]
-              'situering',  # De situering (adressen) van de panden
+              'heeft_situeringen',  # De situering (adressen) van de panden
               'monumentcoordinaten',  # Monumentcoördinaten
-              'monumentgeometrie',  # Geometrie van document
               ]
 
 NON_OPENFIELDS = ['architect_ontwerp_monument',
@@ -27,19 +27,20 @@ NON_OPENFIELDS = ['architect_ontwerp_monument',
                   'bouwjaar_start_bouwperiode_monument',
                   'bouwjaar_eind_bouwperiode_monument',
                   'oorspronkelijke_functie_monument',
-                  'geometrie',
+                  'monumentgeometrie',
                   'in_onderzoek',
                   'beschrijving_monument',
                   'redengevende_omschrijving_monument',
-                  'afbeelding'
+                  'afbeelding',
+                  'complex_beschrijving',
                   ]
 
 
 class MonumentSerializerNonAuth(HALSerializer):
     complex_id = serializers.SerializerMethodField()
     complex_naam = serializers.SerializerMethodField()
-    situering = serializers.SerializerMethodField()
-    monumentgeometrie = serializers.SerializerMethodField()
+    complex_monumentnummer = serializers.SerializerMethodField()
+    heeft_situeringen = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
@@ -48,7 +49,7 @@ class MonumentSerializerNonAuth(HALSerializer):
     @staticmethod
     def get_complex_id(obj):
         if obj.complex:
-            return str(obj.complex.external_id)
+            return str(obj.complex.id)
 
     @staticmethod
     def get_complex_naam(obj):
@@ -56,11 +57,11 @@ class MonumentSerializerNonAuth(HALSerializer):
             return str(obj.complex.complex_naam)
 
     @staticmethod
-    def get_monumentgeometrie(obj):
-        if obj.monumentgeometrie:
-            return json.loads(obj.monumentgeometrie.geojson)
+    def get_complex_monumentnummer(obj):
+        if obj.complex:
+            return str(obj.complex.monumentnummer)
 
-    def get_situering(self, obj):
+    def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
         api_address = '{}monumenten/situeringen/?monument_id={}'
         return {"count": nr_of_situeringen,
@@ -69,9 +70,22 @@ class MonumentSerializerNonAuth(HALSerializer):
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
+    monumentgeometrie = serializers.SerializerMethodField()
+    complex_beschrijving = serializers.SerializerMethodField()
+
     class Meta:
         model = Monument
         fields = OPENFIELDS + NON_OPENFIELDS
+
+    @staticmethod
+    def get_complex_beschrijving(obj):
+        if obj.complex:
+            return str(obj.complex.beschrijving)
+
+    @staticmethod
+    def get_monumentgeometrie(obj):
+        if obj.monumentgeometrie:
+            return json.loads(obj.monumentgeometrie.geojson)
 
 
 class SitueringSerializer(HALSerializer):
@@ -81,7 +95,9 @@ class SitueringSerializer(HALSerializer):
     class Meta:
         model = Situering
         fields = ['_display',
+                  'id',
                   'situering_nummeraanduiding',
+                  'betreft_nummeraanduiding',
                   'eerste_situering'
                   ]
 

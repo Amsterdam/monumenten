@@ -36,7 +36,6 @@ class Migration(migrations.Migration):
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('monument_aanwijzingsdatum', models.DateField(null=True)),
                 ('architect_ontwerp_monument', models.CharField(max_length=128, null=True)),
-                ('beperking', models.IntegerField(null=True)),
                 ('beschrijving_monument', models.TextField(null=True)),
                 ('monumentcoordinaten',
                  django.contrib.gis.db.models.fields.PointField(null=True,

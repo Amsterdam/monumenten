@@ -89,8 +89,10 @@ def update_create_complex(item):
         )
 
 
-def get_coordinates(point):
+def get_coordinates(point, id):
     if type(point) == list:
+        functional_errors.append(
+            'Object has more than 1 coordinate:' + id)
         return GEOSGeometry(point[0], srid=28992)
     return GEOSGeometry(point, srid=28992)
 
@@ -166,7 +168,7 @@ def update_create_monument(item, created_complex):
         architect_ontwerp_monument=item.get('Architect', None),
         beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
-        monumentcoordinaten='Punt' in item and get_coordinates(item['Punt']) or None,
+        monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
         oorspronkelijke_functie_monument=item.get('Functie', None),
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
