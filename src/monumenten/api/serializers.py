@@ -3,7 +3,6 @@ from rest_framework import serializers
 from monumenten.api.rest import HALSerializer
 from monumenten.dataset.models import Situering, Monument
 import json
-from monumenten import settings
 
 
 OPENFIELDS = ['id',  # Identificerende sleutel monument
