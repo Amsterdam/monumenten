@@ -18,7 +18,6 @@ OPENFIELDS = ['id',  # Identificerende sleutel monument
               'heeft_als_grondslag_beperking',  # Heeft als grondslag [Wkpb:Beperking]
               'heeft_situeringen',  # De situering (adressen) van de panden
               'monumentcoordinaten',  # Monumentcoördinaten
-              'afbeelding',  # Monumentcoördinaten
               ]
 
 NON_OPENFIELDS = ['architect_ontwerp_monument',
@@ -31,8 +30,8 @@ NON_OPENFIELDS = ['architect_ontwerp_monument',
                   'in_onderzoek',
                   'beschrijving_monument',
                   'redengevende_omschrijving_monument',
-                  'afbeelding',
                   'complex_beschrijving',
+                  'afbeelding',  # afbeelding
                   ]
 
 
@@ -41,7 +40,6 @@ class MonumentSerializerNonAuth(HALSerializer):
     complex_naam = serializers.SerializerMethodField()
     complex_monumentnummer = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
-    afbeelding = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
@@ -70,18 +68,11 @@ class MonumentSerializerNonAuth(HALSerializer):
                                            self.context['request'].get_host(),
                                            str(obj.id))}
 
-    def get_afbeelding(self, obj):
-        api_address = '{}://{}/monumenten/afbeeldingen/{}/'
-        if obj.afbeelding is None:
-            return {}
-        return {"href": api_address.format(self.context['request'].scheme,
-                                           self.context['request'].get_host(),
-                                           str(obj.afbeelding))}
-
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
     monumentgeometrie = serializers.SerializerMethodField()
     complex_beschrijving = serializers.SerializerMethodField()
+    afbeelding = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
@@ -96,6 +87,14 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
     def get_monumentgeometrie(obj):
         if obj.monumentgeometrie:
             return json.loads(obj.monumentgeometrie.geojson)
+
+    def get_afbeelding(self, obj):
+        api_address = '{}://{}/monumenten/afbeeldingen/{}/'
+        if obj.afbeelding is None:
+            return {}
+        return {"href": api_address.format(self.context['request'].scheme,
+                                           self.context['request'].get_host(),
+                                           str(obj.afbeelding))}
 
 
 class SitueringSerializer(HALSerializer):

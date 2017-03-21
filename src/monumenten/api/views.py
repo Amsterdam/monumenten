@@ -53,7 +53,9 @@ class SitueringList(MonumentVS):
     queryset_detail = (Situering.objects.all())
 
 
-def afbeeldingView(request, id):
+def afbeelding_view(request, id):
+    if not request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
+        return HttpResponse('Unauthorized', status=401)
     response = HttpResponse(content_type="image/jpeg")
     image = objectstore.get_image(id)
     image.save(response, "JPEG")

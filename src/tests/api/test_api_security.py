@@ -27,7 +27,6 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
                       'heeft_als_grondslag_beperking',
                       'heeft_situeringen',
                       'monumentcoordinaten',
-                      'afbeelding',
                       ]
 
     NON_OPENFIELDS = ['architect_ontwerp_monument',
@@ -40,6 +39,7 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
                           'in_onderzoek',
                           'beschrijving_monument',
                           'redengevende_omschrijving_monument',
+                           'afbeelding',
                           'complex_beschrijving',]
 
     def setUp(self):
