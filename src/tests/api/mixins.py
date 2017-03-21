@@ -9,8 +9,8 @@ class JWTMixin(object):
     LEVEL_EMPLOYEE = 0b1
     #LEVEL_EMPLOYEE_PLUS = 0b11
 
-    secret = settings.JWT_SECRET_KEY
-    algorithm = settings.JWT_ALGORITHM
+    secret = settings.DATAPUNT_AUTHZ['JWT_SECRET_KEY']
+    algorithm = settings.DATAPUNT_AUTHZ['JWT_ALGORITHM']
 
     assert(secret is not None)
     assert(algorithm is not None)
@@ -22,7 +22,7 @@ class JWTMixin(object):
         now = int(time.time())
         payload = {
             'iat': now,
-            'exp': now + 60,
+            'exp': now + 300,
             'authz': level
         }
         return jwt.encode(payload, self.secret, algorithm=self.algorithm).decode("utf-8")

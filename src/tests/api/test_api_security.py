@@ -51,6 +51,7 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
 
+        print(self.employee_credentials())
         self.client.credentials(**self.employee_credentials())
         fields_visible_by_employee = self.client.get(url).data
 
