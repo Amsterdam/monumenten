@@ -99,6 +99,9 @@ SWAGGER_SETTINGS = {
 
 HEALTH_MODEL = 'dataset.Monument'
 
-JWT_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY')
-JWT_ALGORITHM = 'HS256'
-assert (JWT_SECRET_KEY is not None)
+DATAPUNT_AUTHZ = {
+	'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY'),
+	'JWT_ALGORITHM': "HS256"
+}
+assert (os.getenv('JWT_SHARED_SECRET_KEY') is not None)
+assert (DATAPUNT_AUTHZ['JWT_SECRET_KEY'] is not None)
