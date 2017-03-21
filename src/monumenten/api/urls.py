@@ -44,5 +44,5 @@ monumenten.register(r'situeringen', api_views.SitueringList,
 monumenten.register(r'monumenten', api_views.MonumentViewSet,
                     base_name='monumenten')
 
-urls = monumenten.urls + [url(r'^afbeeldingen/(?P<id>.*)/$', api_views.afbeeldingView)]
+urls = monumenten.urls + [url(r'^afbeeldingen/(?P<id>.*)/$', api_views.afbeelding_view)]
 
