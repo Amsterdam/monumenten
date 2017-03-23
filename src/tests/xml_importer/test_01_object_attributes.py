@@ -7,10 +7,8 @@ from monumenten.importer.xml_importer import import_file
 
 class TestObjectStore(TestCase):
     """
-    https://dokuwiki.datapunt.amsterdam.nl/doku.php?id=start:monumenten:start
-    vragen:
-    1) de tags "Architect, Opdrachtgever, PeriodeStart, PeriodeEind, Functie" staan nog niet in de xml, is dat bewust gedaan?
-        --> vraag staat nog uit.
+    zie https://dokuwiki.datapunt.amsterdam.nl/doku.php?id=start:monumenten:databestanden
+    voor openstaande vragen
     """
 
     def test_import(self):
@@ -42,25 +40,25 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.monumentstatus, 'Status100', 'Status mismatch')
 
         # Architect ontwerp monument -- leeg want nog niet gevuld in xml
-        self.assertEqual(monument.architect_ontwerp_monument, None, 'Architect')
+        self.assertEqual(monument.architect_ontwerp_monument, 'Architectje', 'Architect')
 
         # Monument aanwijzingsdatum
         self.assertEqual(monument.monument_aanwijzingsdatum, date(2015, 1, 9), 'Aanwijzingsdatum')
 
-        # Heeft als grondslag -- leeg, want staat niet in xml
+        # Heeft als grondslag - wordt niet geleverd
         self.assertEqual(monument.heeft_als_grondslag_beperking, None, 'Heeft als grondslag')
 
-        # Opdrachtgever bouw monument -- leeg want nog niet gevuld in xml
-        self.assertEqual(monument.opdrachtgever_bouw_monument, None, 'Opdrachtgever')
+        # Opdrachtgever bouw monument
+        self.assertEqual(monument.opdrachtgever_bouw_monument, 'Jan', 'Opdrachtgever')
 
-        # Bouwjaar start bouwperiode monument -- leeg want nog niet gevuld in xml
-        self.assertEqual(monument.bouwjaar_start_bouwperiode_monument, None, 'Periode start')
+        # Bouwjaar start bouwperiode monument
+        self.assertEqual(monument.bouwjaar_start_bouwperiode_monument, 1898, 'Periode start')
 
-        # Bouwjaar eind bouwperiode monument -- leeg want nog niet gevuld in xml
-        self.assertEqual(monument.bouwjaar_eind_bouwperiode_monument, None, 'Periode eind')
+        # Bouwjaar eind bouwperiode monument
+        self.assertEqual(monument.bouwjaar_eind_bouwperiode_monument, 1900, 'Periode eind')
 
-        # Oorspronkelijke functie monument -- leeg want nog niet gevuld in xml
-        self.assertEqual(monument.oorspronkelijke_functie_monument, None, 'Functie')
+        # Oorspronkelijke functie monument
+        self.assertEqual(monument.oorspronkelijke_functie_monument, '_Gebouwen, woonhuizen', 'Functie')
 
         # Betreft (BAG verwijzing - Pand)
         self.assertEqual(monument.betreft_pand, '0' + '3630013072812',
