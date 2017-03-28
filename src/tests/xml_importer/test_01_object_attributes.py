@@ -58,7 +58,8 @@ class TestObjectStore(TestCase):
         self.assertEqual(monument.bouwjaar_eind_bouwperiode_monument, 1900, 'Periode eind')
 
         # Oorspronkelijke functie monument
-        self.assertEqual(monument.oorspronkelijke_functie_monument, '_Gebouwen, woonhuizen', 'Functie')
+        self.assertEqual(monument.oorspronkelijke_functie_monument, 'Gebouwen, woonhuizen', 'Functie')
+        self.assertEqual(monument_2.oorspronkelijke_functie_monument, None, 'Functie')
 
         # Betreft (BAG verwijzing - Pand)
         self.assertEqual(monument.betreft_pand, '0' + '3630013072812',
@@ -74,8 +75,8 @@ class TestObjectStore(TestCase):
         self.assertEqual(str(monument_4.monumentgeometrie)[:50], 'SRID=28992;GEOMETRYCOLLECTION (LINESTRING (121556.', 'Geometrie')
 
         # In onderzoek
-        self.assertEqual(monument.in_onderzoek, 'Ja', 'In Onderzoek')
-        self.assertEqual(monument_2.in_onderzoek, 'Ja', 'In Onderzoek')
+        self.assertEqual(monument.in_onderzoek, 'J', 'In Onderzoek')
+        self.assertEqual(monument_2.in_onderzoek, 'J', 'In Onderzoek')
 
         # Beschrijving monument
         # Tekst/Type='Beschrijving'/Status='Afgerond'/Notitie
@@ -93,8 +94,8 @@ class TestObjectStore(TestCase):
         self.assertEqual(adresses[0].external_id, '2f4546b5-7528-443b-9474-ef3c31a2f018', 'Adres id')
         self.assertEqual(adresses[0].betreft_nummeraanduiding, '0'+ '3630000177987',
                          'Adres betreft = BAG sleutel')
-        self.assertEqual(adresses[0].situering_nummeraanduiding, 'Conversie', 'Adres situering')
-        self.assertEqual(adresses[0].eerste_situering, 'Ja', 'Adres eerste_situering')
+        self.assertEqual(adresses[0].situering_nummeraanduiding, 'Actueel', 'Adres situering')
+        self.assertEqual(adresses[0].eerste_situering, 'J', 'Adres eerste_situering')
         self.assertEqual(adresses[0].huisletter, 'A', 'Adres huisletter')
         self.assertEqual(adresses[0].huisnummer, 52, 'Adres huisnummer')
         self.assertEqual(adresses[0].huisnummertoevoeging, '3', 'Adres huisnummertoevoeging')
@@ -103,9 +104,11 @@ class TestObjectStore(TestCase):
 
         # Identificerende sleutel monument
         self.assertIsNotNone(monument.id, 'Id')
+        self.assertEqual('d5cc6402-d211-4981-b965-08a559837218', monument.id, 'Id')
 
         # Identificerende sleutel complex
         self.assertIsNotNone(monument.id, 'Complex Id')
+        self.assertEqual('9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', complex.id, 'Id')
 
         # Identificerende sleutel situering
         adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.id)

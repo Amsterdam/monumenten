@@ -22,9 +22,9 @@ class TestAPIEndpoints(APITestCase):
                         ('?betreft_pand=192048', 0),
                         ('?betreft_pand=bla', 0),
                         ('?nietbestaand=bla', '>'),
-                        ('5/', 'nr=13'))),
-        ('situeringen', (('42/', 'nr=3'),
-                         ('?monument_id=23', '>'),
+                        ('0-0/', 'nr=13'))),
+        ('situeringen', (('2/', 'nr=5'),
+                         ('?monument_id=0-0', '>'),
                          ('?monument_id=nietbestaand', 0)
                          )),
     ]
@@ -50,12 +50,12 @@ class TestAPIEndpoints(APITestCase):
             'Wrong Content-Type for {}'.format(url))
 
         if isinstance((nr_of_rows), int):
-            assert (response.data['count'] == nr_of_rows)
+            self.assertEqual(response.data['count'],nr_of_rows)
         elif nr_of_rows == '>':
-            assert (response.data['count'] > 0)
+            self.assertTrue(response.data['count']> 0)
         elif nr_of_rows.startswith('nr='):
             nr = int(nr_of_rows.split('=')[1])
-            assert (len(response.data), nr)
+            self.assertEqual(len(response.data), nr)
 
     def valid_html_response(self, url, response):
         """

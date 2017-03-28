@@ -1,6 +1,7 @@
 import logging
 
 import xmltodict
+
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 
 from monumenten.dataset.models import Monument, Complex, Situering
@@ -81,6 +82,7 @@ def update_create_complex(item):
                 'Unexpected elements Punt and/or Adres for Complex:' +
                 complex_id)
         return Complex.objects.create(
+            id=complex_id,
             external_id=complex_id,
             beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
             monumentnummer=item.get('Monumentnummer', None),
@@ -105,16 +107,29 @@ def convert_to_verzendsleutel(id):
     return '0' + id
 
 
+def get_functie(functie):
+    """Alleen functies met _ zijn valide"""
+    if functie.startswith('_'):
+        return functie.replace('_', '', 1)
+    return None
+
+
+def get_koppel_status(koppel_status):
+    if koppel_status == 'Conversie':
+        return 'Actueel'
+    return koppel_status
+
+
 def update_create_adress(monument, adress):
     return Situering.objects.create(
         external_id=adress['Id'],
         monument=monument,
         betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_verzendsleutel(
             adress['VerzendSleutel']) or None,
-        situering_nummeraanduiding='KoppelStatus' in adress and adress[
-            'KoppelStatus'] or None,
+        situering_nummeraanduiding='KoppelStatus' in adress and get_koppel_status(adress[
+            'KoppelStatus']) or None,
         eerste_situering='KoppelEerste' in adress and
-                         adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
+                         adress['KoppelEerste'] == 'true' and 'J' or 'N',
         huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
         huisletter='Huisletter' in adress and adress['Huisletter'] or None,
         huisnummertoevoeging='Toevoeging' in adress and adress[
@@ -129,12 +144,12 @@ def update_create_adresses(monument, adress):
     if type(adress) == list:
         for a in adress:
             situering = update_create_adress(monument, a)
-            if main is None or situering.eerste_situering == 'Ja':
+            if main is None or situering.eerste_situering == 'J':
                 main = situering
 
     else:
         main = update_create_adress(monument, adress)
-    if main.eerste_situering == 'Nee':
+    if main.eerste_situering == 'N':
         msg = "Did not find an address labeled 'KoppelEerste = true' for Monument: {}".format(
             monument.external_id)
         functional_errors.append(msg)
@@ -151,6 +166,7 @@ def format_address(a):
 
 def update_create_monument(item, created_complex):
     monument = Monument.objects.create(
+        id=item['Id'],
         external_id=item['Id'],
         monument_aanwijzingsdatum=item.get('AanwijzingsDatum', None),
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
@@ -159,10 +175,10 @@ def update_create_monument(item, created_complex):
         beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
         monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
-        oorspronkelijke_functie_monument=item.get('Functie', None),
+        oorspronkelijke_functie_monument='Functie' in item and get_functie(item['Functie']) or None,
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
-            item['Tag']) and 'Ja' or 'Nee',
+            item['Tag']) and 'J' or 'N',
         monumentnummer=item.get('Monumentnummer', None),
         monumentnaam=item.get('Naam', None),
         display_naam=item.get('Naam', None),
@@ -173,7 +189,8 @@ def update_create_monument(item, created_complex):
         bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),
         redengevende_omschrijving_monument=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
         monumentstatus=item.get('Status', None),
-        monumenttype=item.get('Type', None))
+        monumenttype=item.get('Type', None),
+        heeft_als_grondslag_beperking=item.get('WkpbInschrijfnummer', None))
     if 'Adres' in item:
         main_address = update_create_adresses(monument, item['Adres'])
         if monument.display_naam is None:

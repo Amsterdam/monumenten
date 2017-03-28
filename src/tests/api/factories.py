@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import factory
 from django.contrib.gis.geos import Point
 from factory import fuzzy
-
 from monumenten.dataset import models
 
 JANEE = 'ja'
@@ -20,11 +19,13 @@ def create_testset(nr=10):
     point = Point(121944.32, 487722.88)
 
     for n0 in range(nr):
-        complex = ComplexFactory()
-        for n1 in range(random.randint(1, 10)):
+        complex = ComplexFactory(id=n0)
+        for n1 in range(5):
+            id = str(n0) + '-' + str(n1)
             monument = MonumentenDataFactory(complex=complex,
-                                             monumentcoordinaten=point)
-            for n2 in range(random.randint(1, 10)):
+                                             monumentcoordinaten=point,
+                                             id=id)
+            for n2 in range(5):
                 SitueringFactory(monument=monument)
 
 
@@ -75,7 +76,6 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
 class ComplexFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Complex
-
     external_id = fuzzy.FuzzyText(length=36)
 
     beschrijving = fuzzy.FuzzyText()

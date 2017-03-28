@@ -18,8 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Complex',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True,
-                                        serialize=False, verbose_name='ID')),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id',
                  models.CharField(db_index=True, max_length=36, null=True)),
                 ('beschrijving', models.TextField(null=True)),
@@ -31,8 +30,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Monument',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True,
-                                        serialize=False, verbose_name='ID')),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('monument_aanwijzingsdatum', models.DateField(null=True)),
                 ('architect_ontwerp_monument', models.CharField(max_length=128, null=True)),
@@ -51,7 +49,7 @@ class Migration(migrations.Migration):
                 ('display_naam', models.CharField(max_length=255, null=True)),
                 ('opdrachtgever_bouw_monument', models.CharField(max_length=128, null=True)),
                 ('betreft_pand', models.CharField(max_length=16, null=True)),
-                ('heeft_als_grondslag_beperking', models.CharField(max_length=36, null=True)),
+                ('heeft_als_grondslag_beperking', models.CharField(max_length=15, null=True)),
                 ('bouwjaar_start_bouwperiode_monument', models.IntegerField(null=True)),
                 ('bouwjaar_eind_bouwperiode_monument', models.IntegerField(null=True)),
                 ('redengevende_omschrijving_monument', models.TextField(null=True)),

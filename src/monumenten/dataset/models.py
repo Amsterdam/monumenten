@@ -8,6 +8,7 @@ class Complex(models.Model):
     status: geeft [Rijksmomument, Gemeentelijk monument, Geen status] aan.
     external_id: id conform AMISExport.xml
     """
+    id = models.CharField(max_length=36, primary_key=True)
     external_id = models.CharField(max_length=36, null=True, db_index=True)
 
     beschrijving = models.TextField(null=True)
@@ -28,6 +29,7 @@ class Monument(models.Model):
     -- aanvulling op stelselpedia --
     external_id: id conform AMISExport.xml
     """
+    id = models.CharField(max_length=36, primary_key=True)
     external_id = models.CharField(max_length=36, null=True)
 
     monument_aanwijzingsdatum = models.DateField(null=True)
@@ -48,7 +50,7 @@ class Monument(models.Model):
     redengevende_omschrijving_monument = models.TextField(null=True)
     monumentstatus = models.CharField(max_length=128, null=True)
     monumenttype = models.CharField(max_length=128, null=True)
-    heeft_als_grondslag_beperking = models.CharField(max_length=36, null=True)
+    heeft_als_grondslag_beperking = models.CharField(max_length=15, null=True)
 
     complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
 
