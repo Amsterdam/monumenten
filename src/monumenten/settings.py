@@ -58,7 +58,7 @@ DATABASES = {
 }
 
 # SWAGGER
-SWAG_PATH = 'api-acc.datapunt.amsterdam.nl/monumenten/docs'
+SWAG_PATH = 'api-acc.data.amsterdam.nl/monumenten/docs'
 
 if DEBUG:
     SWAG_PATH = '127.0.0.1:8000/monumenten/docs'
