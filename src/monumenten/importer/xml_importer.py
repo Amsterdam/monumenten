@@ -107,8 +107,12 @@ def convert_to_verzendsleutel(id):
     return '0' + id
 
 
-def get_functie(functie):
+def get_functie(functie, id):
     """Alleen functies met _ zijn valide"""
+
+    if type(functie) == list:
+        functional_errors.append('Multiple tag "functie" for Object id: {}'.format(id))
+        return get_functie(functie[0], id)
     if functie.startswith('_'):
         return functie.replace('_', '', 1)
     return None
@@ -175,7 +179,7 @@ def update_create_monument(item, created_complex):
         beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
         monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
-        oorspronkelijke_functie_monument='Functie' in item and get_functie(item['Functie']) or None,
+        oorspronkelijke_functie_monument='Functie' in item and get_functie(item['Functie'], item['Id']) or None,
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
             item['Tag']) and 'J' or 'N',
