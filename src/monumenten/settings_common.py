@@ -26,7 +26,7 @@ DEBUG = SECRET_KEY == insecure_key
 ALLOWED_HOSTS = ['*']
 
 DATAPUNT_API_URL = os.getenv(
-    'DATAPUNT_API_URL', 'https://api.datapunt.amsterdam.nl/')
+    'DATAPUNT_API_URL', 'https://api.data.amsterdam.nl/')
 
 
 INTERNAL_IPS = ('127.0.0.1', '0.0.0.0')
