@@ -2,12 +2,6 @@ FROM amsterdam/docker_python:latest
 MAINTAINER datapunt.ois@amsterdam.nl
 
 ENV PYTHONUNBUFFERED 1
-ENV CONSUL_HOST=${CONSUL_HOST:-notset}
-ENV CONSUL_PORT=${CONSUL_PORT:-8500}
-ENV DATAPUNT_API_URL=${DATAPUNT_API_URL:-https://api.datapunt.amsterdam.nl/}
-ARG CULTUUR_OBJECTSTORE_PASSWORD
-ENV CULTUUR_OBJECTSTORE_PASSWORD=$CULTUUR_OBJECTSTORE_PASSWORD
-ENV JWT_SHARED_SECRET_KEY=${JWT_SHARED_SECRET_KEY}
 
 EXPOSE 8000
 
@@ -18,10 +12,7 @@ RUN apt-get update \
 		netcat \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& adduser --system datapunt \
-	&& mkdir -p /static \
-	&& chown datapunt /static \
-	&& pip install uwsgi
+	&& adduser --system datapunt
 
 WORKDIR /app
 
@@ -36,5 +27,5 @@ USER datapunt
 
 RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
 
-CMD ["/app/docker-run.sh"]
+CMD uwsgi
 
