@@ -37,8 +37,7 @@ OPENFIELDS_COMPLEX = ['id',
                       'complex_naam',
                       ]
 
-NON_OPENFIELDS_COMPLEX = ['beschrijving',
-                          ]
+NON_OPENFIELDS_COMPLEX = ['beschrijving']
 
 
 class ComplexSerializerNonAuth(HALSerializer):
@@ -63,21 +62,6 @@ class MonumentSerializerNonAuth(HALSerializer):
     class Meta:
         model = Monument
         fields = OPENFIELDS_MONUMENT
-
-    @staticmethod
-    def get_complex_id(obj):
-        if obj.complex:
-            return str(obj.complex.id)
-
-    @staticmethod
-    def get_complex_naam(obj):
-        if obj.complex:
-            return str(obj.complex.complex_naam)
-
-    @staticmethod
-    def get_complex_monumentnummer(obj):
-        if obj.complex:
-            return str(obj.complex.monumentnummer)
 
     def get_ligt_in_complex(self, obj):
         if not obj.complex:
