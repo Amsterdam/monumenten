@@ -19,7 +19,7 @@ def create_testset(nr=10):
     point = Point(121944.32, 487722.88)
 
     for n0 in range(nr):
-        complex = ComplexFactory(id=n0)
+        complex = ComplexFactory(id=n0, monumentnummer=8392183)
         for n1 in range(5):
             id = str(n0) + '-' + str(n1)
             monument = MonumentenDataFactory(complex=complex,

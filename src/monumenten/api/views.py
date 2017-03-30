@@ -7,12 +7,32 @@ from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
 
 from monumenten.api import serializers
-from monumenten.dataset.models import Monument, Situering
+from monumenten.dataset.models import Monument, Situering, Complex
 from .rest import MonumentVS
 
 
+class ComplexFilter(FilterSet):
+    id = filters.CharFilter()
+
+    class Meta:
+        model = Complex
+        fields = ('monumentnummer',)
+
+
+class ComplexViewSet(MonumentVS):
+    serializer_detail_class = serializers.ComplexSerializerNonAuth
+    queryset = Complex.objects.all()
+    filter_class = ComplexFilter
+
+    def get_serializer_class(self):
+        if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
+            return serializers.ComplexSerializerAuth
+        else:
+            return serializers.ComplexSerializerNonAuth
+
+
 class MonumentFilter(FilterSet):
-    monument_id = filters.NumberFilter()
+    id = filters.CharFilter()
 
     class Meta:
         model = Monument

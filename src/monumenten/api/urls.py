@@ -42,6 +42,8 @@ monumenten.register(r'situeringen', api_views.SitueringList,
                     base_name='situeringen')
 monumenten.register(r'monumenten', api_views.MonumentViewSet,
                     base_name='monumenten')
+monumenten.register(r'complexen', api_views.ComplexViewSet,
+                    base_name='complexen')
 
 urls = monumenten.urls
 

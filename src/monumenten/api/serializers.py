@@ -1,26 +1,24 @@
 from rest_framework import serializers
 
 from monumenten.api.rest import HALSerializer
-from monumenten.dataset.models import Situering, Monument
+from monumenten.dataset.models import Situering, Monument, Complex
 import json
 
 
-OPENFIELDS = ['id',  # Identificerende sleutel monument
-              'monumentnummer',  # Monumentnummer
-              'monumentnaam',  # Monumentnaam
-              'monumentstatus',  # Monumentstatus
-              'monument_aanwijzingsdatum',  # Monument aanwijzingsdatum
-              'betreft_pand',  # Betreft [BAG:Pand] (Sleutelverzendend)
-              'display_naam',  # Monumentnaam voor display
-              'complex_id',  # Identificerende sleutel complex
-              'complex_naam',  # Complexnaam
-              'complex_monumentnummer',  # Complexnaam
-              'heeft_als_grondslag_beperking',  # Heeft als grondslag [Wkpb:Beperking]
-              'heeft_situeringen',  # De situering (adressen) van de panden
-              'monumentcoordinaten',  # Monumentcoördinaten
-              ]
+OPENFIELDS_MONUMENT = ['id',
+              'monumentnummer',
+              'monumentnaam',
+              'monumentstatus',
+              'monument_aanwijzingsdatum',
+              'betreft_pand',
+              'display_naam',
+              'heeft_als_grondslag_beperking',
+              'heeft_situeringen',
+              'monumentcoordinaten',
+              'ligt_in_complex',
+                       ]
 
-NON_OPENFIELDS = ['architect_ontwerp_monument',
+NON_OPENFIELDS_MONUMENT = ['architect_ontwerp_monument',
                   'monumenttype',
                   'opdrachtgever_bouw_monument',
                   'bouwjaar_start_bouwperiode_monument',
@@ -31,19 +29,40 @@ NON_OPENFIELDS = ['architect_ontwerp_monument',
                   'beschrijving_monument',
                   'redengevende_omschrijving_monument',
                   'complex_beschrijving',
-                  'afbeelding',  # afbeelding
-                  ]
+                           'afbeelding',
+                           ]
+
+OPENFIELDS_COMPLEX = ['id',
+              'monumentnummer',
+              'complex_naam',
+                       ]
+
+NON_OPENFIELDS_COMPLEX = ['beschrijving',
+                           ]
+
+
+class ComplexSerializerNonAuth(HALSerializer):
+
+    class Meta:
+        model = Complex
+        fields = OPENFIELDS_COMPLEX
+
+
+class ComplexSerializerAuth(ComplexSerializerNonAuth):
+
+    class Meta:
+        model = Complex
+        fields = OPENFIELDS_COMPLEX + NON_OPENFIELDS_COMPLEX
 
 
 class MonumentSerializerNonAuth(HALSerializer):
-    complex_id = serializers.SerializerMethodField()
-    complex_naam = serializers.SerializerMethodField()
-    complex_monumentnummer = serializers.SerializerMethodField()
+
+    ligt_in_complex = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
-        fields = OPENFIELDS
+        fields = OPENFIELDS_MONUMENT
 
     @staticmethod
     def get_complex_id(obj):
@@ -59,6 +78,16 @@ class MonumentSerializerNonAuth(HALSerializer):
     def get_complex_monumentnummer(obj):
         if obj.complex:
             return str(obj.complex.monumentnummer)
+
+    def get_ligt_in_complex(self, obj):
+        if not obj.complex:
+            return None
+        api_address = '{}://{}/monumenten/complexen/{}/'
+
+        return {
+                "href": api_address.format(self.context['request'].scheme,
+                                           self.context['request'].get_host(),
+                                           str(obj.complex.id))}
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
@@ -76,7 +105,7 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
 
     class Meta:
         model = Monument
-        fields = OPENFIELDS + NON_OPENFIELDS
+        fields = OPENFIELDS_MONUMENT + NON_OPENFIELDS_MONUMENT
 
     @staticmethod
     def get_complex_beschrijving(obj):
@@ -95,7 +124,6 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
         return {"href": api_address.format(self.context['request'].scheme,
                                            self.context['request'].get_host(),
                                            str(obj.afbeelding))}
-
 
 class SitueringSerializer(HALSerializer):
     _display = serializers.SerializerMethodField()
