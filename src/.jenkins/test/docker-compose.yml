@@ -15,7 +15,7 @@ services:
       DATABASE_NAME: monumenten
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
-      JWT_SHARED_SECRET_KEY=insecure1234567890
+      JWT_SHARED_SECRET_KEY: insecure1234567890
     command: >
       bash -c "/app/.jenkins/docker-wait.sh \
               && cd /app/.jenkins/test/ \
