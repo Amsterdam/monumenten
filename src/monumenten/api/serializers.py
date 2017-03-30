@@ -6,39 +6,39 @@ import json
 
 
 OPENFIELDS_MONUMENT = ['id',
-              'monumentnummer',
-              'monumentnaam',
-              'monumentstatus',
-              'monument_aanwijzingsdatum',
-              'betreft_pand',
-              'display_naam',
-              'heeft_als_grondslag_beperking',
-              'heeft_situeringen',
-              'monumentcoordinaten',
-              'ligt_in_complex',
+                       'monumentnummer',
+                       'monumentnaam',
+                       'monumentstatus',
+                       'monument_aanwijzingsdatum',
+                       'betreft_pand',
+                       'display_naam',
+                       'heeft_als_grondslag_beperking',
+                       'heeft_situeringen',
+                       'monumentcoordinaten',
+                       'ligt_in_complex',
                        ]
 
 NON_OPENFIELDS_MONUMENT = ['architect_ontwerp_monument',
-                  'monumenttype',
-                  'opdrachtgever_bouw_monument',
-                  'bouwjaar_start_bouwperiode_monument',
-                  'bouwjaar_eind_bouwperiode_monument',
-                  'oorspronkelijke_functie_monument',
-                  'monumentgeometrie',
-                  'in_onderzoek',
-                  'beschrijving_monument',
-                  'redengevende_omschrijving_monument',
-                  'complex_beschrijving',
+                           'monumenttype',
+                           'opdrachtgever_bouw_monument',
+                           'bouwjaar_start_bouwperiode_monument',
+                           'bouwjaar_eind_bouwperiode_monument',
+                           'oorspronkelijke_functie_monument',
+                           'monumentgeometrie',
+                           'in_onderzoek',
+                           'beschrijving_monument',
+                           'redengevende_omschrijving_monument',
+                           'complex_beschrijving',
                            'afbeelding',
                            ]
 
 OPENFIELDS_COMPLEX = ['id',
-              'monumentnummer',
-              'complex_naam',
-                       ]
+                      'monumentnummer',
+                      'complex_naam',
+                      ]
 
 NON_OPENFIELDS_COMPLEX = ['beschrijving',
-                           ]
+                          ]
 
 
 class ComplexSerializerNonAuth(HALSerializer):
@@ -84,8 +84,7 @@ class MonumentSerializerNonAuth(HALSerializer):
             return None
         api_address = '{}://{}/monumenten/complexen/{}/'
 
-        return {
-                "href": api_address.format(self.context['request'].scheme,
+        return {"href": api_address.format(self.context['request'].scheme,
                                            self.context['request'].get_host(),
                                            str(obj.complex.id))}
 
@@ -124,6 +123,7 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
         return {"href": api_address.format(self.context['request'].scheme,
                                            self.context['request'].get_host(),
                                            str(obj.afbeelding))}
+
 
 class SitueringSerializer(HALSerializer):
     _display = serializers.SerializerMethodField()
