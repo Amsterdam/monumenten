@@ -1,3 +1,5 @@
+import os
+
 from monumenten.settings_common import * # noqa F403
 from monumenten.settings_common import INSTALLED_APPS, DEBUG
 from monumenten.settings_databases import Location_key,\
@@ -5,7 +7,6 @@ from monumenten.settings_databases import Location_key,\
     get_database_key,\
     OVERRIDE_HOST_ENV_VAR,\
     OVERRIDE_PORT_ENV_VAR
-import os
 
 INSTALLED_APPS += [
     'monumenten.api',
@@ -98,5 +99,7 @@ SWAGGER_SETTINGS = {
 
 HEALTH_MODEL = 'dataset.Monument'
 
-JWT_SECRET_KEY = os.getenv('JWT_SHARED_SECRET_KEY')
-JWT_ALGORITHM = 'HS256'
+DATAPUNT_AUTHZ = {
+    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY'),
+    'JWT_ALGORITHM': "HS256"
+}

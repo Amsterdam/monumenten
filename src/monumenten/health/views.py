@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
 try:
+    # noinspection PyUnresolvedReferences
     from django.apps import apps
     get_model = apps.get_model
 except ImportError:
@@ -15,7 +16,8 @@ try:
     model = get_model(settings.HEALTH_MODEL)
 except:
     raise ImproperlyConfigured(
-        'settings.HEALTH_MODEL {} doesn\'t resolve to a useable model'.format(settings.HEALTH_MODEL))
+        'settings.HEALTH_MODEL {} doesn\'t resolve to '
+        'a useable model'.format(settings.HEALTH_MODEL))
 
 
 log = logging.getLogger(__name__)
@@ -23,6 +25,7 @@ log = logging.getLogger(__name__)
 
 def health(request):
     # check debug
+
     if settings.DEBUG:
         log.exception("Debug mode not allowed in production")
         return HttpResponse(

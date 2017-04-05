@@ -32,13 +32,13 @@ class Migration(migrations.Migration):
             f"""
                 CREATE VIEW geo_monument_point AS
                 SELECT
-                  m.naam as display,
+                  m.display_naam as display,
                   cast('monumenten/monument' as varchar(30)) as type,
-                  site.domain || 'monumenten/monument/' || m.id || '/' AS uri,
-                  m.coordinaten AS geometrie
+                  site.domain || 'monumenten/monumenten/' || m.id || '/' AS uri,
+                  m.monumentcoordinaten AS geometrie
                 FROM
                   dataset_monument m , django_site site
                 WHERE
-                  m.coordinaten IS NOT NULL and site.name = '{API_DOMAIN}';
+                  m.monumentcoordinaten IS NOT NULL and site.name = '{API_DOMAIN}';
             """)
     ]

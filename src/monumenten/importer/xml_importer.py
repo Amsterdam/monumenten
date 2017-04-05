@@ -1,6 +1,7 @@
 import logging
 
 import xmltodict
+
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 
 from monumenten.dataset.models import Monument, Complex, Situering
@@ -81,48 +82,58 @@ def update_create_complex(item):
                 'Unexpected elements Punt and/or Adres for Complex:' +
                 complex_id)
         return Complex.objects.create(
+            id=complex_id,
             external_id=complex_id,
             beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
             monumentnummer=item.get('Monumentnummer', None),
             complex_naam=item.get('Naam', None),
-            status=item.get('Status', None)
+            complexstatus=item.get('Status', None)
         )
 
 
-def get_coordinates(point):
+def get_coordinates(point, id):
     if type(point) == list:
+        functional_errors.append(
+            'Object has more than 1 coordinate:' + id)
         return GEOSGeometry(point[0], srid=28992)
     return GEOSGeometry(point, srid=28992)
 
 
-def convert_to_landelijk_id(id, id_code):
-    """3630000092647 --> 0363200000092647
-    Landelijke identificatiecode
-Lijst
-Een landelijke identificatiecode bestaat uit 16 cijfers.
-De eerste 4 zijn gereserveerd voor de gemeentecode (0363).
-De 2 cijfers daarna duiden een type BAG object aan:
-10 = een pand, 20 = een nummeraanduiding
-30 = een openbare ruimte
-01 = een verblijfsobject
-02 = een ligplaats
-03 = een standplaats
-De laatste 10 cijfers zijn gereserveerd voor het volgnummer
-"""
+def convert_to_verzendsleutel(id):
+    """
+        prepend '0' 3630000092647 --> 03630000092647
+    """
     assert id.__len__() == 13
-    return id.replace('363', '0363' + id_code, 1)
+    return '0' + id
+
+
+def get_functie(functie, id):
+    """Alleen functies met _ zijn valide"""
+
+    if type(functie) == list:
+        functional_errors.append('Multiple tag "functie" for Object id: {}'.format(id))
+        return get_functie(functie[0], id)
+    if functie.startswith('_'):
+        return functie.replace('_', '', 1)
+    return None
+
+
+def get_koppel_status(koppel_status):
+    if koppel_status == 'Conversie':
+        return 'Actueel'
+    return koppel_status
 
 
 def update_create_adress(monument, adress):
-    Situering.objects.create(
+    return Situering.objects.create(
         external_id=adress['Id'],
         monument=monument,
-        betreft='VerzendSleutel' in adress and convert_to_landelijk_id(
-            adress['VerzendSleutel'], '20') or None,
-        situering_nummeraanduiding='KoppelStatus' in adress and adress[
-            'KoppelStatus'] or None,
+        betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_verzendsleutel(
+            adress['VerzendSleutel']) or None,
+        situering_nummeraanduiding='KoppelStatus' in adress and get_koppel_status(adress[
+            'KoppelStatus']) or None,
         eerste_situering='KoppelEerste' in adress and
-                         adress['KoppelEerste'] == 'true' and 'Ja' or 'Nee',
+                         adress['KoppelEerste'] == 'true' and 'J' or 'N',
         huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
         huisletter='Huisletter' in adress and adress['Huisletter'] or None,
         huisnummertoevoeging='Toevoeging' in adress and adress[
@@ -133,40 +144,63 @@ def update_create_adress(monument, adress):
 
 
 def update_create_adresses(monument, adress):
+    main = None
     if type(adress) == list:
         for a in adress:
-            update_create_adress(monument, a)
+            situering = update_create_adress(monument, a)
+            if main is None or situering.eerste_situering == 'J':
+                main = situering
+
     else:
-        update_create_adress(monument, adress)
+        main = update_create_adress(monument, adress)
+    if main.eerste_situering == 'N':
+        msg = "Did not find an address labeled 'KoppelEerste = true' for Monument: {}".format(
+            monument.external_id)
+        functional_errors.append(msg)
+    return main
+
+
+def format_address(a):
+    straat = a.straat and a.straat or ''
+    huisnummer = a.huisnummer and ' ' + a.huisnummer or ''
+    huisletter = a.huisletter and ' ' + a.huisletter or ''
+    huisnummertoevoeging = a.huisnummertoevoeging and ' ' + a.huisnummertoevoeging or ''
+    return straat + huisnummer + huisletter + huisnummertoevoeging
 
 
 def update_create_monument(item, created_complex):
     monument = Monument.objects.create(
+        id=item['Id'],
         external_id=item['Id'],
-        aanwijzingsdatum=item.get('AanwijzingsDatum', None),
+        monument_aanwijzingsdatum=item.get('AanwijzingsDatum', None),
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
                    item['Afbeelding']['Id'] or None,
-        architect=item.get('Architect', None),
-        beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+        architect_ontwerp_monument=item.get('Architect', None),
+        beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
-        coordinaten='Punt' in item and get_coordinates(item['Punt']) or None,
-        functie=item.get('Functie', None),
-        geometrie=get_geometry(item),
+        monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
+        oorspronkelijke_functie_monument='Functie' in item and get_functie(item['Functie'], item['Id']) or None,
+        monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
-            item['Tag']) and 'Ja' or 'Nee',
+            item['Tag']) and 'J' or 'N',
         monumentnummer=item.get('Monumentnummer', None),
-        naam=item.get('Naam', None),
-        opdrachtgever=item.get('Opdrachtgever', None),
-        pand_sleutel='PandSleutel' in item and convert_to_landelijk_id(
-            item['PandSleutel'], '10') or None,
-        periode_start=item.get('PeriodeStart', None),
-        periode_eind=item.get('PeriodeEind', None),
-        redengevende_omschrijving=get_note(item, 'Tekst',
-                                           'Redengevende omschrijving',
-                                           'Vastgesteld'),
-        status=item.get('Status', None),
-        type=item.get('Type', None))
-    'Adres' in item and update_create_adresses(monument, item['Adres'])
+        monumentnaam=item.get('Naam', None),
+        display_naam=item.get('Naam', None),
+        opdrachtgever_bouw_monument=item.get('Opdrachtgever', None),
+        betreft_pand='PandSleutel' in item and convert_to_verzendsleutel(
+            item['PandSleutel']) or None,
+        bouwjaar_start_bouwperiode_monument=item.get('PeriodeStart', None),
+        bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),
+        redengevende_omschrijving_monument=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
+        monumentstatus=item.get('Status', None),
+        monumenttype=item.get('Type', None),
+        heeft_als_grondslag_beperking=item.get('WkpbInschrijfnummer', None))
+    if 'Adres' in item:
+        main_address = update_create_adresses(monument, item['Adres'])
+        if monument.display_naam is None:
+            monument.display_naam = format_address(main_address)
+            monument.save()
+
     return monument
 
 

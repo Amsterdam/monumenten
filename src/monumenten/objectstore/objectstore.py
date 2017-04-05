@@ -1,9 +1,9 @@
+import io
 import logging
 import os
 from functools import lru_cache
-from PIL import Image
-import io
 
+from PIL import Image
 from swiftclient.client import Connection
 
 log = logging.getLogger(__name__)
@@ -76,7 +76,8 @@ def copy_file_from_objectstore(file_name):
 
 def fetch_import_file_names():
     files = []
-    for file_object in get_full_container_list(container, prefix=import_folder):
+    for file_object in get_full_container_list(container,
+                                               prefix=import_folder):
         if file_object['content_type'] != 'application/directory':
             log.info("Found file {}".format(file_object['name']))
             files.append(file_object['name'])
@@ -84,5 +85,6 @@ def fetch_import_file_names():
 
 
 def get_image(file_name):
-    byte_array = get_conn().get_object(container, file_name)[1]
+    full_file_name = images_folder + '/' + file_name + '.jpg'
+    byte_array = get_conn().get_object(container, full_file_name)[1]
     return Image.open(io.BytesIO(byte_array))

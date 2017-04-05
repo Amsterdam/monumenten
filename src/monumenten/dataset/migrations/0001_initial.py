@@ -3,70 +3,85 @@
 from __future__ import unicode_literals
 
 import django.contrib.gis.db.models.fields
-from django.db import migrations, models
 import django.db.models.deletion
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-
     ]
 
+    # noinspection PyUnresolvedReferences
     operations = [
         migrations.CreateModel(
             name='Complex',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('external_id', models.CharField(db_index=True, max_length=36, null=True)),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
+                ('external_id',
+                 models.CharField(db_index=True, max_length=36, null=True)),
                 ('beschrijving', models.TextField(null=True)),
                 ('monumentnummer', models.IntegerField(null=True)),
                 ('complex_naam', models.CharField(max_length=255, null=True)),
-                ('status', models.CharField(max_length=128, null=True)),
+                ('complexstatus', models.CharField(max_length=128, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='Monument',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id', models.CharField(max_length=36, null=True)),
-                ('aanwijzingsdatum', models.DateField(null=True)),
-                ('architect', models.CharField(max_length=128, null=True)),
-                ('beperking', models.IntegerField(null=True)),
-                ('beschrijving', models.TextField(null=True)),
-                ('coordinaten', django.contrib.gis.db.models.fields.PointField(null=True, srid=28992)),
+                ('monument_aanwijzingsdatum', models.DateField(null=True)),
+                ('architect_ontwerp_monument', models.CharField(max_length=128, null=True)),
+                ('beschrijving_monument', models.TextField(null=True)),
+                ('monumentcoordinaten',
+                 django.contrib.gis.db.models.fields.PointField(null=True,
+                                                                srid=28992)),
                 ('afbeelding', models.CharField(max_length=36, null=True)),
-                ('functie', models.CharField(max_length=128, null=True)),
-                ('geometrie', django.contrib.gis.db.models.fields.GeometryCollectionField(null=True, srid=28992)),
+                ('oorspronkelijke_functie_monument', models.CharField(max_length=128, null=True)),
+                ('monumentgeometrie',
+                 django.contrib.gis.db.models.fields.GeometryCollectionField(
+                     null=True, srid=28992)),
                 ('in_onderzoek', models.CharField(max_length=3, null=True)),
                 ('monumentnummer', models.IntegerField(null=True)),
-                ('naam', models.CharField(max_length=255, null=True)),
-                ('opdrachtgever', models.CharField(max_length=128, null=True)),
-                ('pand_sleutel', models.CharField(max_length=16, null=True)),
-                ('periode_start', models.IntegerField(null=True)),
-                ('periode_eind', models.IntegerField(null=True)),
-                ('redengevende_omschrijving', models.TextField(null=True)),
-                ('status', models.CharField(max_length=128, null=True)),
-                ('type', models.CharField(max_length=128, null=True)),
-                ('complex', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='monumenten', to='dataset.Complex')),
+                ('monumentnaam', models.CharField(max_length=255, null=True)),
+                ('display_naam', models.CharField(max_length=255, null=True)),
+                ('opdrachtgever_bouw_monument', models.CharField(max_length=128, null=True)),
+                ('betreft_pand', models.CharField(max_length=16, null=True)),
+                ('heeft_als_grondslag_beperking', models.CharField(max_length=15, null=True)),
+                ('bouwjaar_start_bouwperiode_monument', models.IntegerField(null=True)),
+                ('bouwjaar_eind_bouwperiode_monument', models.IntegerField(null=True)),
+                ('redengevende_omschrijving_monument', models.TextField(null=True)),
+                ('monumentstatus', models.CharField(max_length=128, null=True)),
+                ('monumenttype', models.CharField(max_length=128, null=True)),
+                ('complex',
+                 models.ForeignKey(null=True,
+                                   on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='monumenten',
+                                   to='dataset.Complex')),
             ],
         ),
         migrations.CreateModel(
             name='Situering',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('external_id', models.CharField(max_length=36, null=True)),
-                ('betreft', models.CharField(max_length=16, null=True)),
-                ('situering_nummeraanduiding', models.CharField(max_length=128, null=True)),
+                ('betreft_nummeraanduiding', models.CharField(max_length=16, null=True)),
+                ('situering_nummeraanduiding',
+                 models.CharField(max_length=128, null=True)),
                 ('eerste_situering', models.CharField(max_length=3, null=True)),
                 ('huisnummer', models.IntegerField(null=True)),
                 ('huisletter', models.CharField(max_length=1, null=True)),
-                ('huisnummertoevoeging', models.CharField(max_length=4, null=True)),
+                ('huisnummertoevoeging',
+                 models.CharField(max_length=4, null=True)),
                 ('postcode', models.CharField(max_length=6, null=True)),
                 ('straat', models.CharField(max_length=80, null=True)),
-                ('monument', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='situeringen', to='dataset.Monument')),
+                ('monument',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='situeringen',
+                                   to='dataset.Monument')),
             ],
         ),
     ]
