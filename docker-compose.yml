@@ -16,11 +16,16 @@ services:
     links:
       - database
     environment:
-      - DATAPUNT_API_URL=${DATAPUNT_API_URL:-https://api.datapunt.amsterdam.nl/}
-      - SECRET_KEY=hoi
-      - DATABASE_NAME=monumenten
-      - DATABASE_USER=monumenten
-      - DATABASE_PASSWORD=insecure
-      - CULTUUR_OBJECTSTORE_PASSWORD=insecure
-      - CONSUL_HOST=${CONSUL_HOST:-notset}
-      - CONSUL_PORT=${CONSUL_PORT:-8500}
+      DATAPUNT_API_URL: "${DATAPUNT_API_URL:-https://api.datapunt.amsterdam.nl/}"
+      SECRET_KEY: hoi
+      DATABASE_NAME: monumenten
+      DATABASE_USER: monumenten
+      DATABASE_PASSWORD: insecure
+      CULTUUR_OBJECTSTORE_PASSWORD: insecure
+      CONSUL_HOST: "${CONSUL_HOST:-notset}"
+      CONSUL_PORT: "${CONSUL_PORT:-8500}"
+      UWSGI_HTTP: ":8080"
+      UWSGI_MODULE: "monumenten.wsgi"
+      UWSGI_CALLABLE: "application"
+      UWSGI_MASTER: 1
+      UWSGI_PROCESSES: 4
