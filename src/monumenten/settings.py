@@ -14,11 +14,7 @@ INSTALLED_APPS += [
     'monumenten.importer',
     'monumenten.health',
     'monumenten.objectstore',
-    'django.contrib.sites',
-
 ]
-
-SITE_ID = int(os.getenv('DJANGO_SITE_ID', '1'))
 
 ROOT_URLCONF = 'monumenten.urls'
 
