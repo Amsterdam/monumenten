@@ -9,7 +9,7 @@ API_DOMAIN = 'API Domain'
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dataset', '0001_initial'), ('sites', '0002_alter_domain_unique'),
+        ('dataset', '0001_initial')
     ]
 
     operations = [
