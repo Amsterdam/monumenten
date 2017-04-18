@@ -124,6 +124,7 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
 class SitueringSerializer(HALSerializer):
     _display = serializers.SerializerMethodField()
     betreft_nummeraanduiding = serializers.SerializerMethodField()
+    hoort_bij_monument = serializers.SerializerMethodField()
 
     filter_fields = ('monument_id')
 
@@ -133,7 +134,8 @@ class SitueringSerializer(HALSerializer):
                   'id',
                   'situering_nummeraanduiding',
                   'betreft_nummeraanduiding',
-                  'eerste_situering'
+                  'eerste_situering',
+                  'hoort_bij_monument'
                   ]
 
     def get_betreft_nummeraanduiding(self, obj):
@@ -142,6 +144,16 @@ class SitueringSerializer(HALSerializer):
                 self.context['request'].scheme,
                 self.context['request'].get_host(),
                 str(obj.betreft_nummeraanduiding))
+        else:
+            api_address = None
+        return {"href": api_address}
+
+    def get_hoort_bij_monument(self, obj):
+        if (obj.hoort_bij_monument):
+            api_address = '{}://{}/monumenten/monumenten/{}/'.format(
+                self.context['request'].scheme,
+                self.context['request'].get_host(),
+                str(obj.hoort_bij_monument))
         else:
             api_address = None
         return {"href": api_address}

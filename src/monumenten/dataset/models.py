@@ -65,6 +65,10 @@ class Situering(models.Model):
     eerste_situering: geeft aan welke situering de eerste is.
     adresgegevens.
     external_id: id conform AMISExport.xml
+    id: is automatisch en gebaseerd op een sequence. Deze id kan niet gebaseerd
+    worden op de external_id, want die is niet uniek. Ook de combinatie
+    monumenten-external-id en adress-external-id is niet uniek
+    in de aangeleverde data.
     """
     external_id = models.CharField(max_length=36, null=True)
 
@@ -79,6 +83,10 @@ class Situering(models.Model):
     straat = models.CharField(max_length=80, null=True)
 
     monument = models.ForeignKey(Monument, related_name='situeringen')
+
+    @property
+    def hoort_bij_monument(self):
+        return self.monument_id
 
     def __str__(self):
         return "Situering {}".format(self.id)

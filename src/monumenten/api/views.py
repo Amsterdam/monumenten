@@ -53,6 +53,7 @@ class MonumentViewSet(MonumentVS):
 
 class SitueringFilter(FilterSet):
     monument_id = filters.CharFilter()
+    id = filters.CharFilter()
 
     class Meta:
         model = Situering
