@@ -36,7 +36,6 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
                           'in_onderzoek',
                           'beschrijving_monument',
                           'redengevende_omschrijving_monument',
-                          'afbeelding',
                           'complex_beschrijving', ]
 
     OPENFIELDS_COMPLEX = ['id',
