@@ -31,4 +31,4 @@ fake-factory==0.7.2
 flake8==3.3.0
 openapi-codec==1.2.1
 xmltodict==0.10.2
-datapunt-authorization-django==0.2.6
+datapunt-authorization-django==0.2.7
