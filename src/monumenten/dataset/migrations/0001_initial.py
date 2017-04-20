@@ -65,8 +65,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Situering',
             fields=[
-                ('identificerende_sleutel_situering', models.AutoField(auto_created=True, primary_key=True,
-                                        serialize=False, verbose_name='ID')),
+                ('identificerende_sleutel_situering', models.AutoField(primary_key=True, serialize=False),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('betreft_nummeraanduiding', models.CharField(max_length=16, null=True)),
                 ('situering_nummeraanduiding',
