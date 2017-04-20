@@ -8,12 +8,12 @@ class Complex(models.Model):
     status: geeft [Rijksmomument, Gemeentelijk monument, Geen status] aan.
     external_id: id conform AMISExport.xml
     """
-    id = models.CharField(max_length=36, primary_key=True)
+    identificerende_sleutel_complex = models.CharField(max_length=36, primary_key=True)
     external_id = models.CharField(max_length=36, null=True, db_index=True)
 
-    beschrijving = models.TextField(null=True)
-    monumentnummer = models.IntegerField(null=True)
-    complex_naam = models.CharField(max_length=255, null=True)
+    beschrijving_complex = models.TextField(null=True)
+    monumentnummer_complex = models.IntegerField(null=True)
+    complexnaam = models.CharField(max_length=255, null=True)
     complexstatus = models.CharField(max_length=128, null=True)
 
     def __str__(self):
@@ -29,7 +29,7 @@ class Monument(models.Model):
     -- aanvulling op stelselpedia --
     external_id: id conform AMISExport.xml
     """
-    id = models.CharField(max_length=36, primary_key=True)
+    identificerende_sleutel_monument = models.CharField(max_length=36, primary_key=True)
     external_id = models.CharField(max_length=36, null=True)
 
     monument_aanwijzingsdatum = models.DateField(null=True)
@@ -70,6 +70,7 @@ class Situering(models.Model):
     monumenten-external-id en adress-external-id is niet uniek
     in de aangeleverde data.
     """
+    identificerende_sleutel_situering = models.AutoField(primary_key=True)
     external_id = models.CharField(max_length=36, null=True)
 
     betreft_nummeraanduiding = models.CharField(max_length=16, null=True)

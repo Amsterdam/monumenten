@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 SELECT
                   m.display_naam as display,
                   cast('monumenten/monument' as varchar(30)) as type,
-                  site.domain || 'monumenten/monumenten/' || m.id || '/' AS uri,
+                  site.domain || 'monumenten/monumenten/' || m.identificerende_sleutel_monument || '/' AS uri,
                   m.monumentcoordinaten AS geometrie
                 FROM
                   dataset_monument m , django_site site

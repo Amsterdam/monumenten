@@ -6,7 +6,7 @@ import json
 
 
 OPENFIELDS_MONUMENT = ['_links',
-                       'id',
+                       'identificerende_sleutel_monument',
                        'monumentnummer',
                        'monumentnaam',
                        'monumentstatus',
@@ -29,16 +29,16 @@ NON_OPENFIELDS_MONUMENT = ['architect_ontwerp_monument',
                            'in_onderzoek',
                            'beschrijving_monument',
                            'redengevende_omschrijving_monument',
-                           'complex_beschrijving',
+                           'beschrijving_complex',
                            ]
 
 OPENFIELDS_COMPLEX = ['_links',
-                      'id',
-                      'monumentnummer',
-                      'complex_naam',
+                      'identificerende_sleutel_complex',
+                      'monumentnummer_complex',
+                      'complexnaam',
                       ]
 
-NON_OPENFIELDS_COMPLEX = ['beschrijving']
+NON_OPENFIELDS_COMPLEX = ['beschrijving_complex']
 
 
 class Base(object):
@@ -57,14 +57,14 @@ class Base(object):
             }
         }
 
-    def dict_with__links_self_href_id(self, path, id):
+    def dict_with__links_self_href_id(self, path, id, id_name):
         return {
             "_links": {
                 "self": {
                     "href": self.href_url(path.format(id))
                 }
             },
-            "id": id
+            id_name: id
         }
 
     def dict_with_count_href(self, count, path):
@@ -82,7 +82,7 @@ class ComplexSerializerNonAuth(Base, HALSerializer):
         fields = OPENFIELDS_COMPLEX
 
     def get__links(self, obj):
-        return self.dict_with_self_href('/monumenten/complexen/{}/'.format(obj.id))
+        return self.dict_with_self_href('/monumenten/complexen/{}/'.format(obj.identificerende_sleutel_complex))
 
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
@@ -106,37 +106,43 @@ class MonumentSerializerNonAuth(Base, HALSerializer):
 
     def get_ligt_in_complex(self, obj):
         if obj.complex:
-            return self.dict_with__links_self_href_id('/monumenten/complexen/{}/', obj.complex.id)
+            return self.dict_with__links_self_href_id(path='/monumenten/complexen/{}/',
+                                                      id=obj.complex.identificerende_sleutel_complex,
+                                                      id_name='identificerende_sleutel_complex')
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
-        path = '/monumenten/situeringen/?monument_id={}'.format(str(obj.id))
+        path = '/monumenten/situeringen/?monument_id={}'.format(str(obj.identificerende_sleutel_monument))
         return self.dict_with_count_href(nr_of_situeringen, path)
 
     def get_betreft_pand(self, obj):
         if obj.betreft_pand:
-            return self.dict_with__links_self_href_id('/bag/pand/{}/', obj.betreft_pand)
+            return self.dict_with__links_self_href_id(path='/bag/pand/{}/',
+                                                      id=obj.betreft_pand,
+                                                      id_name='id')
 
     def get_heeft_als_grondslag_beperking(self, obj):
         if obj.heeft_als_grondslag_beperking:
-            return self.dict_with__links_self_href_id('/wkpb/beperking/{}/', obj.heeft_als_grondslag_beperking)
+            return self.dict_with__links_self_href_id(path='/wkpb/beperking/{}/',
+                                                      id=obj.heeft_als_grondslag_beperking,
+                                                      id_name='id')
 
     def get__links(self, obj):
-        return self.dict_with_self_href('/monumenten/monumenten/{}/'.format(obj.id))
+        return self.dict_with_self_href('/monumenten/monumenten/{}/'.format(obj.identificerende_sleutel_monument))
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
     monumentgeometrie = serializers.SerializerMethodField()
-    complex_beschrijving = serializers.SerializerMethodField()
+    beschrijving_complex = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
         fields = OPENFIELDS_MONUMENT + NON_OPENFIELDS_MONUMENT
 
     @staticmethod
-    def get_complex_beschrijving(obj):
+    def get_beschrijving_complex(obj):
         if obj.complex:
-            return str(obj.complex.beschrijving)
+            return str(obj.complex.beschrijving_complex)
 
     @staticmethod
     def get_monumentgeometrie(obj):
@@ -156,7 +162,7 @@ class SitueringSerializer(Base, HALSerializer):
         model = Situering
         fields = ['_links',
                   '_display',
-                  'id',
+                  'identificerende_sleutel_situering',
                   'situering_nummeraanduiding',
                   'betreft_nummeraanduiding',
                   'eerste_situering',
@@ -165,14 +171,18 @@ class SitueringSerializer(Base, HALSerializer):
 
     def get_betreft_nummeraanduiding(self, obj):
         if obj.betreft_nummeraanduiding:
-            return self.dict_with__links_self_href_id('/bag/nummeraanduiding/{}/', obj.betreft_nummeraanduiding)
+            return self.dict_with__links_self_href_id(path='/bag/nummeraanduiding/{}/',
+                                                      id=obj.betreft_nummeraanduiding,
+                                                      id_name='id')
 
     def get_hoort_bij_monument(self, obj):
         if obj.hoort_bij_monument:
-            return self.dict_with__links_self_href_id('/monumenten/monumenten/{}/', obj.hoort_bij_monument)
+            return self.dict_with__links_self_href_id(path='/monumenten/monumenten/{}/',
+                                                      id=obj.hoort_bij_monument,
+                                                      id_name='identificerende_sleutel_monument')
 
     def get__links(self, obj):
-        return self.dict_with_self_href('/monumenten/situeringen/{}/'.format(obj.id))
+        return self.dict_with_self_href('/monumenten/situeringen/{}/'.format(obj.identificerende_sleutel_situering))
 
     @staticmethod
     def get__display(obj):
