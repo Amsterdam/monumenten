@@ -5,7 +5,8 @@ from monumenten.dataset.models import Situering, Monument, Complex
 import json
 
 
-OPENFIELDS_MONUMENT = ['id',
+OPENFIELDS_MONUMENT = ['_links',
+                       'id',
                        'monumentnummer',
                        'monumentnaam',
                        'monumentstatus',
@@ -31,7 +32,8 @@ NON_OPENFIELDS_MONUMENT = ['architect_ontwerp_monument',
                            'complex_beschrijving',
                            ]
 
-OPENFIELDS_COMPLEX = ['id',
+OPENFIELDS_COMPLEX = ['_links',
+                      'id',
                       'monumentnummer',
                       'complex_naam',
                       ]
@@ -39,11 +41,48 @@ OPENFIELDS_COMPLEX = ['id',
 NON_OPENFIELDS_COMPLEX = ['beschrijving']
 
 
-class ComplexSerializerNonAuth(HALSerializer):
+class Base(object):
+
+    def href_url(self, path):
+        """Prepend scheme and hostname"""
+        base_url = '{}://{}'.format(
+            self.context['request'].scheme,
+            self.context['request'].get_host())
+        return base_url + path
+
+    def dict_with_self_href(self, path):
+        return {
+            "self": {
+                "href": self.href_url(path)
+            }
+        }
+
+    def dict_with__links_self_href_id(self, path, id):
+        return {
+            "_links": {
+                "self": {
+                    "href": self.href_url(path.format(id))
+                }
+            },
+            "id": id
+        }
+
+    def dict_with_count_href(self, count, path):
+        return {
+            "count": count,
+            "href": self.href_url(path)
+        }
+
+
+class ComplexSerializerNonAuth(Base, HALSerializer):
+    _links = serializers.SerializerMethodField()
 
     class Meta:
         model = Complex
         fields = OPENFIELDS_COMPLEX
+
+    def get__links(self, obj):
+        return self.dict_with_self_href('/monumenten/complexen/{}/'.format(obj.id))
 
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
@@ -53,8 +92,9 @@ class ComplexSerializerAuth(ComplexSerializerNonAuth):
         fields = OPENFIELDS_COMPLEX + NON_OPENFIELDS_COMPLEX
 
 
-class MonumentSerializerNonAuth(HALSerializer):
+class MonumentSerializerNonAuth(Base, HALSerializer):
 
+    _links = serializers.SerializerMethodField()
     ligt_in_complex = serializers.SerializerMethodField()
     betreft_pand = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
@@ -67,39 +107,25 @@ class MonumentSerializerNonAuth(HALSerializer):
     def get_ligt_in_complex(self, obj):
         if not obj.complex:
             return None
-        api_address = '{}://{}/monumenten/complexen/{}/'
-
-        return {"href": api_address.format(self.context['request'].scheme,
-                                           self.context['request'].get_host(),
-                                           str(obj.complex.id))}
+        return self.dict_with__links_self_href_id('/monumenten/complexen/{}/', obj.complex.id)
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
-        api_address = '{}://{}/monumenten/situeringen/?monument_id={}'
-        return {"count": nr_of_situeringen,
-                "href": api_address.format(self.context['request'].scheme,
-                                           self.context['request'].get_host(),
-                                           str(obj.id))}
+        path = '/monumenten/situeringen/?monument_id={}'.format(str(obj.id))
+        return self.dict_with_count_href(nr_of_situeringen, path)
 
     def get_betreft_pand(self, obj):
-        if (obj.betreft_pand):
-            api_address = '{}://{}/bag/pand/{}/'.format(
-                self.context['request'].scheme,
-                self.context['request'].get_host(),
-                str(obj.betreft_pand))
-        else:
-            api_address = None
-        return {"href": api_address}
+        if not obj.betreft_pand:
+            return None
+        return self.dict_with__links_self_href_id('/bag/pand/{}/', obj.betreft_pand)
 
     def get_heeft_als_grondslag_beperking(self, obj):
-        if (obj.heeft_als_grondslag_beperking):
-            api_address = '{}://{}/wkpb/beperking/{}/'.format(
-                self.context['request'].scheme,
-                self.context['request'].get_host(),
-                str(obj.heeft_als_grondslag_beperking))
-        else:
-            api_address = None
-        return {"href": api_address}
+        if not obj.heeft_als_grondslag_beperking:
+            return None
+        return self.dict_with__links_self_href_id('/wkpb/beperking/{}/', obj.heeft_als_grondslag_beperking)
+
+    def get__links(self, obj):
+        return self.dict_with_self_href('/monumenten/monumenten/{}/'.format(obj.id))
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
@@ -121,8 +147,9 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
             return json.loads(obj.monumentgeometrie.geojson)
 
 
-class SitueringSerializer(HALSerializer):
+class SitueringSerializer(Base, HALSerializer):
     _display = serializers.SerializerMethodField()
+    _links = serializers.SerializerMethodField()
     betreft_nummeraanduiding = serializers.SerializerMethodField()
     hoort_bij_monument = serializers.SerializerMethodField()
 
@@ -130,33 +157,27 @@ class SitueringSerializer(HALSerializer):
 
     class Meta:
         model = Situering
-        fields = ['_display',
+        fields = ['_links',
+                  '_display',
                   'id',
                   'situering_nummeraanduiding',
                   'betreft_nummeraanduiding',
                   'eerste_situering',
-                  'hoort_bij_monument'
+                  'hoort_bij_monument',
                   ]
 
     def get_betreft_nummeraanduiding(self, obj):
-        if (obj.betreft_nummeraanduiding):
-            api_address = '{}://{}/bag/nummeraanduiding/{}/'.format(
-                self.context['request'].scheme,
-                self.context['request'].get_host(),
-                str(obj.betreft_nummeraanduiding))
-        else:
-            api_address = None
-        return {"href": api_address}
+        if not obj.betreft_nummeraanduiding:
+            return None
+        return self.dict_with__links_self_href_id('/bag/nummeraanduiding/{}/', obj.betreft_nummeraanduiding)
 
     def get_hoort_bij_monument(self, obj):
-        if (obj.hoort_bij_monument):
-            api_address = '{}://{}/monumenten/monumenten/{}/'.format(
-                self.context['request'].scheme,
-                self.context['request'].get_host(),
-                str(obj.hoort_bij_monument))
-        else:
-            api_address = None
-        return {"href": api_address}
+        if not obj.hoort_bij_monument:
+            return None
+        return self.dict_with__links_self_href_id('/monumenten/monumenten/{}/', obj.hoort_bij_monument)
+
+    def get__links(self, obj):
+        return self.dict_with_self_href('/monumenten/situeringen/{}/'.format(obj.id))
 
     @staticmethod
     def get__display(obj):
