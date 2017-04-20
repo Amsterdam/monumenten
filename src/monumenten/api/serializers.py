@@ -105,9 +105,8 @@ class MonumentSerializerNonAuth(Base, HALSerializer):
         fields = OPENFIELDS_MONUMENT
 
     def get_ligt_in_complex(self, obj):
-        if not obj.complex:
-            return None
-        return self.dict_with__links_self_href_id('/monumenten/complexen/{}/', obj.complex.id)
+        if obj.complex:
+            return self.dict_with__links_self_href_id('/monumenten/complexen/{}/', obj.complex.id)
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
@@ -115,14 +114,12 @@ class MonumentSerializerNonAuth(Base, HALSerializer):
         return self.dict_with_count_href(nr_of_situeringen, path)
 
     def get_betreft_pand(self, obj):
-        if not obj.betreft_pand:
-            return None
-        return self.dict_with__links_self_href_id('/bag/pand/{}/', obj.betreft_pand)
+        if obj.betreft_pand:
+            return self.dict_with__links_self_href_id('/bag/pand/{}/', obj.betreft_pand)
 
     def get_heeft_als_grondslag_beperking(self, obj):
-        if not obj.heeft_als_grondslag_beperking:
-            return None
-        return self.dict_with__links_self_href_id('/wkpb/beperking/{}/', obj.heeft_als_grondslag_beperking)
+        if obj.heeft_als_grondslag_beperking:
+            return self.dict_with__links_self_href_id('/wkpb/beperking/{}/', obj.heeft_als_grondslag_beperking)
 
     def get__links(self, obj):
         return self.dict_with_self_href('/monumenten/monumenten/{}/'.format(obj.id))
@@ -167,14 +164,12 @@ class SitueringSerializer(Base, HALSerializer):
                   ]
 
     def get_betreft_nummeraanduiding(self, obj):
-        if not obj.betreft_nummeraanduiding:
-            return None
-        return self.dict_with__links_self_href_id('/bag/nummeraanduiding/{}/', obj.betreft_nummeraanduiding)
+        if obj.betreft_nummeraanduiding:
+            return self.dict_with__links_self_href_id('/bag/nummeraanduiding/{}/', obj.betreft_nummeraanduiding)
 
     def get_hoort_bij_monument(self, obj):
-        if not obj.hoort_bij_monument:
-            return None
-        return self.dict_with__links_self_href_id('/monumenten/monumenten/{}/', obj.hoort_bij_monument)
+        if obj.hoort_bij_monument:
+            return self.dict_with__links_self_href_id('/monumenten/monumenten/{}/', obj.hoort_bij_monument)
 
     def get__links(self, obj):
         return self.dict_with_self_href('/monumenten/situeringen/{}/'.format(obj.id))
