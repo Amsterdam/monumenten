@@ -22,14 +22,14 @@ class TestAPIEndpoints(APITestCase):
                         ('?betreft_pand=192048', 0),
                         ('?betreft_pand=bla', 0),
                         ('?nietbestaand=bla', '>'),
-                        ('0-0/', 'nr=11'))),
-        ('situeringen', (('2/', 'nr=6'),
+                        ('0-0/', 'nr=12'))),
+        ('situeringen', (('2/', 'nr=7'),
                          ('?monument_id=0-0', '>'),
                          ('?monument_id=nietbestaand', 0)
                          )),
         ('complexen',    (
                          ('', '3'),
-                         ('2/', 'nr=3'),
+                         ('2/', 'nr=4'),
                          ('?monumentnummer=8392183', 10),
                          ('?monumentnummer=nietbestaand', 0)
                          )),
