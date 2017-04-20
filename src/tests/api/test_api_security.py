@@ -14,7 +14,7 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
     Verifies that security in the API works correctly.
     """
 
-    OPENFIELDS_MONUMENT = ['id',
+    OPENFIELDS_MONUMENT = ['identificerende_sleutel_monument',
                       'monumentnummer',
                       'monumentnaam',
                       'monumentstatus',
@@ -36,20 +36,21 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
                           'in_onderzoek',
                           'beschrijving_monument',
                           'redengevende_omschrijving_monument',
-                          'complex_beschrijving', ]
-
-    OPENFIELDS_COMPLEX = ['id',
-                          'monumentnummer',
-                          'complex_naam',
+                         'beschrijving_complex',
                           ]
 
-    NON_OPENFIELDS_COMPLEX = ['beschrijving',]
+    OPENFIELDS_COMPLEX = ['identificerende_sleutel_complex',
+                          'monumentnummer_complex',
+                          'complexnaam',
+                          ]
+
+    NON_OPENFIELDS_COMPLEX = ['beschrijving_complex',]
 
     def setUp(self):
         create_testset()
 
     def test_security_monumenten(self):
-        url = '/monumenten/monumenten/{}/'.format(models.Monument.objects.all()[0].id)
+        url = '/monumenten/monumenten/{}/'.format(models.Monument.objects.all()[0].identificerende_sleutel_monument)
 
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
@@ -67,7 +68,7 @@ class TestAPIEndpoints(JWTMixin,APITestCase):
             self.assertTrue(f in fields_visible_by_public, 'Field should be visible by public: {}'.format(f))
 
     def test_security_complexen(self):
-        url = '/monumenten/complexen/{}/'.format(models.Complex.objects.all()[0].id)
+        url = '/monumenten/complexen/{}/'.format(models.Complex.objects.all()[0].identificerende_sleutel_complex)
 
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data

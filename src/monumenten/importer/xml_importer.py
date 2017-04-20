@@ -82,11 +82,11 @@ def update_create_complex(item):
                 'Unexpected elements Punt and/or Adres for Complex:' +
                 complex_id)
         return Complex.objects.create(
-            id=complex_id,
+            identificerende_sleutel_complex=complex_id,
             external_id=complex_id,
-            beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-            monumentnummer=item.get('Monumentnummer', None),
-            complex_naam=item.get('Naam', None),
+            beschrijving_complex=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            monumentnummer_complex=item.get('Monumentnummer', None),
+            complexnaam=item.get('Naam', None),
             complexstatus=item.get('Status', None)
         )
 
@@ -170,7 +170,7 @@ def format_address(a):
 
 def update_create_monument(item, created_complex):
     monument = Monument.objects.create(
-        id=item['Id'],
+        identificerende_sleutel_monument=item['Id'],
         external_id=item['Id'],
         monument_aanwijzingsdatum=item.get('AanwijzingsDatum', None),
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and

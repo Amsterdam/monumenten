@@ -16,7 +16,7 @@ class ComplexFilter(FilterSet):
 
     class Meta:
         model = Complex
-        fields = ('monumentnummer',)
+        fields = ('monumentnummer_complex',)
 
 
 class ComplexViewSet(MonumentVS):

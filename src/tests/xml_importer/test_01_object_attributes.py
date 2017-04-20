@@ -103,28 +103,28 @@ class TestObjectStore(TestCase):
         self.assertEqual(adresses[0].straat, 'Straatje', 'Adres straat')
 
         # Identificerende sleutel monument
-        self.assertIsNotNone(monument.id, 'Id')
-        self.assertEqual('d5cc6402-d211-4981-b965-08a559837218', monument.id, 'Id')
+        self.assertIsNotNone(monument.identificerende_sleutel_monument, 'Id')
+        self.assertEqual('d5cc6402-d211-4981-b965-08a559837218', monument.identificerende_sleutel_monument, 'Id')
 
         # Identificerende sleutel complex
-        self.assertIsNotNone(monument.id, 'Complex Id')
-        self.assertEqual('9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', complex.id, 'Id')
+        self.assertIsNotNone(complex.identificerende_sleutel_complex, 'Complex Id')
+        self.assertEqual('9d278d0d-c5c0-4c8d-9f4e-081d7706b42e', complex.identificerende_sleutel_complex, 'Id')
 
         # Identificerende sleutel situering
-        adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.id)
-        self.assertIsNotNone(adresses[0].id, 'Adres id')
+        adresses = sorted(list(monument.situeringen.all()), key=lambda s: s.identificerende_sleutel_situering)
+        self.assertIsNotNone(adresses[0].identificerende_sleutel_situering, 'Adres id')
 
         # Identificerende sleutel complex complex
-        self.assertIsNotNone(complex.id, 'Complex id')
+        self.assertIsNotNone(complex.identificerende_sleutel_complex, 'Complex id')
 
         # Monumentnummer complex
-        self.assertEqual(complex.monumentnummer, 518301, 'Complex nummer')
+        self.assertEqual(complex.monumentnummer_complex, 518301, 'Complex nummer')
 
         # Complexnaam
-        self.assertEqual(complex.complex_naam, 'Complex1999', 'Complex naam')
+        self.assertEqual(complex.complexnaam, 'Complex1999', 'Complex naam')
 
         # Beschrijving complex
-        self.assertEqual(complex.beschrijving, 'Notitie4', 'Complex beschrijving')
+        self.assertEqual(complex.beschrijving_complex, 'Notitie4', 'Complex beschrijving')
 
         # Status complex - NOOT: staat niet in stelselpedia
         self.assertEqual(complex.complexstatus, 'Rijksmonument', 'Complex status')

@@ -18,19 +18,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Complex',
             fields=[
-                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
+                ('identificerende_sleutel_complex', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id',
                  models.CharField(db_index=True, max_length=36, null=True)),
-                ('beschrijving', models.TextField(null=True)),
-                ('monumentnummer', models.IntegerField(null=True)),
-                ('complex_naam', models.CharField(max_length=255, null=True)),
+                ('beschrijving_complex', models.TextField(null=True)),
+                ('monumentnummer_complex', models.IntegerField(null=True)),
+                ('complexnaam', models.CharField(max_length=255, null=True)),
                 ('complexstatus', models.CharField(max_length=128, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='Monument',
             fields=[
-                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
+                ('identificerende_sleutel_monument', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('monument_aanwijzingsdatum', models.DateField(null=True)),
                 ('architect_ontwerp_monument', models.CharField(max_length=128, null=True)),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Situering',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True,
+                ('identificerende_sleutel_situering', models.AutoField(auto_created=True, primary_key=True,
                                         serialize=False, verbose_name='ID')),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('betreft_nummeraanduiding', models.CharField(max_length=16, null=True)),

@@ -19,12 +19,12 @@ def create_testset(nr=10):
     point = Point(121944.32, 487722.88)
 
     for n0 in range(nr):
-        complex = ComplexFactory(id=n0, monumentnummer=8392183)
+        complex = ComplexFactory(identificerende_sleutel_complex=n0, monumentnummer_complex=8392183)
         for n1 in range(5):
             id = str(n0) + '-' + str(n1)
             monument = MonumentenDataFactory(complex=complex,
                                              monumentcoordinaten=point,
-                                             id=id)
+                                             identificerende_sleutel_monument=id)
             for n2 in range(5):
                 SitueringFactory(monument=monument)
 
@@ -78,7 +78,7 @@ class ComplexFactory(factory.DjangoModelFactory):
         model = models.Complex
     external_id = fuzzy.FuzzyText(length=36)
 
-    beschrijving = fuzzy.FuzzyText()
-    monumentnummer = factory.sequence(lambda n: n)
-    complex_naam = fuzzy.FuzzyText(length=255)
+    beschrijving_complex = fuzzy.FuzzyText()
+    monumentnummer_complex = factory.sequence(lambda n: n)
+    complexnaam = fuzzy.FuzzyText(length=255)
     complexstatus = fuzzy.FuzzyText(length=128)

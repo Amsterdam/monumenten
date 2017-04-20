@@ -30,8 +30,8 @@ class TestAPIEndpoints(APITestCase):
         ('complexen',    (
                          ('', '3'),
                          ('2/', 'nr=4'),
-                         ('?monumentnummer=8392183', 10),
-                         ('?monumentnummer=nietbestaand', 0)
+                         ('?monumentnummer_complex=8392183', 10),
+                         ('?monumentnummer_complex=nietbestaand', 0)
                          )),
     ]
 
