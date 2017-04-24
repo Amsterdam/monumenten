@@ -11,7 +11,7 @@ services:
     links:
       - database
     environment:
-      CULTUUR_OBJECTSTORE_PASSWORD:
+      CULTUUR_OBJECTSTORE_PASSWORD: ${CULTUUR_OBJECTSTORE_PASSWORD}
       DATABASE_NAME: monumenten
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure

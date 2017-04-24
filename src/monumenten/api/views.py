@@ -5,16 +5,34 @@
 from authorization_django import levels as authorization_levels
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
-from django.http import HttpResponse
 
 from monumenten.api import serializers
-from monumenten.dataset.models import Monument, Situering
+from monumenten.dataset.models import Monument, Situering, Complex
 from .rest import MonumentVS
-from monumenten.objectstore import objectstore
+
+
+class ComplexFilter(FilterSet):
+    id = filters.CharFilter()
+
+    class Meta:
+        model = Complex
+        fields = ('monumentnummer_complex',)
+
+
+class ComplexViewSet(MonumentVS):
+    serializer_detail_class = serializers.ComplexSerializerNonAuth
+    queryset = Complex.objects.all()
+    filter_class = ComplexFilter
+
+    def get_serializer_class(self):
+        if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
+            return serializers.ComplexSerializerAuth
+        else:
+            return serializers.ComplexSerializerNonAuth
 
 
 class MonumentFilter(FilterSet):
-    monument_id = filters.NumberFilter()
+    id = filters.CharFilter()
 
     class Meta:
         model = Monument
@@ -34,7 +52,8 @@ class MonumentViewSet(MonumentVS):
 
 
 class SitueringFilter(FilterSet):
-    monument_id = filters.NumberFilter()
+    monument_id = filters.CharFilter()
+    id = filters.CharFilter()
 
     class Meta:
         model = Situering
@@ -51,12 +70,3 @@ class SitueringList(MonumentVS):
     serializer_class = serializers.SitueringSerializer
     filter_class = SitueringFilter
     queryset_detail = (Situering.objects.all())
-
-
-def afbeelding_view(request, id):
-    if not request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
-        return HttpResponse('Unauthorized', status=401)
-    response = HttpResponse(content_type="image/jpeg")
-    image = objectstore.get_image(id)
-    image.save(response, "JPEG")
-    return response

@@ -18,10 +18,7 @@ RUN apt-get update \
 		netcat \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& adduser --system datapunt \
-	&& mkdir -p /static \
-	&& chown datapunt /static \
-	&& pip install uwsgi
+	&& adduser --system datapunt
 
 WORKDIR /app
 
@@ -36,5 +33,5 @@ USER datapunt
 
 RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
 
-CMD ["/app/docker-run.sh"]
+CMD uwsgi
 
