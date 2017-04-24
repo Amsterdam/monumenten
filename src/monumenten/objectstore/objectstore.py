@@ -3,7 +3,6 @@ import logging
 import os
 from functools import lru_cache
 
-from PIL import Image
 from swiftclient.client import Connection
 
 log = logging.getLogger(__name__)
@@ -82,9 +81,3 @@ def fetch_import_file_names():
             log.info("Found file {}".format(file_object['name']))
             files.append(file_object['name'])
     return files
-
-
-def get_image(file_name):
-    full_file_name = images_folder + '/' + file_name + '.jpg'
-    byte_array = get_conn().get_object(container, full_file_name)[1]
-    return Image.open(io.BytesIO(byte_array))
