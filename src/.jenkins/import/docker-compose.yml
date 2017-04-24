@@ -38,7 +38,6 @@ services:
                           -t dataset* \
                           -t geo*  \
                           -t django_migrations  \
-                          -t django_site \
                           -T auth*    \
                           -U monumenten \
                           -h db -p 5432 \

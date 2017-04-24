@@ -96,6 +96,6 @@ SWAGGER_SETTINGS = {
 HEALTH_MODEL = 'dataset.Monument'
 
 DATAPUNT_AUTHZ = {
-    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY'),
+    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY', 'insecureeeeeeeeeeeeeeeeeeeeeeeeeee'),
     'JWT_ALGORITHM': "HS256"
 }

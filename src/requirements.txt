@@ -1,4 +1,4 @@
-Django==1.10.2
+Django==1.11
 Markdown==2.6.7
 PyYAML==3.12
 click==6.6
@@ -20,7 +20,7 @@ sqlparse==0.2.2
 uritemplate==3.0.0
 urllib3==1.18.1
 python_swiftclient==3.2.0
-Pillow==3.4.2
+# Pillow==3.4.2
 python-keystoneclient==3.8.0
 dateutils==0.6.6
 python-dateutil==2.6.0

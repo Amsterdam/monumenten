@@ -6,11 +6,8 @@ from django.contrib.gis.geos import Point
 from factory import fuzzy
 from monumenten.dataset import models
 
-JANEE = 'ja'
-
 
 def gen_janee():
-    global JANEE
     JANEE = 'nee'
     return JANEE
 
@@ -19,18 +16,20 @@ def create_testset(nr=10):
     point = Point(121944.32, 487722.88)
 
     for n0 in range(nr):
-        complex = ComplexFactory(identificerende_sleutel_complex=n0, monumentnummer_complex=8392183)
+        _complex = ComplexFactory(id=n0, monumentnummer_complex=8392183)
         for n1 in range(5):
-            id = str(n0) + '-' + str(n1)
-            monument = MonumentenDataFactory(complex=complex,
-                                             monumentcoordinaten=point,
-                                             identificerende_sleutel_monument=id)
-            for n2 in range(5):
+            pk = str(n0) + '-' + str(n1)
+            monument = MonumentenDataFactory(
+                complex=_complex,
+                monumentcoordinaten=point,
+                id=pk)
+
+            for _ in range(5):
                 SitueringFactory(monument=monument)
 
 
 class SitueringFactory(factory.DjangoModelFactory):
-    class Meta:
+    class Meta(object):
         model = models.Situering
 
     betreft_nummeraanduiding = fuzzy.FuzzyInteger(low=0)
@@ -47,7 +46,7 @@ class SitueringFactory(factory.DjangoModelFactory):
 
 
 class MonumentenDataFactory(factory.DjangoModelFactory):
-    class Meta:
+    class Meta(object):
         model = models.Monument
 
     if random.randint(0, 50) % 3 == 0:  # one in 3 is filled
@@ -74,7 +73,7 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
 
 
 class ComplexFactory(factory.DjangoModelFactory):
-    class Meta:
+    class Meta(object):
         model = models.Complex
     external_id = fuzzy.FuzzyText(length=36)
 

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Complex',
             fields=[
-                ('identificerende_sleutel_complex', models.CharField(max_length=36, primary_key=True, serialize=False)),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id',
                  models.CharField(db_index=True, max_length=36, null=True)),
                 ('beschrijving_complex', models.TextField(null=True)),
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Monument',
             fields=[
-                ('identificerende_sleutel_monument', models.CharField(max_length=36, primary_key=True, serialize=False)),
+                ('id', models.CharField(max_length=36, primary_key=True, serialize=False)),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('monument_aanwijzingsdatum', models.DateField(null=True)),
                 ('architect_ontwerp_monument', models.CharField(max_length=128, null=True)),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Situering',
             fields=[
-                ('identificerende_sleutel_situering', models.AutoField(primary_key=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('external_id', models.CharField(max_length=36, null=True)),
                 ('betreft_nummeraanduiding', models.CharField(max_length=16, null=True)),
                 ('situering_nummeraanduiding',
