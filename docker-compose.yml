@@ -17,7 +17,7 @@ services:
       - database
     environment:
       - DATAPUNT_API_URL=${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
-      - SECRET_KEY=hoi
+      - SECRET_KEY=insecure
       - DATABASE_NAME=monumenten
       - DATABASE_USER=monumenten
       - DATABASE_PASSWORD=insecure

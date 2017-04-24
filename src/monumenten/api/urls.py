@@ -18,22 +18,21 @@ from rest_framework import routers
 from monumenten.api import views as api_views
 
 
+class MonumentenView(routers.APIRootView):
+    """
+    De monumenten in de stad worden hier als een lijst getoond.
+
+    - monumenten
+    - situeringen
+    - complexen
+
+    TODO meer uit leg nodig.
+         link naar stelselpedia
+    """
+
+
 class MonumentenRouter(routers.DefaultRouter):
-    """
-    De monumenten in de stad worden hier als een lijst getoond. Ze zijn
-    tevens op te vragen vanuit Atlas
-    """
-
-    def get_api_root_view(self, **kwargs):
-        # noinspection PyCompatibility
-        view = super().get_api_root_view(**kwargs)
-        cls = view.cls
-
-        class Monumenten(cls):
-            pass
-
-        Monumenten.__doc__ = self.__doc__
-        return Monumenten.as_view()
+    APIRootView = MonumentenView
 
 
 monumenten = MonumentenRouter()
@@ -46,4 +45,3 @@ monumenten.register(r'complexen', api_views.ComplexViewSet,
                     base_name='complexen')
 
 urls = monumenten.urls
-
