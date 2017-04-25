@@ -74,3 +74,14 @@ class DatapuntViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     renderer_classes = DEFAULT_RENDERERS
     pagination_class = HALPagination
     filter_backends = (filters.DjangoFilterBackend,)
+
+
+class DisplayField(serializers.Field):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['source'] = '*'
+        kwargs['read_only'] = True
+        super().__init__(*args, **kwargs)
+
+    def to_representation(self, value):
+        return str(value)

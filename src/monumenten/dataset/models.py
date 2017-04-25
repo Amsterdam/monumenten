@@ -37,7 +37,8 @@ class Monument(models.Model):
     beschrijving_monument = models.TextField(null=True)
     monumentcoordinaten = models.PointField(null=True, srid=28992)
     afbeelding = models.CharField(max_length=36, null=True)
-    oorspronkelijke_functie_monument = models.CharField(max_length=128, null=True)
+    oorspronkelijke_functie_monument = models.CharField(
+        max_length=128, null=True)
     monumentgeometrie = models.GeometryCollectionField(null=True, srid=28992)
     in_onderzoek = models.CharField(max_length=3, null=True)
     monumentnummer = models.IntegerField(null=True)
@@ -55,6 +56,12 @@ class Monument(models.Model):
     complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
 
     def __str__(self):
+        if self.display_naam:
+            return self.display_naam
+        if self.monumentnummer:
+            return str(self.monumentnummer)
+        if self.situeringen:
+            return repr(self.situeringen.first())
         return "Monument {}".format(self.id)
 
 
@@ -90,4 +97,24 @@ class Situering(models.Model):
         return self.monument_id
 
     def __str__(self):
-        return "Situering {}".format(self.id)
+        """
+        Gekopieerd vanuit BAG, straat voor toegevoegd
+
+        :return: displayfield met adres
+        """
+        toevoegingen = [self.straat]
+
+        toevoeging = self.huisnummertoevoeging
+
+        if self.huisnummer:
+            toevoegingen.append(str(self.huisnummer))
+
+        if self.huisletter:
+            toevoegingen.append(str(self.huisletter))
+
+        if toevoeging:
+            tv = str(toevoeging)
+            split_tv = " ".join([c for c in tv])
+            toevoegingen.append(split_tv)
+
+        return ' '.join(toevoegingen)

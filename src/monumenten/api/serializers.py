@@ -2,6 +2,7 @@ import json
 from rest_framework import serializers
 
 from monumenten.api.rest import HALSerializer
+from monumenten.api.rest import DisplayField
 from monumenten.dataset.models import Situering, Monument, Complex
 
 
@@ -100,7 +101,7 @@ class ComplexSerializerAuth(ComplexSerializerNonAuth):
 class MonumentSerializerNonAuth(Base, HALSerializer):
 
     _links = serializers.SerializerMethodField()
-    _display = serializers.SerializerMethodField()
+    _display = DisplayField()
     ligt_in_complex = serializers.SerializerMethodField()
     betreft_pand = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
@@ -109,9 +110,6 @@ class MonumentSerializerNonAuth(Base, HALSerializer):
     class Meta(object):
         model = Monument
         fields = OPENFIELDS_MONUMENT
-
-    def get__display(self, obj):
-        return obj.display_naam
 
     def get_ligt_in_complex(self, obj):
         if obj.complex:
@@ -166,7 +164,7 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
 
 class SitueringSerializer(Base, HALSerializer):
 
-    _display = serializers.SerializerMethodField()
+    _display = DisplayField()
 
     _links = serializers.SerializerMethodField()
     betreft_nummeraanduiding = serializers.SerializerMethodField()
@@ -202,30 +200,4 @@ class SitueringSerializer(Base, HALSerializer):
 
     def get__links(self, obj):
         return self.dict_with_self_href(
-            '/monumenten/situeringen/{}/'.format(
-                obj.id))
-
-    @staticmethod
-    def get__display(obj):
-        """
-        Gekopieerd vanuit BAG, straat voor toegevoegd
-
-        :param obj:
-        :return: displayfield met adres
-        """
-        toevoegingen = [obj.straat]
-
-        toevoeging = obj.huisnummertoevoeging
-
-        if obj.huisnummer:
-            toevoegingen.append(str(obj.huisnummer))
-
-        if obj.huisletter:
-            toevoegingen.append(str(obj.huisletter))
-
-        if toevoeging:
-            tv = str(toevoeging)
-            split_tv = " ".join([c for c in tv])
-            toevoegingen.append(split_tv)
-
-        return ' '.join(toevoegingen)
+            '/monumenten/situeringen/{}/'.format(obj.id))
