@@ -8,18 +8,18 @@ from django_filters.rest_framework import filters
 
 from monumenten.api import serializers
 from monumenten.dataset.models import Monument, Situering, Complex
-from .rest import MonumentVS
+from .rest import DatapuntViewSet
 
 
 class ComplexFilter(FilterSet):
     id = filters.CharFilter()
 
-    class Meta:
+    class Meta(object):
         model = Complex
         fields = ('monumentnummer_complex',)
 
 
-class ComplexViewSet(MonumentVS):
+class ComplexViewSet(DatapuntViewSet):
     serializer_detail_class = serializers.ComplexSerializerNonAuth
     queryset = Complex.objects.all()
     filter_class = ComplexFilter
@@ -27,19 +27,18 @@ class ComplexViewSet(MonumentVS):
     def get_serializer_class(self):
         if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
             return serializers.ComplexSerializerAuth
-        else:
-            return serializers.ComplexSerializerNonAuth
+        return serializers.ComplexSerializerNonAuth
 
 
 class MonumentFilter(FilterSet):
     id = filters.CharFilter()
 
-    class Meta:
+    class Meta(object):
         model = Monument
         fields = ('betreft_pand',)
 
 
-class MonumentViewSet(MonumentVS):
+class MonumentViewSet(DatapuntViewSet):
     serializer_detail_class = serializers.MonumentSerializerNonAuth
     queryset = Monument.objects.select_related('complex')
     filter_class = MonumentFilter
@@ -47,20 +46,19 @@ class MonumentViewSet(MonumentVS):
     def get_serializer_class(self):
         if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
             return serializers.MonumentSerializerAuth
-        else:
-            return serializers.MonumentSerializerNonAuth
+        return serializers.MonumentSerializerNonAuth
 
 
 class SitueringFilter(FilterSet):
     monument_id = filters.CharFilter()
     id = filters.CharFilter()
 
-    class Meta:
+    class Meta(object):
         model = Situering
         fields = ('monument_id',)
 
 
-class SitueringList(MonumentVS):
+class SitueringList(DatapuntViewSet):
     """
     De situering van een monument. Dit is ten opzichte van andere objecten in
     de openbare ruimte
