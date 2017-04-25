@@ -10,6 +10,10 @@ log = logging.getLogger(__name__)
 class TestAPIEndpoints(APITestCase):
     """
     Verifies that browsing the API works correctly.
+
+
+    # point = Point(121944.32, 487722.88)
+    #               52.37638, 4.90177
     """
 
     reverse_list_urls = [
@@ -25,7 +29,13 @@ class TestAPIEndpoints(APITestCase):
             ('?betreft_pand=192048', 0),
             ('?betreft_pand=bla', 0),
             ('?nietbestaand=bla', '>'),
-            ('0-0/', 'nr=12'))),
+            ('0-0/', 'nr=12'),
+            ('?locatie=121944.32,487722.88,10', 50),
+            ('?locatie=52.37638,4.90177,10', 50),
+            # location far away should show up nothing
+            ('?locatie=121144.32,487722.88,10', 0),
+            ('?locatie=52.39638,4.90177,10', 0)
+        )),
 
         ('situeringen', (
             ('2/', 'nr=7'),
@@ -101,7 +111,6 @@ class TestAPIEndpoints(APITestCase):
         for url, arguments in self.detail_urls:
             for args, nr_of_rows in arguments:
                 get_url = '/monumenten/{}/{}'.format(url, args)
-                log.debug(
-                    "test {}".format(get_url))
+                log.debug("test %s", get_url)
                 response = self.client.get(get_url)
                 self.valid_response(url, response, nr_of_rows)
