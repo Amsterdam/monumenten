@@ -14,6 +14,11 @@ trap 'dc kill ; dc rm -f' EXIT
 rm -rf ${DIR}/backups
 mkdir -p ${DIR}/backups
 
+
 dc build
+
+dc exec -T database update-table.sh bag bag_pand public monumenten
+dc exec -T database update-table.sh bag bag_nummeraanduiding public monumenten
+
 dc run --rm importer
 dc run --rm db-backup

@@ -123,7 +123,7 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
             return self.dict_with__links_self_href_id(
                 path='/monumenten/complexen/{}/',
                 id=obj.complex.id,
-                id_name='id')
+                id_name='identificerende_sleutel_complex')
 
     def get_heeft_situeringen(self, obj):
         nr_of_situeringen = obj.situeringen.count()
@@ -135,7 +135,7 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
         if obj.betreft_pand:
             return self.dict_with__links_self_href_id(path='/bag/pand/{}/',
                                                       id=obj.betreft_pand,
-                                                      id_name='id')
+                                                      id_name='pandidentificatie')
 
     def get_heeft_als_grondslag_beperking(self, obj):
         if obj.heeft_als_grondslag_beperking:
@@ -200,14 +200,14 @@ class SitueringSerializer(BaseSerializer, HALSerializer):
             return self.dict_with__links_self_href_id(
                 path='/bag/nummeraanduiding/{}/',
                 id=obj.betreft_nummeraanduiding,
-                id_name='id')
+                id_name='nummeraanduidingidentificatie')
 
     def get_hoort_bij_monument(self, obj):
         if obj.hoort_bij_monument:
             return self.dict_with__links_self_href_id(
                 path='/monumenten/monumenten/{}/',
                 id=obj.hoort_bij_monument,
-                id_name='id')
+                id_name='identificerende_sleutel_monument')
 
     def get__links(self, obj):
         return self.dict_with_self_href(
