@@ -40,6 +40,7 @@ class TestAPIEndpoints(APITestCase):
         ('situeringen', (
             ('2/', 'nr=7'),
             ('?monument_id=0-0', '>'),
+            ('?betrefte_nummeraanduiding=12345678', '>'),
             ('?monument_id=nietbestaand', 0)
         )),
 

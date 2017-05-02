@@ -15,7 +15,7 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
     """
 
     OPENFIELDS_MONUMENT = [
-        'id',
+        'identificerende_sleutel_monument',
         'monumentnummer',
         'monumentnaam',
         'monumentstatus',
@@ -42,7 +42,7 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
     ]
 
     OPENFIELDS_COMPLEX = [
-        'id',
+        'identificerende_sleutel_complex',
         'monumentnummer_complex',
         'complexnaam',
     ]

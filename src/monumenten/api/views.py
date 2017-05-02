@@ -111,11 +111,12 @@ class MonumentViewSet(DatapuntViewSet):
 
 class SitueringFilter(FilterSet):
     monument_id = filters.CharFilter()
+    betreft_nummeraanduiding = filters.CharFilter()
     id = filters.CharFilter()
 
     class Meta(object):
         model = Situering
-        fields = ('monument_id')
+        fields = ('monument_id', 'betreft_nummeraanduiding')
 
 
 class SitueringList(DatapuntViewSet):
