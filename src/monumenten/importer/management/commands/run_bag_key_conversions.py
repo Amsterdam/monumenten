@@ -15,6 +15,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("Run bag key conversions.")
 
-        bag_key_conversions.convert_monumenten()
+        bag_key_conversions.update_landelijk_id_nummeraanduiding()
 
-        bag_key_conversions.convert_situeringen()
+        bag_key_conversions.update_landelijk_id_pand()
