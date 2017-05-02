@@ -8,7 +8,7 @@ from monumenten.dataset.models import Situering, Monument, Complex
 
 OPENFIELDS_MONUMENT = [
     '_links',
-    'id',
+    'identificerende_sleutel_monument',
     'monumentnummer',
     'monumentnaam',
     'monumentstatus',
@@ -37,7 +37,7 @@ NON_OPENFIELDS_MONUMENT = [
 
 OPENFIELDS_COMPLEX = [
     '_links',
-    'id',
+    'identificerende_sleutel_complex',
     'monumentnummer_complex',
     'complexnaam',
 ]
@@ -45,8 +45,7 @@ OPENFIELDS_COMPLEX = [
 NON_OPENFIELDS_COMPLEX = ['beschrijving_complex']
 
 
-class Base(object):
-    """WTF?"""
+class BaseSerializer(object):
 
     def href_url(self, path):
         """Prepend scheme and hostname"""
@@ -79,8 +78,9 @@ class Base(object):
         }
 
 
-class ComplexSerializerNonAuth(Base, HALSerializer):
+class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
     _links = serializers.SerializerMethodField()
+    identificerende_sleutel_complex = serializers.SerializerMethodField()
 
     class Meta(object):
         model = Complex
@@ -90,6 +90,8 @@ class ComplexSerializerNonAuth(Base, HALSerializer):
         return self.dict_with_self_href(
             '/monumenten/complexen/{}/'.format(obj.id))
 
+    def get_identificerende_sleutel_complex(self, obj):
+        return obj.id
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
 
@@ -98,7 +100,7 @@ class ComplexSerializerAuth(ComplexSerializerNonAuth):
         fields = OPENFIELDS_COMPLEX + NON_OPENFIELDS_COMPLEX
 
 
-class MonumentSerializerNonAuth(Base, HALSerializer):
+class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
 
     _links = serializers.SerializerMethodField()
     _display = DisplayField()
@@ -106,10 +108,14 @@ class MonumentSerializerNonAuth(Base, HALSerializer):
     betreft_pand = serializers.SerializerMethodField()
     heeft_situeringen = serializers.SerializerMethodField()
     heeft_als_grondslag_beperking = serializers.SerializerMethodField()
+    identificerende_sleutel_monument = serializers.SerializerMethodField()
 
     class Meta(object):
         model = Monument
         fields = OPENFIELDS_MONUMENT
+
+    def get_identificerende_sleutel_monument(self, obj):
+        return obj.id
 
     def get_ligt_in_complex(self, obj):
         if obj.complex:
@@ -162,13 +168,14 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
             return json.loads(obj.monumentgeometrie.geojson)
 
 
-class SitueringSerializer(Base, HALSerializer):
+class SitueringSerializer(BaseSerializer, HALSerializer):
 
     _display = DisplayField()
 
     _links = serializers.SerializerMethodField()
     betreft_nummeraanduiding = serializers.SerializerMethodField()
     hoort_bij_monument = serializers.SerializerMethodField()
+    identificerende_sleutel_situering = serializers.SerializerMethodField()
 
     filter_fields = ('monument_id')
 
@@ -177,12 +184,15 @@ class SitueringSerializer(Base, HALSerializer):
         fields = [
             '_links',
             '_display',
-            'id',
+            'identificerende_sleutel_situering',
             'situering_nummeraanduiding',
             'betreft_nummeraanduiding',
             'eerste_situering',
             'hoort_bij_monument',
         ]
+
+    def get_identificerende_sleutel_situering(self, obj):
+        return obj.id
 
     def get_betreft_nummeraanduiding(self, obj):
         if obj.betreft_nummeraanduiding:
