@@ -1,5 +1,5 @@
 FROM amsterdam/docker_python:latest
-MAINTAINER datapunt.ois@amsterdam.nl
+MAINTAINER datapunt@amsterdam.nl
 
 ENV PYTHONUNBUFFERED 1
 ENV CONSUL_HOST=${CONSUL_HOST:-notset}
@@ -11,8 +11,7 @@ ENV JWT_SHARED_SECRET_KEY=${JWT_SHARED_SECRET_KEY}
 
 EXPOSE 8000
 
-RUN apt-get update \
-	&& apt-get install -y \
+RUN apt-get install -y \
 		gdal-bin \
 		libgeos-dev \
 		netcat \
