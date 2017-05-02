@@ -93,6 +93,7 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
     def get_identificerende_sleutel_complex(self, obj):
         return obj.id
 
+
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
 
     class Meta(object):

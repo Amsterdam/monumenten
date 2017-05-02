@@ -115,7 +115,7 @@ class SitueringFilter(FilterSet):
 
     class Meta(object):
         model = Situering
-        fields = ('monument_id',)
+        fields = ('monument_id')
 
 
 class SitueringList(DatapuntViewSet):
