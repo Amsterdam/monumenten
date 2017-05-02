@@ -17,6 +17,7 @@ mkdir -p ${DIR}/backups
 
 dc build
 
+dc up -d database
 dc exec -T database update-table.sh bag bag_pand public monumenten
 dc exec -T database update-table.sh bag bag_nummeraanduiding public monumenten
 
