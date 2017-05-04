@@ -26,8 +26,7 @@ class MonumentenView(routers.APIRootView):
     - situeringen
     - complexen
 
-    TODO meer uit leg nodig.
-         link naar stelselpedia
+    datamodel conform stelselpedia https://www.amsterdam.nl/stelselpedia/monumenten-index/catalogus-monumenten/
     """
 
 
