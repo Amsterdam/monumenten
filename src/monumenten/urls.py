@@ -54,5 +54,4 @@ if settings.DEBUG:
 
     urlpatterns.extend([
         url(r'^__debug__/', include(debug_toolbar.urls)),
-        url(r'^explorer/', include('explorer.urls')),
     ])

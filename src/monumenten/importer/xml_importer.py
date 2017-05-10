@@ -84,9 +84,9 @@ def update_create_complex(item):
         return Complex.objects.create(
             id=complex_id,
             external_id=complex_id,
-            beschrijving=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
-            monumentnummer=item.get('Monumentnummer', None),
-            complex_naam=item.get('Naam', None),
+            beschrijving_complex=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            monumentnummer_complex=item.get('Monumentnummer', None),
+            complexnaam=item.get('Naam', None),
             complexstatus=item.get('Status', None)
         )
 

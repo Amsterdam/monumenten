@@ -41,12 +41,16 @@ API and import  module.
 
 ### Importeer de meest recente database van acceptatie:
 
-docker-compose exec database update-db.sh monumenten
+    docker-compose exec database update-db.sh monumenten
+    docker-compose exec database update-table.sh bag bag_pand public monumenten
+    docker-compose exec database update-table.sh bag bag_nummeraanduiding public monumenten
+
 
 ### Monumenten import
 
 #### Location of the datafiles
 Login to Rattic and retrieve the objectstore user and password for CloudVPS Cultuur.
+
 Login to https://stack.cloudvps.com/
 
 #### Run the import

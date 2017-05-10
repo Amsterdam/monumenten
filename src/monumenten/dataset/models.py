@@ -11,9 +11,9 @@ class Complex(models.Model):
     id = models.CharField(max_length=36, primary_key=True)
     external_id = models.CharField(max_length=36, null=True, db_index=True)
 
-    beschrijving = models.TextField(null=True)
-    monumentnummer = models.IntegerField(null=True)
-    complex_naam = models.CharField(max_length=255, null=True)
+    beschrijving_complex = models.TextField(null=True)
+    monumentnummer_complex = models.IntegerField(null=True)
+    complexnaam = models.CharField(max_length=255, null=True)
     complexstatus = models.CharField(max_length=128, null=True)
 
     def __str__(self):
@@ -37,7 +37,8 @@ class Monument(models.Model):
     beschrijving_monument = models.TextField(null=True)
     monumentcoordinaten = models.PointField(null=True, srid=28992)
     afbeelding = models.CharField(max_length=36, null=True)
-    oorspronkelijke_functie_monument = models.CharField(max_length=128, null=True)
+    oorspronkelijke_functie_monument = models.CharField(
+        max_length=128, null=True)
     monumentgeometrie = models.GeometryCollectionField(null=True, srid=28992)
     in_onderzoek = models.CharField(max_length=3, null=True)
     monumentnummer = models.IntegerField(null=True)
@@ -55,6 +56,12 @@ class Monument(models.Model):
     complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
 
     def __str__(self):
+        if self.display_naam:
+            return self.display_naam
+        if self.monumentnummer:
+            return str(self.monumentnummer)
+        if self.situeringen:
+            return repr(self.situeringen.first())
         return "Monument {}".format(self.id)
 
 
@@ -65,7 +72,12 @@ class Situering(models.Model):
     eerste_situering: geeft aan welke situering de eerste is.
     adresgegevens.
     external_id: id conform AMISExport.xml
+    id: is automatisch en gebaseerd op een sequence. Deze id kan niet gebaseerd
+    worden op de external_id, want die is niet uniek. Ook de combinatie
+    monumenten-external-id en adress-external-id is niet uniek
+    in de aangeleverde data.
     """
+    id = models.AutoField(primary_key=True)
     external_id = models.CharField(max_length=36, null=True)
 
     betreft_nummeraanduiding = models.CharField(max_length=16, null=True)
@@ -80,5 +92,29 @@ class Situering(models.Model):
 
     monument = models.ForeignKey(Monument, related_name='situeringen')
 
+    @property
+    def hoort_bij_monument(self):
+        return self.monument_id
+
     def __str__(self):
-        return "Situering {}".format(self.id)
+        """
+        Gekopieerd vanuit BAG, straat voor toegevoegd
+
+        :return: displayfield met adres
+        """
+        toevoegingen = [self.straat]
+
+        toevoeging = self.huisnummertoevoeging
+
+        if self.huisnummer:
+            toevoegingen.append(str(self.huisnummer))
+
+        if self.huisletter:
+            toevoegingen.append(str(self.huisletter))
+
+        if toevoeging:
+            tv = str(toevoeging)
+            split_tv = " ".join([c for c in tv])
+            toevoegingen.append(split_tv)
+
+        return ' '.join(toevoegingen)

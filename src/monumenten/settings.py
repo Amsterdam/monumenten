@@ -14,11 +14,7 @@ INSTALLED_APPS += [
     'monumenten.importer',
     'monumenten.health',
     'monumenten.objectstore',
-    'django.contrib.sites',
-
 ]
-
-SITE_ID = int(os.getenv('DJANGO_SITE_ID', '1'))
 
 ROOT_URLCONF = 'monumenten.urls'
 
@@ -58,7 +54,7 @@ DATABASES = {
 }
 
 # SWAGGER
-SWAG_PATH = 'api-acc.datapunt.amsterdam.nl/monumenten/docs'
+SWAG_PATH = 'acc.api.data.amsterdam.nl/monumenten/docs'
 
 if DEBUG:
     SWAG_PATH = '127.0.0.1:8000/monumenten/docs'
@@ -100,6 +96,6 @@ SWAGGER_SETTINGS = {
 HEALTH_MODEL = 'dataset.Monument'
 
 DATAPUNT_AUTHZ = {
-    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY'),
+    'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY', 'insecureeeeeeeeeeeeeeeeeeeeeeeeeee'),
     'JWT_ALGORITHM': "HS256"
 }

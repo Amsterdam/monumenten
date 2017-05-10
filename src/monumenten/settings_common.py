@@ -26,7 +26,7 @@ DEBUG = SECRET_KEY == insecure_key
 ALLOWED_HOSTS = ['*']
 
 DATAPUNT_API_URL = os.getenv(
-    'DATAPUNT_API_URL', 'https://api.datapunt.amsterdam.nl/')
+    'DATAPUNT_API_URL', 'https://api.data.amsterdam.nl/')
 
 
 INTERNAL_IPS = ('127.0.0.1', '0.0.0.0')
@@ -35,13 +35,11 @@ INTERNAL_IPS = ('127.0.0.1', '0.0.0.0')
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+    # 'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_filters',
     'django_extensions',
 
     'django.contrib.gis',
@@ -51,20 +49,15 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += (
-        'debug_toolbar', 'explorer')
+    INSTALLED_APPS += ('debug_toolbar',)
 
-
-SITE_ID = int(os.getenv('DJANGO_SITE_ID', '1'))
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'authorization_django.authorization_middleware',
@@ -83,28 +76,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
-]
-
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.'
-                'UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.'
-                'MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.'
-                'CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.'
-                'NumericPasswordValidator',
     },
 ]
 
@@ -129,12 +100,15 @@ REST_FRAMEWORK = dict(
     PAGE_SIZE=100,
 
     MAX_PAGINATE_BY=100,
+
+    UNAUTHENTICATED_USER=None,
+    UNAUTHENTICATED_TOKE=None,
+
     DEFAULT_AUTHENTICATION_CLASSES=(
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ),
-    DEFAULT_PAGINATION_CLASS='drf_hal_json.pagination.HalPageNumberPagination',
-    DEFAULT_PARSER_CLASSES=('drf_hal_json.parsers.JsonHalParser',),
+
     DEFAULT_RENDERER_CLASSES=(
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer'
