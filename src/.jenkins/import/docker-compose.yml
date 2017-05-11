@@ -24,6 +24,7 @@ services:
               && python manage.py migrate \
               && python manage.py run_import \
               && python manage.py run_bag_key_conversions\
+              && python manage.py run_import_validation\
               && python manage.py run_refresh_materialized_views"
 
   db-backup:
