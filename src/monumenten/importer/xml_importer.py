@@ -2,7 +2,7 @@ import logging
 
 import xmltodict
 
-from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+from django.contrib.gis.geos import GEOSGeometry, GeometryCollection, MultiPoint
 
 from monumenten.dataset.models import Monument, Complex, Situering
 
@@ -68,7 +68,11 @@ def get_geometry(item):
     return geometry
 
 
-def update_create_complex(item):
+def update_create_complex(item, monument_id=None):
+    if type(item) == list:
+        functional_errors.append(
+            'Object has more than one ParentObject:  {}'.format(monument_id))
+        item = item[0]
     complex_id = item['Id']
     try:
         return Complex.objects.get(external_id=complex_id)
@@ -96,7 +100,12 @@ def get_coordinates(point, id):
         functional_errors.append(
             'Object has more than 1 coordinate:' + id)
         return GEOSGeometry(point[0], srid=28992)
-    return GEOSGeometry(point, srid=28992)
+    point = GEOSGeometry(point, srid=28992)
+    if type(point) == MultiPoint:
+        functional_errors.append(
+            'Object has a Multipoint coordinate:' + id)
+        return point[0]
+    return point
 
 
 def convert_to_verzendsleutel(id):
@@ -210,7 +219,7 @@ def handle(_, item):
         update_create_complex(item)
     else:
         if 'ParentObject' in item:
-            created_complex = update_create_complex(item['ParentObject'])
+            created_complex = update_create_complex(item['ParentObject'], item['Id'])
             update_create_monument(item, created_complex)
         else:
             update_create_monument(item, None)
