@@ -2,8 +2,7 @@ import logging
 
 from django.core.management import BaseCommand
 
-from monumenten.importer import xml_importer, import_validation
-from monumenten.objectstore import objectstore
+from monumenten.importer import import_validation
 log = logging.getLogger(__name__)
 
 
