@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             f"""
-                CREATE VIEW geo_monument_point AS
+                CREATE MATERIALIZED VIEW geo_monument_point AS
                 SELECT
                   m.display_naam as display,
                   cast('monumenten/monument' as varchar(30)) as type,
@@ -23,5 +23,7 @@ class Migration(migrations.Migration):
                   m.monumentcoordinaten AS geometrie
                 FROM
                   dataset_monument m;
+
+                CREATE  INDEX geo_monument_point_idx ON geo_monument_point (geometrie);
             """)
     ]
