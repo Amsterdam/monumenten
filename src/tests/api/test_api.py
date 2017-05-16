@@ -34,8 +34,10 @@ class TestAPIEndpoints(APITestCase):
             ('?locatie=52.37638,4.90177,10', 50),
             # location far away should show up nothing
             ('?locatie=121144.32,487722.88,10', 0),
-            ('?locatie=52.39638,4.90177,10', 0)
+            ('?locatie=52.39638,4.90177,10', 0),
+
         )),
+
 
         ('situeringen', (
             ('2/', 'nr=7'),
@@ -52,6 +54,14 @@ class TestAPIEndpoints(APITestCase):
         )),
     ]
 
+    invalid_urls = [
+        ('monumenten', (
+            # location not in amsterdam should raise error 400
+            ('?locatie=100144.32,417722.88,10'),
+            ('?locatie=51.39638,3.90177,10')
+        ))
+    ]
+
     def setUp(self):
         # builds 10 complexes with
         # 1 to 10 monuments and 1 to 10 situeringen
@@ -65,6 +75,15 @@ class TestAPIEndpoints(APITestCase):
         self.assertEqual(
             response.status_code,
             200, 'Wrong response code for {}'.format(url))
+
+    def invalid_response(self, url, response):
+        """
+        Check if we go an validation error
+        """
+        r_code = response.status_code,
+        self.assertEqual(
+            400, response.status_code,
+            f'Expected response code 400 received {r_code} for {url}')
 
     def valid_response(self, url, response, nr_of_rows):
         """
@@ -107,6 +126,14 @@ class TestAPIEndpoints(APITestCase):
         self.assertEqual(
             'text/html; charset=utf-8', response['Content-Type'],
             'Wrong Content-Type for {}'.format(url))
+
+    def test_invalid_parameters(self):
+        for url, arguments in self.invalid_urls:
+            for args in arguments:
+                get_url = '/monumenten/{}/{}'.format(url, args)
+                log.debug("test %s", get_url)
+                response = self.client.get(get_url)
+                self.invalid_response(url, response)
 
     def test_details(self):
         for url, arguments in self.detail_urls:
