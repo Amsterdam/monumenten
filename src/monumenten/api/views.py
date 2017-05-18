@@ -77,14 +77,12 @@ def valid_lat_lon(lat, lon):
     return True
 
 
-def validate_x_y(value):
-    """
-    Check if we get valid values
-    """
+def convert_intput_to_float(value):
+
     x = None
     y = None
+    radius = None
     err = None
-    point = radius = None
 
     try:
         x, y, radius = value.split(',')
@@ -99,6 +97,23 @@ def validate_x_y(value):
     except ValueError:
         return None, None, f"Invalid value {x} {y} {radius}"
 
+    return x, y, radius, err
+
+
+def validate_x_y(value):
+    """
+    Check if we get valid values
+    """
+    x = None
+    y = None
+    err = None
+    point = radius = None
+
+    x, y, radius, err = convert_intput_to_float(value)
+
+    if err:
+        return None, None, err
+
     # checking sane radius size
     if radius > 1000:
         return None, None, "radius too big"
@@ -110,7 +125,7 @@ def validate_x_y(value):
     elif valid_lat_lon(x, y):
         point = Point(y, x, srid=4326).transform(28992, clone=True)
     else:
-        err = "Invalid coordinates recieved not within Amsterdam"
+        err = "Coordinates recieved not within Amsterdam"
 
     return point, radius, err
 
