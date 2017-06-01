@@ -1,8 +1,8 @@
 import os
 
-from monumenten.settings_common import * # noqa F403
-from monumenten.settings_common import INSTALLED_APPS, DEBUG
-from monumenten.settings_databases import Location_key,\
+from settings_common import * # noqa F403
+from settings_common import INSTALLED_APPS, DEBUG
+from settings_databases import LocationKey,\
     get_docker_host,\
     get_database_key,\
     OVERRIDE_HOST_ENV_VAR,\
@@ -23,7 +23,7 @@ WSGI_APPLICATION = 'monumenten.wsgi.application'
 
 
 DATABASE_OPTIONS = {
-    Location_key.docker: {
+    LocationKey.docker: {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv('DATABASE_NAME', 'monumenten'),
         'USER': os.getenv('DATABASE_USER', 'monumenten'),
@@ -31,7 +31,7 @@ DATABASE_OPTIONS = {
         'HOST': 'database',
         'PORT': '5432'
     },
-    Location_key.local: {
+    LocationKey.local: {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv('DATABASE_NAME', 'monumenten'),
         'USER': os.getenv('DATABASE_USER', 'monumenten'),
@@ -39,7 +39,7 @@ DATABASE_OPTIONS = {
         'HOST': get_docker_host(),
         'PORT': '5412'
     },
-    Location_key.override: {
+    LocationKey.override: {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv('DATABASE_NAME', 'monumenten'),
         'USER': os.getenv('DATABASE_USER', 'monumenten'),
