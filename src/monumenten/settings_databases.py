@@ -35,7 +35,7 @@ OVERRIDE_HOST_ENV_VAR = 'DATABASE_HOST_OVERRIDE'
 OVERRIDE_PORT_ENV_VAR = 'DATABASE_PORT_OVERRIDE'
 
 
-class Location_key:
+class LocationKey:
     local = 'local'
     docker = 'docker'
     override = 'override'
@@ -43,8 +43,8 @@ class Location_key:
 
 def get_database_key():
     if os.getenv(OVERRIDE_HOST_ENV_VAR):
-        return Location_key.override
+        return LocationKey.override
     elif in_docker():
-        return Location_key.docker
+        return LocationKey.docker
 
-    return Location_key.local
+    return LocationKey.local

@@ -10,9 +10,15 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django.contrib.gis.geos import Point
 
+from rest_framework import serializers as rest_serializers
+
 from monumenten.api import serializers
 from monumenten.dataset.models import Monument, Situering, Complex
 from .rest import DatapuntViewSet
+
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class ComplexFilter(FilterSet):
@@ -32,6 +38,96 @@ class ComplexViewSet(DatapuntViewSet):
         if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
             return serializers.ComplexSerializerAuth
         return serializers.ComplexSerializerNonAuth
+
+
+# max bbox sizes from mapserver
+# RD  EXTENT      100000    450000   150000 500000
+# WGS             52.03560, 4.58565  52.48769, 5.31360
+
+
+def valid_rd(x, y):
+
+    rd_x_min = 100000
+    rd_y_min = 450000
+    rd_x_max = 150000
+    rd_y_max = 500000
+
+    if not rd_x_min <= x <= rd_x_max:
+        return False
+
+    if not rd_y_min <= y <= rd_y_max:
+        return False
+
+    return True
+
+
+def valid_lat_lon(lat, lon):
+
+    lat_min = 52.03560
+    lat_max = 52.48769
+    lon_min = 4.58565
+    lon_max = 5.31360
+
+    if not lat_min <= lat <= lat_max:
+        return False
+
+    if not lon_min <= lon <= lon_max:
+        return False
+
+    return True
+
+
+def convert_intput_to_float(value):
+
+    x = None
+    y = None
+    radius = None
+    err = None
+
+    try:
+        x, y, radius = value.split(',')
+    except ValueError:
+        return None, None, f"Not enough values x, y, radius {value}"
+
+    # Converting to float
+    try:
+        x = float(x)
+        y = float(y)
+        radius = int(radius)
+    except ValueError:
+        return None, None, f"Invalid value {x} {y} {radius}"
+
+    return x, y, radius, err
+
+
+def validate_x_y(value):
+    """
+    Check if we get valid values
+    """
+    x = None
+    y = None
+    err = None
+    point = radius = None
+
+    x, y, radius, err = convert_intput_to_float(value)
+
+    if err:
+        return None, None, err
+
+    # checking sane radius size
+    if radius > 1000:
+        return None, None, "radius too big"
+
+    # Checking if the given coords are valid
+
+    if valid_rd(x, y):
+        point = Point(x, y, srid=28992)
+    elif valid_lat_lon(x, y):
+        point = Point(y, x, srid=4326).transform(28992, clone=True)
+    else:
+        err = "Coordinates recieved not within Amsterdam"
+
+    return point, radius, err
 
 
 class MonumentFilter(FilterSet):
@@ -67,22 +163,13 @@ class MonumentFilter(FilterSet):
         The value given is broken up by ',' and coverterd
         to the value tuple
         """
-        try:
-            x, y, radius = value.split(',')
-        except ValueError:
-            return queryset.none()
 
-        # Converting , to . and then to float
-        x = float(x)
-        y = float(y)
-        radius = int(radius)
+        point, radius, err = validate_x_y(value)
 
-        # Checking if the given coords are in RD, otherwise converting
-
-        if y > 10:
-            point = Point(x, y, srid=28992)
-        else:
-            point = Point(y, x, srid=4326).transform(28992, clone=True)
+        if err:
+            log.exception(err)
+            raise rest_serializers.ValidationError(err)
+            # return queryset.none()
 
         # Creating one big queryset
         monumenten_g = queryset.filter(
