@@ -1,8 +1,8 @@
 import os
 
-from settings_common import * # noqa F403
-from settings_common import INSTALLED_APPS, DEBUG
-from settings_databases import LocationKey,\
+from monumenten.settings_common import * # noqa F403
+from monumenten.settings_common import INSTALLED_APPS, DEBUG
+from monumenten.settings_databases import LocationKey,\
     get_docker_host,\
     get_database_key,\
     OVERRIDE_HOST_ENV_VAR,\
