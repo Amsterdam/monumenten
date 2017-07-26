@@ -26,6 +26,7 @@ class TestAPIEndpoints(APITestCase):
         ('monumenten', (
             ('', '>'),
             ('?betreft_pand=10', 1),
+            ('?complex_id=1', 5),
             ('?betreft_pand=192048', 0),
             ('?betreft_pand=bla', 0),
             ('?nietbestaand=bla', '>'),

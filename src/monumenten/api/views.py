@@ -142,6 +142,7 @@ class MonumentFilter(FilterSet):
         fields = (
             'betreft_pand',
             'locatie',
+            'complex_id',
         )
 
     def nummeraanduiding_filter(self, queryset, filer_name, value):
