@@ -49,7 +49,7 @@ class TestAPIEndpoints(APITestCase):
 
         ('complexen', (
             ('', '3'),
-            ('2/', 'nr=4'),
+            ('2/', 'nr=5'),
             ('?monumentnummer_complex=8392183', 10),
             ('?monumentnummer_complex=nietbestaand', 0)
         )),
@@ -143,3 +143,13 @@ class TestAPIEndpoints(APITestCase):
                 log.debug("test %s", get_url)
                 response = self.client.get(get_url)
                 self.valid_response(url, response, nr_of_rows)
+
+    def test_extra_complex(self):
+        self.assertTrue(True)
+        get_url = '/monumenten/complexen/1/'
+        response = self.client.get(get_url)
+        self.assertIn('monumenten', response.data)
+        self.assertIn('count', response.data['monumenten'])
+        self.assertIn('href', response.data['monumenten'])
+        self.assertIn('/monumenten/monumenten/?complex_id=', response.data['monumenten']['href'])
+

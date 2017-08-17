@@ -40,6 +40,7 @@ OPENFIELDS_COMPLEX = [
     'identificerende_sleutel_complex',
     'monumentnummer_complex',
     'complexnaam',
+    'monumenten',
 ]
 
 NON_OPENFIELDS_COMPLEX = ['beschrijving_complex']
@@ -81,6 +82,7 @@ class BaseSerializer(object):
 class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
     _links = serializers.SerializerMethodField()
     identificerende_sleutel_complex = serializers.SerializerMethodField()
+    monumenten = serializers.SerializerMethodField()
 
     class Meta(object):
         model = Complex
@@ -92,6 +94,11 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
 
     def get_identificerende_sleutel_complex(self, obj):
         return obj.id
+
+    def get_monumenten(self, obj):
+        nr_monumenten = obj.monumenten.count()
+        path = '/monumenten/monumenten/?complex_id={}'.format(obj.id)
+        return self.dict_with_count_href(nr_monumenten, path)
 
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
