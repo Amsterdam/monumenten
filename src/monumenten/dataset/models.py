@@ -17,7 +17,12 @@ class Complex(models.Model):
     complexstatus = models.CharField(max_length=128, null=True)
 
     def __str__(self):
-        return "Complex {}".format(self.id)
+        if self.complexnaam:
+            return self.complexnaam
+        if self.monumentnummer_complex:
+            return self.monumentnummer_complex
+        # Above as per be-1261 - fallback below (self.id is never null):
+        return 'Complex {}'.format(self.id)
 
 
 class Monument(models.Model):
