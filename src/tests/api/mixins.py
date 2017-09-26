@@ -15,15 +15,24 @@ class JWTMixin(object):
     assert(secret is not None)
     assert(algorithm is not None)
 
-    def employee_credentials(self):
-        return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(self.LEVEL_EMPLOYEE)))
+    def employee_credentials(self, scope=None):
+        return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(scope if scope else self.LEVEL_EMPLOYEE)))
 
-    def jwt_token(self, level):
+    def jwt_token(self, level_or_scope):
         now = int(time.time())
-        payload = {
-            'iat': now,
-            'exp': now + 300,
-            'authz': level
-        }
+        if isinstance(level_or_scope, str):
+            payload = {
+                'iat': now,
+                'exp': now + 300,
+                'scopes': [ level_or_scope ]
+            }
+        else:
+            payload = {
+                'iat': now,
+                'exp': now + 300,
+                'authz': level_or_scope
+
+            }
+
         return jwt.encode(payload, self.secret, algorithm=self.algorithm).decode("utf-8")
 

@@ -35,7 +35,8 @@ class ComplexViewSet(DatapuntViewSet):
     filter_class = ComplexFilter
 
     def get_serializer_class(self):
-        if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
+        if self.request.is_authorized_for('MON/RC') or \
+                self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
             return serializers.ComplexSerializerAuth
         return serializers.ComplexSerializerNonAuth
 
@@ -192,7 +193,8 @@ class MonumentViewSet(DatapuntViewSet):
     filter_class = MonumentFilter
 
     def get_serializer_class(self):
-        if self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
+        if self.request.is_authorized_for('MON/RC') or \
+                self.request.is_authorized_for(authorization_levels.LEVEL_EMPLOYEE):
             return serializers.MonumentSerializerAuth
         return serializers.MonumentSerializerNonAuth
 
