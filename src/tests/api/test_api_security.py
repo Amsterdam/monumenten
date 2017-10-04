@@ -1,5 +1,6 @@
 import logging
 
+from authorization_django import levels as authorization_levels
 from rest_framework.test import APITestCase
 from monumenten.dataset import models
 
@@ -61,7 +62,7 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
 
-        for scope in (None, "MON/RC"):
+        for scope in (None, authorization_levels.SCOPE_MON_RDM):
             credentials = self.employee_credentials(scope=scope)
             log.debug(credentials)
             self.client.credentials(**credentials)
@@ -90,7 +91,7 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
 
-        for scope in (None, "MON/RC"):
+        for scope in (None, authorization_levels.SCOPE_MON_RBC):
             credentials = self.employee_credentials(scope=scope)
             log.debug(credentials)
             self.client.credentials(**credentials)
