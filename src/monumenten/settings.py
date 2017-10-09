@@ -94,7 +94,7 @@ SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'oauth2': {
             'type': 'oauth2',
-            'authorizationUrl': "https://acc.api.data.amsterdam.nl/oauth2/authorize",
+            'authorizationUrl': DATAPUNT_API_URL + "oauth2/authorize",
             'flow': 'implicit',
             'scopes': {
                 "MON/RBC": "Bevragen complexen",
