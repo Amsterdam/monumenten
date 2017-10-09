@@ -1,7 +1,7 @@
 import os
 
 from monumenten.settings_common import * # noqa F403
-from monumenten.settings_common import INSTALLED_APPS, DEBUG
+from monumenten.settings_common import INSTALLED_APPS, DEBUG, DATAPUNT_API_URL
 from monumenten.settings_databases import LocationKey,\
     get_docker_host,\
     get_database_key,\
