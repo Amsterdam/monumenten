@@ -91,6 +91,18 @@ SWAGGER_SETTINGS = {
     },
 
     'doc_expansion': 'list',
+    'SECURITY_DEFINITIONS': {
+       'oauth2': {
+           'type': 'oauth2',
+           'authorizationUrl': "https://acc.api.data.amsterdam.nl/oauth2/authorize",
+           'flow': 'implicit',
+           'scopes': {
+               "BRK/RSN": "Read Subject Natuurlijk",
+               "BRK/RS": "Read Subject",
+               "BRK/OR": "Read Object"
+           }
+       }
+    }
 }
 
 HEALTH_MODEL = 'dataset.Monument'
@@ -99,3 +111,4 @@ DATAPUNT_AUTHZ = {
     'JWT_SECRET_KEY': os.getenv('JWT_SHARED_SECRET_KEY', 'insecureeeeeeeeeeeeeeeeeeeeeeeeeee'),
     'JWT_ALGORITHM': "HS256"
 }
+
