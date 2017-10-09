@@ -92,16 +92,16 @@ SWAGGER_SETTINGS = {
 
     'doc_expansion': 'list',
     'SECURITY_DEFINITIONS': {
-       'oauth2': {
-           'type': 'oauth2',
-           'authorizationUrl': "https://acc.api.data.amsterdam.nl/oauth2/authorize",
-           'flow': 'implicit',
-           'scopes': {
-               "BRK/RSN": "Read Subject Natuurlijk",
-               "BRK/RS": "Read Subject",
-               "BRK/OR": "Read Object"
-           }
-       }
+        'oauth2': {
+            'type': 'oauth2',
+            'authorizationUrl': "https://acc.api.data.amsterdam.nl/oauth2/authorize",
+            'flow': 'implicit',
+            'scopes': {
+                "BRK/RSN": "Read Subject Natuurlijk",
+                "BRK/RS": "Read Subject",
+                "BRK/OR": "Read Object"
+            }
+        }
     }
 }
 
