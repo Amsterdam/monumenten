@@ -97,9 +97,8 @@ SWAGGER_SETTINGS = {
             'authorizationUrl': "https://acc.api.data.amsterdam.nl/oauth2/authorize",
             'flow': 'implicit',
             'scopes': {
-                "BRK/RSN": "Read Subject Natuurlijk",
-                "BRK/RS": "Read Subject",
-                "BRK/OR": "Read Object"
+                "MON/RBC": "Bevragen complexen",
+                "MON/RDM": "Details monumenten",
             }
         }
     }
