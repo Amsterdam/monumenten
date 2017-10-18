@@ -35,7 +35,6 @@ INTERNAL_IPS = ('127.0.0.1', '0.0.0.0')
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 
@@ -56,8 +55,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'authorization_django.authorization_middleware',
@@ -72,7 +69,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -101,8 +97,8 @@ REST_FRAMEWORK = dict(
 
     MAX_PAGINATE_BY=100,
 
-    UNAUTHENTICATED_USER=None,
-    UNAUTHENTICATED_TOKE=None,
+    UNAUTHENTICATED_USER={},
+    UNAUTHENTICATED_TOKEN={},
 
     DEFAULT_AUTHENTICATION_CLASSES=(
         # 'rest_framework.authentication.BasicAuthentication',
