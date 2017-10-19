@@ -19,6 +19,7 @@ OPENFIELDS_MONUMENT = [
     'heeft_situeringen',
     'monumentcoordinaten',
     'ligt_in_complex',
+    'in_onderzoek',
 ]
 
 NON_OPENFIELDS_MONUMENT = [
@@ -29,7 +30,6 @@ NON_OPENFIELDS_MONUMENT = [
     'bouwjaar_eind_bouwperiode_monument',
     'oorspronkelijke_functie_monument',
     'monumentgeometrie',
-    'in_onderzoek',
     'beschrijving_monument',
     'redengevende_omschrijving_monument',
     'beschrijving_complex',
