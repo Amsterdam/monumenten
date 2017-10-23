@@ -174,7 +174,15 @@ def format_address(a):
     huisnummer = a.huisnummer and ' ' + a.huisnummer or ''
     huisletter = a.huisletter and ' ' + a.huisletter or ''
     huisnummertoevoeging = a.huisnummertoevoeging and ' ' + a.huisnummertoevoeging or ''
-    return straat + huisnummer + huisletter + huisnummertoevoeging
+    address = straat + huisnummer + huisletter + huisnummertoevoeging
+    if a.situering_nummeraanduiding and a.situering_nummeraanduiding != 'Actueel':
+        if a.situering_nummeraanduiding == 'Actueel/Via':
+            address = 'betreden via ' + address
+        elif a.situering_nummeraanduiding == 'Actueel/Tegenover':
+            address = 'gelegen tegenover ' + address
+        elif a.situering_nummeraanduiding == 'Actueel/Bij':
+            address = 'gelegen bij ' + address
+    return address
 
 
 def update_create_monument(item, created_complex):
