@@ -62,27 +62,26 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
 
-        for scope in (None, authorization_levels.SCOPE_MON_RDM):
-            credentials = self.employee_credentials(scope=scope)
-            log.debug(credentials)
-            self.client.credentials(**credentials)
-            fields_visible_by_employee = self.client.get(url).data
+        credentials = self.employee_credentials(authorization_levels.SCOPE_MON_RDM)
+        log.debug(credentials)
+        self.client.credentials(**credentials)
+        fields_visible_by_employee = self.client.get(url).data
 
-            for f in self.NON_OPENFIELDS_MONUMENT:
-                self.assertTrue(
-                    f in fields_visible_by_employee,
-                    'Field should be visible by employee: {}'.format(f))
-                self.assertTrue(
-                    f not in fields_visible_by_public,
-                    'Field should NOT be visible by public: {}'.format(f))
+        for f in self.NON_OPENFIELDS_MONUMENT:
+            self.assertTrue(
+                f in fields_visible_by_employee,
+                'Field should be visible by employee: {}'.format(f))
+            self.assertTrue(
+                f not in fields_visible_by_public,
+                'Field should NOT be visible by public: {}'.format(f))
 
-            for f in self.OPENFIELDS_MONUMENT:
-                self.assertTrue(
-                    f in fields_visible_by_employee,
-                    'Field should be visible by employee: {}'.format(f))
-                self.assertTrue(
-                    f in fields_visible_by_public,
-                    'Field should be visible by public: {}'.format(f))
+        for f in self.OPENFIELDS_MONUMENT:
+            self.assertTrue(
+                f in fields_visible_by_employee,
+                'Field should be visible by employee: {}'.format(f))
+            self.assertTrue(
+                f in fields_visible_by_public,
+                'Field should be visible by public: {}'.format(f))
 
     def test_security_complexen(self):
         url = '/monumenten/complexen/{}/'.format(
@@ -91,24 +90,23 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
 
-        for scope in (None, authorization_levels.SCOPE_MON_RBC):
-            credentials = self.employee_credentials(scope=scope)
-            log.debug(credentials)
-            self.client.credentials(**credentials)
-            fields_visible_by_employee = self.client.get(url).data
+        credentials = self.employee_credentials(authorization_levels.SCOPE_MON_RBC)
+        log.debug(credentials)
+        self.client.credentials(**credentials)
+        fields_visible_by_employee = self.client.get(url).data
 
-            for f in self.NON_OPENFIELDS_COMPLEX:
-                self.assertTrue(
-                    f in fields_visible_by_employee,
-                    'Field should be visible by employee: {}'.format(f))
-                self.assertTrue(
-                    f not in fields_visible_by_public,
-                    'Field should NOT be visible by public: {}'.format(f))
+        for f in self.NON_OPENFIELDS_COMPLEX:
+            self.assertTrue(
+                f in fields_visible_by_employee,
+                'Field should be visible by employee: {}'.format(f))
+            self.assertTrue(
+                f not in fields_visible_by_public,
+                'Field should NOT be visible by public: {}'.format(f))
 
-            for f in self.OPENFIELDS_COMPLEX:
-                self.assertTrue(
-                    f in fields_visible_by_employee,
-                    'Field should be visible by employee: {}'.format(f))
-                self.assertTrue(
-                    f in fields_visible_by_public,
-                    'Field should be visible by public: {}'.format(f))
+        for f in self.OPENFIELDS_COMPLEX:
+            self.assertTrue(
+                f in fields_visible_by_employee,
+                'Field should be visible by employee: {}'.format(f))
+            self.assertTrue(
+                f in fields_visible_by_public,
+                'Field should be visible by public: {}'.format(f))

@@ -5,10 +5,6 @@ from monumenten import settings
 
 
 class JWTMixin(object):
-    #LEVEL_DEFAULT = 0b0
-    LEVEL_EMPLOYEE = 0b1
-    #LEVEL_EMPLOYEE_PLUS = 0b11
-
     secret = settings.DATAPUNT_AUTHZ['JWT_SECRET_KEY']
     algorithm = settings.DATAPUNT_AUTHZ['JWT_ALGORITHM']
 
@@ -16,23 +12,16 @@ class JWTMixin(object):
     assert(algorithm is not None)
 
     def employee_credentials(self, scope=None):
-        return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(scope if scope else self.LEVEL_EMPLOYEE)))
+        return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(scope)))
 
-    def jwt_token(self, level_or_scope):
+    def jwt_token(self, scope):
         now = int(time.time())
-        if isinstance(level_or_scope, str):
-            payload = {
-                'iat': now,
-                'exp': now + 300,
-                'scopes': [ level_or_scope ]
-            }
-        else:
-            payload = {
-                'iat': now,
-                'exp': now + 300,
-                'authz': level_or_scope
-
-            }
+        scopes = [ scope ] if isinstance(scope, str) else []
+        payload = {
+            'iat': now,
+            'exp': now + 300,
+            'scopes': scopes
+        }
 
         return jwt.encode(payload, self.secret, algorithm=self.algorithm).decode("utf-8")
 
