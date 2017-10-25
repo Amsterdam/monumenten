@@ -177,11 +177,11 @@ def format_address(a):
     address = straat + huisnummer + huisletter + huisnummertoevoeging
     if a.situering_nummeraanduiding and a.situering_nummeraanduiding != 'Actueel':
         if a.situering_nummeraanduiding == 'Actueel/Via':
-            address = 'betreden via ' + address
+            address = 'Betreden via ' + address
         elif a.situering_nummeraanduiding == 'Actueel/Tegenover':
-            address = 'gelegen tegenover ' + address
+            address = 'Gelegen tegenover ' + address
         elif a.situering_nummeraanduiding == 'Actueel/Bij':
-            address = 'gelegen bij ' + address
+            address = 'Gelegen bij ' + address
     return address
 
 
