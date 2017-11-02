@@ -16,6 +16,7 @@ Including another URLconf
 from rest_framework import routers
 
 from monumenten.api import views as api_views
+from monumenten.api import searchviews as search_views
 
 
 class MonumentenView(routers.APIRootView):
@@ -42,5 +43,12 @@ monumenten.register(r'monumenten', api_views.MonumentViewSet,
                     base_name='monumenten')
 monumenten.register(r'complexen', api_views.ComplexViewSet,
                     base_name='complexen')
+
+
+monumenten.register(r'typeahead', search_views.TypeaheadViewSet,
+                    base_name='typeahead')
+monumenten.register(r'search', search_views.SearchComplexenMonumentenViewSet,
+                    base_name='search')
+
 
 urls = monumenten.urls

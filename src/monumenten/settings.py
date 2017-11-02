@@ -1,4 +1,5 @@
 import os
+import sys
 
 from monumenten.settings_common import * # noqa F403
 from monumenten.settings_common import INSTALLED_APPS, DEBUG, DATAPUNT_API_URL
@@ -52,6 +53,30 @@ DATABASE_OPTIONS = {
 DATABASES = {
     'default': DATABASE_OPTIONS[get_database_key()]
 }
+
+EL_HOST_VAR = os.getenv('ELASTIC_HOST_OVERRIDE')
+EL_PORT_VAR = os.getenv('ELASTIC_PORT_OVERRIDE', '9200')
+
+
+ELASTIC_OPTIONS = {
+    LocationKey.docker: ["http://elasticsearch:9200"],
+    LocationKey.local: [f"http://{get_docker_host()}:9200"],
+    LocationKey.override: [f"http://{EL_HOST_VAR}:{EL_PORT_VAR}"],
+}
+
+ELASTIC_SEARCH_HOSTS = ELASTIC_OPTIONS[get_database_key()]
+
+ELASTIC_INDICES = dict(
+    MONUMENTEN='monumenten')
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    for k, v in ELASTIC_INDICES.items():
+        ELASTIC_INDICES[k] += '_test'
+
+BATCH_SETTINGS = dict(
+    batch_size=100000
+)
 
 # SWAGGER
 SWAG_PATH = 'acc.api.data.amsterdam.nl/monumenten/docs'
