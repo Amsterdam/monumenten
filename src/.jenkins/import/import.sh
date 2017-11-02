@@ -17,7 +17,7 @@ mkdir -p ${DIR}/backups
 
 dc build
 
-dc up -d database
+dc up -d database elasticsearch
 sleep 50
 
 dc exec -T database update-table.sh bag bag_pand public monumenten
