@@ -20,8 +20,6 @@ services:
       DATABASE_NAME: monumenten
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
-      DATABASE_HOST_OVERRIDE: database
-      DATABASE_PORT_OVERRIDE: 5432
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
 
     command: >
