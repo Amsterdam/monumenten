@@ -7,11 +7,8 @@ services:
       POSTGRES_USER: monumenten
 
   elasticsearch:
-    image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5
-    volumes:
-      - ./backups/elasticsearch:/tmp/backups
-    user: root
-    command: elasticsearch -Ehttp.host=0.0.0.0 -Etransport.host=127.0.0.1 -Epath.repo=/tmp
+    image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5:latest
+    command:  elasticsearch -Ehttp.host=0.0.0.0 -Etransport.host=127.0.0.1
 
   importer:
     image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
