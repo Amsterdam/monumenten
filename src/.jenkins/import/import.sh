@@ -25,3 +25,4 @@ dc exec -T database update-table.sh bag bag_nummeraanduiding public monumenten
 
 dc run --rm importer
 dc run --rm db-backup
+dc run --rm el-backup

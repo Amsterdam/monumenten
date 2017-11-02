@@ -9,6 +9,10 @@ services:
   elasticsearch:
     image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5:latest
     command:  elasticsearch -Ehttp.host=0.0.0.0 -Etransport.host=127.0.0.1
+    user: root
+    volumes:
+      - ./backups/elasticsearch:/tmp/backups
+
 
   importer:
     image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
@@ -48,3 +52,14 @@ services:
                           -U monumenten \
                           -h db -p 5432 \
                           monumenten > /tmp/backups/database.dump"
+
+  el-backup:
+    image: build.datapunt.amsterdam.nl:5000/atlas/elasticsearch5
+    volumes:
+      - ./backups/elasticsearch:/tmp/backups
+    user: root
+    command: >
+      bash -c "chmod -R 777 /tmp/backups \
+              && curl -X PUT http://elasticsearch:9200/_snapshot/backup -d '{ \"type\": \"fs\", \"settings\": { \"location\": \"/tmp/backups\" }}' \
+              && curl -X PUT http://elasticsearch:9200/_snapshot/backup/monumenten?wait_for_completion=true -d '{ \"indices\": \"monumenten\" }' \
+              && chmod -R 777 /tmp/backups"
