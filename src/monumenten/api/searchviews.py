@@ -51,8 +51,6 @@ def multimatch_complexen_monumenten_q(query):
         "multi_match",
         query=query,
         type="phrase_prefix",
-        slop=12,  # match "stephan preeker" with "stephan jacob preeker"
-        max_expansions=12,
         fields=[
             "display_naam",
             "complexnaam"
@@ -65,9 +63,6 @@ def add_sorting():
     Give human understandable sorting to the output
     """
     return (
-        {"_type": {"order": "asc"}},
-        {"display_naam": {
-            "order": "asc", "missing": "_first"}},
         '-_score',
     )
 
@@ -303,15 +298,21 @@ def autocomplete_query(client, query):
     :return: Ordered sets of responses for monuments and complexes closest to the requested query
     """
 
-    return (MultiSearch().using(client).index(MONUMENTEN).add(Search().doc_type("monument").query({
-        "prefix": {
-            "display_naam": query,
-        }
-    }).sort('display_naam')[0:3]).add(Search().doc_type("complex").query({
-        "prefix": {
-            "complexnaam": query,
-        }
-    }).sort('complexnaam')[0:3]))
+    return (MultiSearch().using(client).index(MONUMENTEN).add(Search().doc_type("monument").query(Q(
+        "multi_match",
+        query=query,
+        type="phrase_prefix",
+        fields=[
+            "display_naam",
+        ]
+    )).sort('-_score')[0:3]).add(Search().doc_type("complex").query(Q(
+        "multi_match",
+        query=query,
+        type="phrase_prefix",
+        fields=[
+            "complexnaam",
+        ]
+    )).sort('-_score')[0:3]))
 
 
 def get_autocomplete_response(client, query):
@@ -376,7 +377,7 @@ class TypeaheadViewSet(viewsets.ViewSet):
 
         query = request.query_params['q'].strip().lower()
 
-        if len(query) < 4:
+        if len(query) < 3:
             return Response([])
 
         response = self.get_autocomplete_response(self.client, query)
