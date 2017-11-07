@@ -194,6 +194,18 @@ class MonumentViewSet(DatapuntViewSet):
         return serializers.MonumentSerializerNonAuth
 
 
+class SimpleMonumentViewSet(MonumentViewSet):
+    """
+    Speciale ViewSet voor POC koppeling maps.amsterdam.nl
+    """
+    pagination_class = None
+    serializer_detail_class = serializers.MonumentSerializerMap
+    queryset = Monument.objects.filter(monumentnummer__isnull=False)
+
+    def get_serializer_class(self):
+        return serializers.MonumentSerializerMap
+
+
 class SitueringFilter(FilterSet):
     monument_id = filters.CharFilter()
     betreft_nummeraanduiding = filters.CharFilter()
