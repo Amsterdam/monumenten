@@ -34,16 +34,17 @@ naam_stripper = analysis.char_filter(
     ]
 )
 
-display_naam = es.analyzer(
-    'display_naam',
+
+monument_naam = es.analyzer(
+    'monument_naam',
     tokenizer='standard',
-    filter=['standard', 'lowercase', 'asciifolding', synonym_filter, noname_prefix_filter],
+    filter=['lowercase', 'trim', 'asciifolding', synonym_filter, noname_prefix_filter],
     char_filter=[naam_stripper],
 
 )
 
-naam = es.analyzer(
-    'naam',
+complex_naam = es.analyzer(
+    'complex_naam',
     tokenizer='standard',
     filter=['standard', 'lowercase', 'asciifolding', synonym_filter],
     char_filter=[naam_stripper],

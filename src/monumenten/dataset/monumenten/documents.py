@@ -13,7 +13,7 @@ class Monument(es.DocType):
     Elastic data for Monument
     """
     id = es.Keyword(index='not_analyzed')
-    display_naam = es.Text(fielddata=True, analyzer=analyzers.display_naam)
+    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam)
 
 
 class Complex(es.DocType):
@@ -21,16 +21,16 @@ class Complex(es.DocType):
     Elastic data for Complex
     """
     id = es.Keyword(index='not_analyzed')
-    complexnaam = es.Text(fielddata=True, analyzer=analyzers.naam)
+    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam)
 
 
 def from_monument(mon: models.Monument):
     m = Monument(_id='{}'.format(mon.id))
-    m.display_naam = mon.display_naam
+    m.naam = mon.display_naam
     return m
 
 
 def from_complex(comp: models.Complex):
     c = Complex(_id='{}'.format(comp.id))
-    c.complexnaam = comp.complexnaam
+    c.naam = comp.complexnaam
     return c

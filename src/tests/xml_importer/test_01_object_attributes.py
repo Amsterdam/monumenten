@@ -152,7 +152,7 @@ class TestSearch(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data['count'] > 0)
         self.assertEqual(response.data['results'][0]['type'], 'complex')
-        self.assertEqual(response.data['results'][0]['complexnaam'], 'Complex1999')
+        self.assertEqual(response.data['results'][0]['naam'], 'Complex1999')
         self.assertEqual(response.data['results'][0]['_links']['self']['href'],
                          'http://testserver/monumenten/complexen/9d278d0d-c5c0-4c8d-9f4e-081d7706b42e/')
 
@@ -166,13 +166,13 @@ class TestSearch(APITestCase):
         response = self.client.get(search_endpoint, {'q': "".join(query)})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) > 0)
-        self.assertEqual(response.data[0]['content'][0]['display_naam'], 'Monumentje')
+        self.assertEqual(response.data[0]['content'][0]['naam'], 'Monumentje')
         self.assertEqual(response.data[0]['content'][0]['uri'], 'monumenten/monumenten/d5cc6402-d211-4981-b965-08a559837218')
 
         query = 'complex1999'
         response = self.client.get(search_endpoint, {'q': "".join(query)})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) > 0)
-        self.assertEqual(response.data[0]['content'][0]['complexnaam'], 'Complex1999 (complex)')
+        self.assertEqual(response.data[0]['content'][0]['naam'], 'Complex1999 (complex)')
 
 

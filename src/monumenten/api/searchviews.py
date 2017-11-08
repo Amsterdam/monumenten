@@ -51,9 +51,9 @@ def multimatch_complexen_monumenten_q(query):
         "multi_match",
         query=query,
         type="phrase_prefix",
+        max_expansions=100,
         fields=[
-            "display_naam",
-            "complexnaam"
+            "naam",
         ]
     )
 
@@ -101,10 +101,9 @@ def multimatch_q(query):
         "multi_match",
         query=query,
         type="phrase_prefix",
-        slop=12,
-        max_expansions=12,
+        max_expansions=100,
         fields=[
-            'display_naam'
+            "naam"
         ]
     )
 
@@ -284,7 +283,7 @@ class SearchComplexenMonumentenViewSet(SearchViewSet):
     Zoek-Monumenten
 
     Given a query parameter `q`, this function returns a subset of
-    all monument objects that match the display_naam elastic search query.
+    all monument objects that match the naam elastic search query.
 
     """
     metadata_class = QueryMetadata
@@ -303,14 +302,14 @@ def autocomplete_query(client, query):
         query=query,
         type="phrase_prefix",
         fields=[
-            "display_naam",
+            "naam",
         ]
     )).sort('-_score')[0:3]).add(Search().doc_type("complex").query(Q(
         "multi_match",
         query=query,
         type="phrase_prefix",
         fields=[
-            "complexnaam",
+            "naam",
         ]
     )).sort('-_score')[0:3]))
 
@@ -323,11 +322,11 @@ def get_autocomplete_response(client, query):
         for hit in result.hits:
             if hit.meta.doc_type == 'complex':
                 uri_part = 'complexen'
-                name = 'complexnaam'
+                name = 'naam'
                 name_extension = ' (complex)'
             else:
                 uri_part = 'monumenten'
-                name = 'display_naam'
+                name = 'naam'
                 name_extension = ''
 
             content.append({
