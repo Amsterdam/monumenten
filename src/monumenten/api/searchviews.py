@@ -63,7 +63,7 @@ def add_sorting():
     Give human understandable sorting to the output
     """
     return (
-        '-_score',
+        'naam.raw',
     )
 
 
@@ -122,6 +122,7 @@ def default_search_query(client, query: str):
         .query(
             multimatch_q(query)
         )
+        .sort("naam.raw")
     )
 
 
@@ -304,14 +305,14 @@ def autocomplete_query(client, query):
         fields=[
             "naam",
         ]
-    )).sort('-_score')[0:3]).add(Search().doc_type("complex").query(Q(
+    )).sort('naam.raw')[0:3]).add(Search().doc_type("complex").query(Q(
         "multi_match",
         query=query,
         type="phrase_prefix",
         fields=[
             "naam",
         ]
-    )).sort('-_score')[0:3]))
+    )).sort('naam.raw')[0:3]))
 
 
 def get_autocomplete_response(client, query):

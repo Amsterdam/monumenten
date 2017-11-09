@@ -13,7 +13,8 @@ class Monument(es.DocType):
     Elastic data for Monument
     """
     id = es.Keyword(index='not_analyzed')
-    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam)
+    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam,
+                   fields={'raw': es.String(index='not_analyzed')})
 
 
 class Complex(es.DocType):
@@ -21,7 +22,8 @@ class Complex(es.DocType):
     Elastic data for Complex
     """
     id = es.Keyword(index='not_analyzed')
-    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam)
+    naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam,
+                   fields={'raw': es.String(index='not_analyzed') } )
 
 
 def from_monument(mon: models.Monument):
