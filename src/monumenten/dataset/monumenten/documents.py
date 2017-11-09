@@ -23,7 +23,7 @@ class Complex(es.DocType):
     """
     id = es.Keyword(index='not_analyzed')
     naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam,
-                   fields={'raw': es.String(index='not_analyzed') } )
+                   fields={'raw': es.String(index='not_analyzed')})
 
 
 def from_monument(mon: models.Monument):
