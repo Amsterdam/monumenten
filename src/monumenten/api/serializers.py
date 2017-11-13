@@ -2,11 +2,11 @@ import json
 import logging
 
 from rest_framework import serializers
-from monumenten.dataset.static_data import UNESCO_GEBIED
 
 from monumenten.api.rest import DisplayField
 from monumenten.api.rest import HALSerializer
 from monumenten.dataset.models import Situering, Monument, Complex
+from monumenten.dataset.static_data import UNESCO_GEBIED
 
 log = logging.getLogger(__name__)
 
@@ -239,7 +239,6 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
 
 
 class SitueringSerializer(BaseSerializer, HALSerializer):
-
     _display = DisplayField()
 
     _links = serializers.SerializerMethodField()
@@ -259,7 +258,7 @@ class SitueringSerializer(BaseSerializer, HALSerializer):
             'betreft_nummeraanduiding',
             'eerste_situering',
             'hoort_bij_monument',
-       ]
+        ]
 
     def get_identificerende_sleutel_situering(self, obj):
         return obj.id
