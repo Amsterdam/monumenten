@@ -192,7 +192,7 @@ class MonumentSerializerMap(serializers.ModelSerializer):
         if obj.monumentcoordinaten is not None:
             obj.monumentcoordinaten.transform(4326)
             in_unesco = obj.monumentcoordinaten.intersects(UNESCO_GEBIED)
-        return f"{obj.monumenttype}||{'Y' if in_unesco else 'N'}"
+        return f"{obj.monumenttype}||{'J' if in_unesco else 'N'}"
 
     def get_LABEL(self, obj):
         return obj.monumentstatus
@@ -210,7 +210,10 @@ class MonumentSerializerMap(serializers.ModelSerializer):
         return "0"
 
     def get_SELECTIE(self, obj):
-        return "RIJKS" if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
+        selectie = "RIJKS" if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
+        if obj.redengevende_omschrijving_monument is not None:
+            selectie += "_PLUS"
+        return selectie
 
     def get_TYPE(self, obj):
         return "punt"
