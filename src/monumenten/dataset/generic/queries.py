@@ -48,12 +48,11 @@ class ElasticQueryWrapper(object):
     def to_elasticsearch_object(self, client) -> Search:
         assert self.indexes
 
-        search = (
-            Search()
-                .using(client)
-                .index(*self.indexes)
-                .query(self.query)
-        )
+        search = (Search().
+                  using(client).
+                  index(*self.indexes).
+                  query(self.query)
+                  )
         if self.sort_fields:
             search = search.sort(*self.sort_fields)
 

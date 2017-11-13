@@ -44,37 +44,37 @@ def get_url(request, hit):
 
 def multimatch_complexen_monumenten_q(query):
     return {
-            'bool': {
-                'should': [
-                    {
-                        'constant_score': {
-                            'query': {
-                                'prefix': {
-                                    'naam.keyword': query,
-                                }
-                            },
-                            'boost': 10,
+        'bool': {
+            'should': [
+                {
+                    'constant_score': {
+                        'query': {
+                            'prefix': {
+                                'naam.keyword': query,
+                            }
                         },
+                        'boost': 10,
                     },
-                    {
-                        'constant_score': {
-                            'query': {
-                                'multi_match': {
-                                    'query': query,
-                                    'type': 'phrase_prefix',
-                                    'max_expansions': 100,
-                                    'fields': [
-                                        'naam',
-                                    ]
-                                }
-                            },
-                            'boost': 5,
-                        }
+                },
+                {
+                    'constant_score': {
+                        'query': {
+                            'multi_match': {
+                                'query': query,
+                                'type': 'phrase_prefix',
+                                'max_expansions': 100,
+                                'fields': [
+                                    'naam',
+                                ]
+                            }
+                        },
+                        'boost': 5,
                     }
-                ],
-                'minimum_should_match': 1,
-            }
+                }
+            ],
+            'minimum_should_match': 1,
         }
+    }
 
 
 def multimatch_complexen_monumenten_q_wrapper(query) -> ElasticQueryWrapper:
