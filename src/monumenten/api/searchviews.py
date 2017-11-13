@@ -15,6 +15,7 @@ from rest_framework.reverse import reverse
 
 import logging
 
+from monumenten.dataset.generic.queries import ElasticQueryWrapper
 
 log = logging.getLogger(__name__)
 
@@ -42,28 +43,67 @@ def get_url(request, hit):
 
 
 def multimatch_complexen_monumenten_q(query):
-    """
-    Main 'One size fits all' search query used
-    """
-    log.debug('%20s %s', multimatch_complexen_monumenten_q.__name__, query)
+    return {
+            'bool': {
+                'should': [
+                    {
+                        'constant_score': {
+                            'query': {
+                                'prefix': {
+                                    'naam.keyword': query,
+                                }
+                            },
+                            'boost': 10,
+                        },
+                    },
+                    {
+                        'constant_score': {
+                            'query': {
+                                'multi_match': {
+                                    'query': query,
+                                    'type': 'phrase_prefix',
+                                    'max_expansions': 100,
+                                    'fields': [
+                                        'naam',
+                                    ]
+                                }
+                            },
+                            'boost': 5,
+                        }
+                    }
+                ],
+                'minimum_should_match': 1,
+            }
+        }
 
-    return Q(
-        "multi_match",
-        query=query,
-        type="phrase_prefix",
-        max_expansions=100,
-        fields=[
-            "naam",
-        ]
-    )
 
+def multimatch_complexen_monumenten_q_wrapper(query) -> ElasticQueryWrapper:
+    """
+    Basis openbare-ruimte query.
 
-def add_sorting():
+    Het resultaat ordent pure prefix matches vóór phrase_prefix matches.
     """
-    Give human understandable sorting to the output
-    """
-    return (
-        'naam.raw',
+
+    # Logica:
+    # Het doel is om 'echte' prefix-matches te sorteren vóór phrase-prefix
+    # matches.  Met alleen phrase-prefix kan dat niet, dus we gebruiken twee
+    # 'should' queries waarvan er minimaal één moet matchen. Met de
+    # constant_score wrapper zorgen we ervoor dat alle 'prefix' matches een
+    # score van 10 krijgen, en alle 'phrase_prefix' matches een score van 5.
+    # De 'constant_score' op de 'must' voorkomt dat die in de weg zit.  Op
+    # basis van deze output kunnen we vervolgens ordenen op score, gevolgd
+    # door naam.
+    #
+    # Voorbeelden: Zoeken op hort, geeft eerst Hortus Botanicus, dan pas BRUG 232, HORTUS
+    log.debug('%20s %s', multimatch_complexen_monumenten_q_wrapper.__name__, query)
+
+    sort_fields = ['_score', 'naam.keyword']
+
+    return ElasticQueryWrapper(
+        query=multimatch_complexen_monumenten_q(query),
+        indexes=[MONUMENTEN],
+        sort_fields=sort_fields,
+        size=50,
     )
 
 
@@ -71,11 +111,7 @@ def search_complexen_monumenten_query(view, client, query):
     """
     Execute search on adresses
     """
-    return (
-        Search().using(client).index(MONUMENTEN).query(
-            multimatch_complexen_monumenten_q(query)
-        ).sort(*add_sorting())
-    )
+    return multimatch_complexen_monumenten_q_wrapper(query).to_elasticsearch_object(client)
 
 
 class QueryMetadata(metadata.SimpleMetadata):
@@ -298,21 +334,10 @@ def autocomplete_query(client, query):
     :return: Ordered sets of responses for monuments and complexes closest to the requested query
     """
 
-    return (MultiSearch().using(client).index(MONUMENTEN).add(Search().doc_type("monument").query(Q(
-        "multi_match",
-        query=query,
-        type="phrase_prefix",
-        fields=[
-            "naam",
-        ]
-    )).sort('naam.raw')[0:3]).add(Search().doc_type("complex").query(Q(
-        "multi_match",
-        query=query,
-        type="phrase_prefix",
-        fields=[
-            "naam",
-        ]
-    )).sort('naam.raw')[0:3]))
+    return (MultiSearch().using(client).index(MONUMENTEN).add(Search().doc_type("monument").query(
+            multimatch_complexen_monumenten_q(query)).sort('_score', 'naam.raw')[0:3]).add(
+        Search().doc_type("complex").query(
+            multimatch_complexen_monumenten_q(query)).sort('_score', 'naam.raw')[0:3]))
 
 
 def get_autocomplete_response(client, query):

@@ -34,7 +34,6 @@ naam_stripper = analysis.char_filter(
     ]
 )
 
-
 monument_naam = es.analyzer(
     'monument_naam',
     tokenizer='standard',
@@ -48,4 +47,10 @@ complex_naam = es.analyzer(
     tokenizer='standard',
     filter=['standard', 'lowercase', 'asciifolding', synonym_filter],
     char_filter=[naam_stripper],
+)
+
+subtype = es.analyzer(
+    'subtype',
+    tokenizer='keyword',
+    filter=['lowercase'],
 )

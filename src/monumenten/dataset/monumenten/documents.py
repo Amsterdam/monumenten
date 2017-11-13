@@ -14,7 +14,8 @@ class Monument(es.DocType):
     """
     id = es.Keyword(index='not_analyzed')
     naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam,
-                   fields={'raw': es.String(index='not_analyzed')})
+                   fields={'raw': es.Text(fielddata=True, index='not_analyzed'),
+                           'keyword': es.Text(fielddata=True, analyzer=analyzers.subtype)})
 
 
 class Complex(es.DocType):
@@ -23,7 +24,8 @@ class Complex(es.DocType):
     """
     id = es.Keyword(index='not_analyzed')
     naam = es.Text(fielddata=True, analyzer=analyzers.monument_naam,
-                   fields={'raw': es.String(index='not_analyzed')})
+                   fields={'raw': es.Text(fielddata=True, index='not_analyzed'),
+                           'keyword': es.Text(fielddata=True, analyzer=analyzers.subtype)})
 
 
 def from_monument(mon: models.Monument):
