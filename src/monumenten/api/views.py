@@ -1,5 +1,5 @@
 # Create your views here.
-from authorization_django import levels as authorization_levels
+import authorization_levels
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
 
