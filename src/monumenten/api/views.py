@@ -194,6 +194,25 @@ class MonumentViewSet(DatapuntViewSet):
         return serializers.MonumentSerializerNonAuth
 
 
+class MapsMonumentFilter(FilterSet):
+    SELECT = filters.CharFilter(method="SELECT_filter")
+
+    # verblijfs object filter
+
+    class Meta(object):
+        model = Monument
+        fields = ('SELECT',)
+
+    def SELECT_filter(self, queryset, _filter_name, value):
+        """
+        Filter based on the SELECT
+        """
+        status = 'Rijksmonument' if 'RIJKS' in value else 'Gemeentelijk monument'
+        omschrijving_is_null = '_PLUS' not in value
+        return queryset.filter(monumentstatus=status,
+                               redengevende_omschrijving_monument__isnull=omschrijving_is_null)
+
+
 class SimpleMonumentViewSet(MonumentViewSet):
     """
     Speciale ViewSet voor POC koppeling maps.amsterdam.nl
@@ -201,6 +220,7 @@ class SimpleMonumentViewSet(MonumentViewSet):
     pagination_class = None
     serializer_detail_class = serializers.MonumentSerializerMap
     queryset = Monument.objects.filter(monumentnummer__isnull=False)
+    filter_class = MapsMonumentFilter
 
     def get_serializer_class(self):
         return serializers.MonumentSerializerMap
