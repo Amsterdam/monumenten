@@ -184,7 +184,7 @@ class MonumentSerializerMap(serializers.ModelSerializer):
     def get_COORDS(self, obj):
         if obj.monumentcoordinaten is not None:
             obj.monumentcoordinaten.transform(4326)
-            return f'{obj.monumentcoordinaten.x:.7},{obj.monumentcoordinaten.y:.7}||'
+            return f'{obj.monumentcoordinaten.x:.7f},{obj.monumentcoordinaten.y:.7f}||'
         return f'0,0||'
 
     def get_FILTER(self, obj):
@@ -200,13 +200,13 @@ class MonumentSerializerMap(serializers.ModelSerializer):
     def get_LATMAX(self, obj):
         if obj.monumentcoordinaten is not None:
             obj.monumentcoordinaten.transform(4326)
-            return f"result: {obj.monumentcoordinaten.y:.7}"
+            return f"result: {obj.monumentcoordinaten.y:.7f}"
         return "0"
 
     def get_LNGMAX(self, obj):
         if obj.monumentcoordinaten is not None:
             obj.monumentcoordinaten.transform(4326)
-            return f"result: {obj.monumentcoordinaten.x:.7}"
+            return f"result: {obj.monumentcoordinaten.x:.7f}"
         return "0"
 
     def get_SELECTIE(self, obj):
