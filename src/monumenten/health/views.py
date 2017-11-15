@@ -71,15 +71,14 @@ def check_data(request):
     # check elastic
     try:
         client = elasticsearch.Elasticsearch(settings.ELASTIC_SEARCH_HOSTS)
-        x = elasticsearch_dsl.Search().using(client).index(settings.ELASTIC_INDICES['MONUMENTEN']).query("match_all").execute()
-        assert x.hits.total  > 3000
+        x = elasticsearch_dsl.Search().using(client).index(settings.ELASTIC_INDICES['MONUMENTEN']).query(
+            "match_all").execute()
+        assert x.hits.total > 3000
 
     except:
         log.exception("Too few monumenten data in ES database")
         return HttpResponse(
             "Autocomplete failed", content_type="text/plain", status=500)
 
-
     return HttpResponse(
         "Data OK", content_type='text/plain', status=200)
-
