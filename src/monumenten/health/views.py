@@ -3,6 +3,10 @@ import logging
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
+
+import elasticsearch
+import elasticsearch_dsl
+
 try:
     # noinspection PyUnresolvedReferences
     from django.apps import apps
@@ -24,14 +28,6 @@ log = logging.getLogger(__name__)
 
 
 def health(request):
-    # check debug
-
-    if settings.DEBUG:
-        log.exception("Debug mode not allowed in production")
-        return HttpResponse(
-            "Debug mode not allowed in production",
-            content_type="text/plain", status=500)
-
     # check database
     try:
         with connection.cursor() as cursor:
@@ -41,6 +37,24 @@ def health(request):
         log.exception("Database connectivity failed")
         return HttpResponse(
             "Database connectivity failed",
+            content_type="text/plain", status=500)
+
+    # check elastic search
+    try:
+        client = elasticsearch.Elasticsearch(settings.ELASTIC_SEARCH_HOSTS)
+        es = elasticsearch_dsl.Search()
+        es.using(client).query("match", all="x").execute()
+    except AttributeError:
+        message = "ELASTIC_SEARCH_HOSTS not in settings"
+        log.exception(message)
+        return HttpResponse(
+            message,
+            content_type="text/plain", status=500)
+    except BaseException:
+        message = "No elastic search server found on {}".format(settings.ELASTIC_SEARCH_HOSTS)
+        log.exception(message)
+        return HttpResponse(
+            message,
             content_type="text/plain", status=500)
 
     return HttpResponse(
@@ -53,5 +67,19 @@ def check_data(request):
         return HttpResponse(
             "Too few monumenten data in the database",
             content_type="text/plain", status=500)
+
+    # check elastic
+    try:
+        client = elasticsearch.Elasticsearch(settings.ELASTIC_SEARCH_HOSTS)
+        x = elasticsearch_dsl.Search().using(client).index(settings.ELASTIC_INDICES['MONUMENTEN']).query("match_all").execute()
+        assert x.hits.total  > 3000
+
+    except:
+        log.exception("Too few monumenten data in ES database")
+        return HttpResponse(
+            "Autocomplete failed", content_type="text/plain", status=500)
+
+
     return HttpResponse(
-        "Database data OK", content_type='text/plain', status=200)
+        "Data OK", content_type='text/plain', status=200)
+
