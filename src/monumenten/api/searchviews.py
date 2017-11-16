@@ -348,11 +348,11 @@ def get_autocomplete_response(client, query):
         for hit in result.hits:
             if hit.meta.doc_type == 'complex':
                 uri_part = 'complexen'
-                name = 'naam'
+                name = '_display'
                 name_extension = ' (complex)'
             else:
                 uri_part = 'monumenten'
-                name = 'naam'
+                name = '_display'
                 name_extension = ''
 
             content.append({
