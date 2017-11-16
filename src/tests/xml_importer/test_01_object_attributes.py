@@ -167,7 +167,7 @@ class TestSearch(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data) > 0)
         self.assertEqual(response.data[0]['content'][0]['_display'], 'Monumentje')
-        self.assertEqual(response.data[0]['content'][0]['uri'], 'monumenten/monumenten/d5cc6402-d211-4981-b965-08a559837218')
+        self.assertEqual(response.data[0]['content'][0]['uri'], 'monumenten/monumenten/d5cc6402-d211-4981-b965-08a559837218/')
 
         query = 'complex1999'
         response = self.client.get(search_endpoint, {'q': "".join(query)})
