@@ -357,7 +357,7 @@ def get_autocomplete_response(client, query):
 
             content.append({
                 '_display': '{v}{e}'.format(v=hit[name], e=name_extension),
-                'uri': 'monumenten/{u}/{v}'.format(u=uri_part, v=hit.meta.id)
+                'uri': 'monumenten/{u}/{v}/'.format(u=uri_part, v=hit.meta.id)
             })
 
     return [{
