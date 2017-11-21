@@ -8,7 +8,6 @@ services:
       POSTGRES_DB: monumenten
       POSTGRES_USER: monumenten
       POSTGRES_PASSWORD: insecure
-      LOCAL: "True"
     volumes:
       - "~/.ssh/datapunt.key:/root/.ssh/datapunt.key"
 
