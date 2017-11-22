@@ -219,7 +219,7 @@ class SimpleMonumentViewSet(MonumentViewSet):
     """
     pagination_class = None
     serializer_detail_class = serializers.MonumentSerializerMap
-    queryset = Monument.objects.filter(monumentnummer__isnull=False)
+    queryset = Monument.objects.filter(monumentnummer__isnull=False, monumentcoordinaten__isnull=False)
     filter_class = MapsMonumentFilter
 
     def get_serializer_class(self):

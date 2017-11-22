@@ -182,32 +182,24 @@ class MonumentSerializerMap(serializers.ModelSerializer):
         fields = ['COORDS', 'FILTER', 'LABEL', 'LATMAX', 'LNGMAX', 'SELECTIE', 'TYPE', 'VOLGNR']
 
     def get_COORDS(self, obj):
-        if obj.monumentcoordinaten is not None:
-            obj.monumentcoordinaten.transform(4326)
-            return f'{obj.monumentcoordinaten.x:.7f},{obj.monumentcoordinaten.y:.7f}||'
-        return f'0,0||'
+        obj.monumentcoordinaten.transform(4326)
+        return f'{obj.monumentcoordinaten.x:.7f},{obj.monumentcoordinaten.y:.7f}||'
 
     def get_FILTER(self, obj):
-        in_unesco = False
-        if obj.monumentcoordinaten is not None:
-            obj.monumentcoordinaten.transform(4326)
-            in_unesco = obj.monumentcoordinaten.intersects(UNESCO_GEBIED)
+        obj.monumentcoordinaten.transform(4326)
+        in_unesco = obj.monumentcoordinaten.intersects(UNESCO_GEBIED)
         return f"{obj.monumenttype}||{'J' if in_unesco else 'N'}"
 
     def get_LABEL(self, obj):
         return obj.monumentstatus
 
     def get_LATMAX(self, obj):
-        if obj.monumentcoordinaten is not None:
-            obj.monumentcoordinaten.transform(4326)
-            return f"{obj.monumentcoordinaten.y:.7f}"
-        return "0"
+        obj.monumentcoordinaten.transform(4326)
+        return f"{obj.monumentcoordinaten.y:.7f}"
 
     def get_LNGMAX(self, obj):
-        if obj.monumentcoordinaten is not None:
-            obj.monumentcoordinaten.transform(4326)
-            return f"{obj.monumentcoordinaten.x:.7f}"
-        return "0"
+        obj.monumentcoordinaten.transform(4326)
+        return f"{obj.monumentcoordinaten.x:.7f}"
 
     def get_SELECTIE(self, obj):
         selectie = "RIJKS" if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
