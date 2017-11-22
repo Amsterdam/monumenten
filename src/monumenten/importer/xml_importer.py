@@ -55,7 +55,12 @@ def get_in_onderzoek(tags):
 
 def get_geometry(item):
     if 'Polygoon' in item:
-        gm = GEOSGeometry(item['Polygoon'])
+        polygon = item['Polygoon']
+        if type(item) == list:
+            functional_errors.append(
+                'Object has more than one Polygon:  {}'.format(item['Id']))
+            polygon = polygon[0]
+        gm = GEOSGeometry(polygon)
         if gm.geom_type == 'GeometryCollection':
             return gm
         geometry = GeometryCollection(gm)
@@ -112,6 +117,10 @@ def convert_to_verzendsleutel(id):
     """
         prepend '0' 3630000092647 --> 03630000092647
     """
+    if type(id) == list:
+        functional_errors.append(
+            'Object has more than 1 Pandsleutel:' + ' '.join(id))
+        id = id[0]
     assert id.__len__() == 13
     return '0' + id
 
