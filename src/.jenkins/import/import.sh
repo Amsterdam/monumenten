@@ -14,7 +14,7 @@ trap 'dc kill ; dc rm -f' EXIT
 rm -rf ${DIR}/backups
 mkdir -p ${DIR}/backups
 
-
+dc pull
 dc build
 
 dc up -d database elasticsearch
