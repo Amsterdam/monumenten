@@ -56,7 +56,7 @@ def get_in_onderzoek(tags):
 def get_geometry(item):
     if 'Polygoon' in item:
         polygon = item['Polygoon']
-        if type(item) == list:
+        if type(polygon) == list:
             functional_errors.append(
                 'Object has more than one Polygon:  {}'.format(item['Id']))
             polygon = polygon[0]
