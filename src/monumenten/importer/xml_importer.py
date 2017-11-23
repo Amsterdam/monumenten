@@ -1,3 +1,4 @@
+import time
 import logging
 
 import xmltodict
@@ -11,8 +12,8 @@ log = logging.getLogger(__name__)
 functional_errors = []
 
 
-def match(dict, attribute, value):
-    return attribute in dict and dict[attribute] == value and True or False
+def match(dict1, attribute, value):
+    return attribute in dict1 and dict1[attribute] == value and True or False
 
 
 def get_note(item, text_list, text_type, text_status):
@@ -100,37 +101,37 @@ def update_create_complex(item, monument_id=None):
         )
 
 
-def get_coordinates(point, id):
+def get_coordinates(point, id1):
     if type(point) == list:
         functional_errors.append(
-            'Object has more than 1 coordinate:' + id)
+            'Object has more than 1 coordinate:' + id1)
         return GEOSGeometry(point[0], srid=28992)
     point = GEOSGeometry(point, srid=28992)
     if type(point) == MultiPoint:
         functional_errors.append(
-            'Object has a Multipoint coordinate:' + id)
+            'Object has a Multipoint coordinate:' + id1)
         return point[0]
     return point
 
 
-def convert_to_verzendsleutel(id):
+def convert_to_verzendsleutel(id1):
     """
         prepend '0' 3630000092647 --> 03630000092647
     """
     if type(id) == list:
         functional_errors.append(
-            'Object has more than 1 Pandsleutel:' + ' '.join(id))
-        id = id[0]
-    assert id.__len__() == 13
-    return '0' + id
+            'Object has more than 1 Pandsleutel:' + ' '.join(id1))
+        id1 = id1[0]
+    assert id1.__len__() == 13
+    return '0' + id1
 
 
-def get_functie(functie, id):
+def get_functie(functie, id1):
     """Alleen functies met _ zijn valide"""
 
     if type(functie) == list:
-        functional_errors.append('Multiple tag "functie" for Object id: {}'.format(id))
-        return get_functie(functie[0], id)
+        functional_errors.append('Multiple tag "functie" for Object id: {}'.format(id1))
+        return get_functie(functie[0], id1)
     if functie.startswith('_'):
         return functie.replace('_', '', 1)
     return None
@@ -142,8 +143,14 @@ def get_koppel_status(koppel_status):
     return koppel_status
 
 
+# Global variable for batch creation
+batch_size = 50
+monuments_batch = []
+situeringen_batch = []
+
+
 def update_create_adress(monument, adress):
-    return Situering.objects.create(
+    situering = Situering(
         external_id=adress['Id'],
         monument=monument,
         betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_verzendsleutel(
@@ -159,6 +166,9 @@ def update_create_adress(monument, adress):
         postcode='Postcode' in adress and adress['Postcode'] or None,
         straat='Straat' in adress and adress['Straat'] or None
     )
+    global situeringen_batch
+    situeringen_batch.append(situering)
+    return situering
 
 
 def update_create_adresses(monument, adress):
@@ -195,7 +205,7 @@ def format_address(a):
 
 
 def update_create_monument(item, created_complex):
-    monument = Monument.objects.create(
+    monument = Monument(
         id=item['Id'],
         external_id=item['Id'],
         monument_aanwijzingsdatum=item.get('AanwijzingsDatum', None),
@@ -225,8 +235,17 @@ def update_create_monument(item, created_complex):
         main_address = update_create_adresses(monument, item['Adres'])
         if monument.display_naam is None:
             monument.display_naam = format_address(main_address)
-            monument.save()
 
+    global monuments_batch
+    global situeringen_batch
+    global batch_size
+    monuments_batch.append(monument)
+    if len(monuments_batch) > batch_size:
+        Monument.objects.bulk_create(monuments_batch)
+        monuments_batch = []
+        if len(situeringen_batch) > 0:
+            Situering.objects.bulk_create(situeringen_batch)
+            situeringen_batch = []
     return monument
 
 
@@ -244,19 +263,31 @@ def handle(_, item):
 
 
 def import_file(filename):
+    start = time.time()
     log.info('Clean database')
     Situering.objects.all().delete()
     Monument.objects.all().delete()
     Complex.objects.all().delete()
 
     log.info('Start import')
-    Monument.objects.all().delete()
     with open(filename, "r", encoding='utf-16') as fd:
         xmltodict.parse(fd.read(), item_depth=2, item_callback=handle)
+
+    global monuments_batch
+    if len(monuments_batch) > 0:
+        Monument.objects.bulk_create(monuments_batch)
+        monuments_batch = []
+    global situeringen_batch
+    if len(situeringen_batch) > 0:
+        Situering.objects.bulk_create(situeringen_batch)
+        situeringen_batch = []
+
     log.info("Monument count: {}".format(Monument.objects.count()))
     log.info("Complex count: {}".format(Complex.objects.count()))
     log.info("Situering count: {}".format(Situering.objects.count()))
 
     for e in functional_errors:
         log.info(e)
-    log.info('Import done')
+
+    total_seconds = time.time() - start
+    log.info('Import done in {:.2f} seconds'.format(total_seconds))

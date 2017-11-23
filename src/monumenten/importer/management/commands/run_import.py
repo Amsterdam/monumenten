@@ -34,6 +34,7 @@ class Command(BaseCommand):
             for file_name in objectstore.fetch_import_file_names():
                 local_file = objectstore.copy_file_from_objectstore(file_name)
                 xml_importer.import_file(local_file)
+
         if options['run-index']:
             for job_class in self.indexes['monumenten']:
                 job_class().execute()

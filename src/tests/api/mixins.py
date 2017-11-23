@@ -10,7 +10,7 @@ class JWTMixin(object):
     jwks = middleware_settings()['JWKS'].signers
 
     assert len(jwks) > 0
-    (kid, key), = jwks.items()
+    (kid, key) = list(jwks.items())[0]
 
     def employee_credentials(self, scope=None):
         return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(scope)))

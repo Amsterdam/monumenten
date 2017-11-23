@@ -28,6 +28,9 @@ elasticsearch-dsl==5.3.0
 factory-boy==2.7.0
 fake-factory==0.7.2
 flake8==3.3.0
+gevent==1.2.0
+greenlet==0.4.11
+grequests==0.3.0
 iso8601==0.1.11
 itypes==1.1.0
 jinja2==2.9.6
