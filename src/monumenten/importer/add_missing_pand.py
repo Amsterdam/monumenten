@@ -6,6 +6,7 @@ import grequests
 import gevent
 from requests import Session
 from gevent.queue import JoinableQueue
+from django.db.models import Q
 from monumenten.dataset.models import Monument
 # NOTE : The previous two lines should also be set in manage.py
 # Other we get unpredictable recursion overflow errors
@@ -44,7 +45,8 @@ def add_missing_pand():
     Do  a search with the address of monument where type is Pand betreft_pand is missing
     """
     status_job = gevent.spawn(fix_counter)
-    missing_pand_monuments = list(Monument.objects.all().filter(betreft_pand__isnull=True, monumenttype='Pand'))
+    missing_pand_monuments = list(Monument.objects.all().filter(Q(monumenttype='Pand') | Q(monumenttype='Bouwblok'),
+                                                                betreft_pand__isnull=True))
 
     count = len(missing_pand_monuments)
     if count == 0:
