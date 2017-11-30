@@ -13,7 +13,7 @@ functional_errors = []
 
 
 def match(dict1, attribute, value):
-    return attribute in dict1 and dict1[attribute] == value and True or False
+    return attribute in dict1 and dict1[attribute] == value
 
 
 def get_note(item, text_list, text_type, text_status):
