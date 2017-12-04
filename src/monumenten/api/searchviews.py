@@ -304,7 +304,15 @@ class SearchViewSet(viewsets.ViewSet):
         result['type'] = hit.meta.doc_type
         result['dataset'] = hit.meta.index
 
-        result.update(hit.to_dict())
+        if result['type'] == 'complex':
+            name_extension = ' (complex)'
+        else:
+            name_extension = ''
+
+        hit_dict = hit.to_dict()
+        hit_dict['_display'] = hit_dict['naam'] + name_extension
+        del hit_dict['naam']
+        result.update(hit_dict)
 
         return result
 
