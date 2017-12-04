@@ -152,7 +152,7 @@ class TestSearch(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data['count'] > 0)
         self.assertEqual(response.data['results'][0]['type'], 'complex')
-        self.assertEqual(response.data['results'][0]['naam'], 'Complex1999')
+        self.assertEqual(response.data['results'][0]['_display'], 'Complex1999 (complex)')
         self.assertEqual(response.data['results'][0]['_links']['self']['href'],
                          'http://testserver/monumenten/complexen/9d278d0d-c5c0-4c8d-9f4e-081d7706b42e/')
 
