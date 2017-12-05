@@ -5,6 +5,11 @@ from gevent import monkey
 monkey.patch_all(thread=False, select=False)
 
 if __name__ == "__main__":
+    """
+    This is a special version of manage.py for run_add_missing_pand.
+    This version imports gevent and  does the  monkey patching.
+    We do not want to do that for all other tasks.
+    """
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "monumenten.settings")
     try:
         from django.core.management import execute_from_command_line
