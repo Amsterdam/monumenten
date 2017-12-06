@@ -301,7 +301,8 @@ class SearchViewSet(viewsets.ViewSet):
         result = OrderedDict()
         result['_links'] = get_url(request, hit)
 
-        result['type'] = hit.meta.doc_type
+        result['type'] = 'monument'
+        result['subtype'] = hit.meta.doc_type
         result['dataset'] = hit.meta.index
 
         hit_dict = hit.to_dict()
