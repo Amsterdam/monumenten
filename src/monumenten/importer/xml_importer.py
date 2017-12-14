@@ -118,7 +118,7 @@ def convert_to_verzendsleutel(id1):
     """
         prepend '0' 3630000092647 --> 03630000092647
     """
-    if type(id) == list:
+    if type(id1) == list:
         functional_errors.append(
             'Object has more than 1 Pandsleutel:' + ' '.join(id1))
         id1 = id1[0]
