@@ -1,4 +1,4 @@
-FROM amsterdam/python:latest
+FROM amsterdam/python
 MAINTAINER datapunt@amsterdam.nl
 
 ENV PYTHONUNBUFFERED 1
@@ -11,16 +11,7 @@ ENV JWT_SHARED_SECRET_KEY=${JWT_SHARED_SECRET_KEY}
 
 EXPOSE 8000
 
-RUN apt-get install -y \
-		gdal-bin \
-		libgeos-dev \
-		netcat \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& adduser --system datapunt
-
 WORKDIR /app
-
 
 # CI hook - see .jenkins/README.TXT
 COPY .jenkins/import /.jenkins-import/

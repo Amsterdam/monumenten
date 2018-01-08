@@ -5,6 +5,8 @@ services:
     environment:
       POSTGRES_PASSWORD: insecure
       POSTGRES_USER: monumenten
+    volumes:
+      - ./backups:/tmp/backups
 
   elasticsearch:
     image: amsterdam/elasticsearch5
@@ -15,7 +17,8 @@ services:
 
 
   importer:
-    image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
+#    image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
+    build: ../../
     links:
       - database
       - elasticsearch
@@ -34,33 +37,3 @@ services:
               && python manage.py run_bag_key_conversions\
               && python manage.py run_import_validation\
               && python manage.py run_refresh_materialized_views"
-
-  db-backup:
-    image: amsterdam/postgres
-    links:
-      - database:db
-    volumes:
-      - ./backups:/tmp/backups
-    command: >
-      bash -c "echo db:5432:monumenten:monumenten:insecure > ~/.pgpass \
-              && chmod 600 ~/.pgpass \
-              && pg_dump --clean \
-                          -Fc \
-                          -t dataset* \
-                          -t geo*  \
-                          -t django_migrations  \
-                          -T auth*    \
-                          -U monumenten \
-                          -h db -p 5432 \
-                          monumenten > /tmp/backups/database.dump"
-
-  el-backup:
-    image: amsterdam/elasticsearch5
-    volumes:
-      - ./backups/elasticsearch:/tmp/backups
-    user: root
-    command: >
-      bash -c "chmod -R 777 /tmp/backups \
-              && curl -X PUT http://elasticsearch:9200/_snapshot/backup -d '{ \"type\": \"fs\", \"settings\": { \"location\": \"/tmp/backups\" }}' \
-              && curl -X PUT http://elasticsearch:9200/_snapshot/backup/monumenten?wait_for_completion=true -d '{ \"indices\": \"monumenten\" }' \
-              && chmod -R 777 /tmp/backups"
