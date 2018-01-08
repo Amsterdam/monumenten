@@ -15,7 +15,6 @@ services:
     volumes:
       - ./backups/elasticsearch:/tmp/backups
 
-
   importer:
     image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
     links:
@@ -28,4 +27,4 @@ services:
       DATABASE_PASSWORD: insecure
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
     command: >
-      bash -c "/.jenkins-import/docker-import-db.sh"
+      bash -c "/.jenkins/import/docker-import-db.sh"

@@ -21,7 +21,7 @@ dc build
 
 dc up -d database
 dc up -d elasticsearch
-dc run importer /app/.jenkins/docker-wait.sh
+dc run importer /.jenkins/docker-wait.sh
 
 dc exec -T database update-table.sh bag bag_pand public monumenten
 dc exec -T database update-table.sh bag bag_nummeraanduiding public monumenten
