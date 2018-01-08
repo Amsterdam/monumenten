@@ -17,8 +17,7 @@ services:
 
 
   importer:
-#    image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
-    build: ../../
+    image: build.datapunt.amsterdam.nl:5000/datapunt/monumenten:${ENVIRONMENT}
     links:
       - database
       - elasticsearch
@@ -28,12 +27,5 @@ services:
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
       DATAPUNT_API_URL: ${DATAPUNT_API_URL:-https://api.data.amsterdam.nl/}
-
     command: >
-      bash -c "/app/.jenkins/docker-wait.sh \
-              && python manage.py migrate \
-              && python manage.py run_import \
-              && python manage_gevent.py run_add_missing_pand \
-              && python manage.py run_bag_key_conversions\
-              && python manage.py run_import_validation\
-              && python manage.py run_refresh_materialized_views"
+      bash -c "/.jenkins-import/docker-import-db.sh"
