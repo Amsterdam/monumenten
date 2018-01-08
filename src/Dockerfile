@@ -14,6 +14,7 @@ EXPOSE 8000
 WORKDIR /app
 
 # CI hook - see .jenkins/README.TXT
+COPY .jenkins /.jenkins
 COPY .jenkins/docker-migrate.sh /app/
 
 COPY requirements.txt /app/
