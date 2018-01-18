@@ -32,19 +32,28 @@ def get_url(request, hit):
     """
     Get a detail API url for hit
     """
-    doc_type, doc_id = hit.meta.doc_type, hit.meta.id
+    doc_type, doc_id = hit.type, hit.meta.id
 
     if doc_type in _details:
         return OrderedDict([
             ('self', dict(
-                href=reverse(_details[doc_type], kwargs=dict(pk=doc_id), request=request)
+                href=reverse(
+                    _details[doc_type],
+                    kwargs=dict(pk=doc_id), request=request)
             ))
         ])
 
 
-def multimatch_complexen_monumenten_q(query):
-    return {
+def multimatch_complexen_monumenten_q(query, _type=None):
+
+    must = []
+
+    if _type:
+        must.append(Q('term', type=_type))
+
+    q = {
         'bool': {
+            'must': must,
             'should': [
                 {
                     'constant_score': {
@@ -75,6 +84,8 @@ def multimatch_complexen_monumenten_q(query):
             'minimum_should_match': 1,
         }
     }
+
+    return q
 
 
 def multimatch_complexen_monumenten_q_wrapper(query) -> ElasticQueryWrapper:
@@ -109,7 +120,7 @@ def multimatch_complexen_monumenten_q_wrapper(query) -> ElasticQueryWrapper:
 
 def search_complexen_monumenten_query(view, client, query):
     """
-    Execute search on adresses
+    Execute search on monumenten
     """
     return multimatch_complexen_monumenten_q_wrapper(query).to_elasticsearch_object(client)
 
@@ -301,14 +312,14 @@ class SearchViewSet(viewsets.ViewSet):
         result = OrderedDict()
         result['_links'] = get_url(request, hit)
 
-        result['type'] = 'monument'
-        result['subtype'] = hit.meta.doc_type
+        result['subtype'] = hit.type
         result['dataset'] = hit.meta.index
 
         hit_dict = hit.to_dict()
         hit_dict['_display'] = hit_dict['naam']
         del hit_dict['naam']
         result.update(hit_dict)
+        result['type'] = 'monument'
 
         return result
 
@@ -335,13 +346,26 @@ class SearchComplexenMonumentenViewSet(SearchViewSet):
 
 def autocomplete_query(client, query):
     """
-    :return: Ordered sets of responses for monuments and complexes closest to the requested query
+    :return: Ordered sets of responses for monuments
+    and complexes closest to the requested query
     """
 
-    return (MultiSearch().using(client).index(MONUMENTEN).add(Search().doc_type("monument").query(
-            multimatch_complexen_monumenten_q(query)).sort('_score', 'naam.raw')[0:3]).add(
-        Search().doc_type("complex").query(
-            multimatch_complexen_monumenten_q(query)).sort('_score', 'naam.raw')[0:3]))
+    return (
+        MultiSearch()
+        .using(client).index(MONUMENTEN)
+        .add(
+            Search()
+            .query(
+                multimatch_complexen_monumenten_q(
+                    query, _type='monument'))
+            .sort('_score', 'naam.raw')[0:3]
+        )
+        .add(
+            Search().query(
+                multimatch_complexen_monumenten_q(
+                    query, _type='complex'))
+            .sort('_score', 'naam.raw')[0:3])
+    )
 
 
 def get_autocomplete_response(client, query):
@@ -350,7 +374,7 @@ def get_autocomplete_response(client, query):
     content = []
     for result in results:
         for hit in result.hits:
-            if hit.meta.doc_type == 'complex':
+            if hit.type == 'complex':
                 uri_part = 'complexen'
                 name = 'naam'
                 name_extension = ' (complex)'

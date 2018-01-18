@@ -1,7 +1,9 @@
 from collections import OrderedDict
 
+import django_filters
+
 from rest_framework import renderers, pagination, response, \
-    viewsets, filters
+    viewsets
 from rest_framework import serializers
 from rest_framework.utils.urls import replace_query_param
 
@@ -73,7 +75,8 @@ class HALPagination(pagination.PageNumberPagination):
 class DatapuntViewSet(DetailSerializerMixin, viewsets.ReadOnlyModelViewSet):
     renderer_classes = DEFAULT_RENDERERS
     pagination_class = HALPagination
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,)
 
 
 class DisplayField(serializers.Field):

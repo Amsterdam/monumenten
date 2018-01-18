@@ -25,8 +25,7 @@ from monumenten.api import urls as api_urls
 
 grouped_url_patterns = {
     'base_patterns': [
-        url(r'^status/', include('monumenten.health.urls',
-                                 namespace='health')),
+        url(r'^status/', include('monumenten.health.urls')),
     ],
     'monumenten_patterns': [
         url(r'^monumenten/', include(api_urls.urls)),

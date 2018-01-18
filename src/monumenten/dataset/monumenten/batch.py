@@ -6,7 +6,7 @@ from monumenten.dataset.monumenten import documents
 
 class DeleteMonumentenIndexTask(index.DeleteIndexTask):
     index = settings.ELASTIC_INDICES['MONUMENTEN']
-    doc_types = [documents.Monument, documents.Complex]
+    doc_types = [documents.Monument]
 
 
 class IndexMonumentenTask(index.ImportIndexTask):

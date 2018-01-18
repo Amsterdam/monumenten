@@ -58,7 +58,8 @@ class Monument(models.Model):
     monumenttype = models.CharField(max_length=128, null=True)
     heeft_als_grondslag_beperking = models.CharField(max_length=15, null=True)
 
-    complex = models.ForeignKey(Complex, related_name='monumenten', null=True)
+    complex = models.ForeignKey(
+        Complex, models.DO_NOTHING, related_name='monumenten', null=True)
 
     def __str__(self):
         if self.display_naam:
@@ -95,7 +96,7 @@ class Situering(models.Model):
     postcode = models.CharField(max_length=6, null=True)
     straat = models.CharField(max_length=80, null=True)
 
-    monument = models.ForeignKey(Monument, related_name='situeringen')
+    monument = models.ForeignKey(Monument, models.DO_NOTHING, related_name='situeringen')
 
     @property
     def hoort_bij_monument(self):
