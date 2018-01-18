@@ -48,7 +48,7 @@ def multimatch_complexen_monumenten_q(query):
             'should': [
                 {
                     'constant_score': {
-                        'query': {
+                        'filter': {
                             'prefix': {
                                 'naam.keyword': query,
                             }
@@ -58,7 +58,7 @@ def multimatch_complexen_monumenten_q(query):
                 },
                 {
                     'constant_score': {
-                        'query': {
+                        'filter': {
                             'multi_match': {
                                 'query': query,
                                 'type': 'phrase_prefix',
