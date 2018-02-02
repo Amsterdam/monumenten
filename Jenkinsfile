@@ -25,7 +25,7 @@ node {
     stage('Test') {
         tryStep "test", {
 
-            sh "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml rm && " +
+            sh "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml down && " +
 	    "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml build && " +
 	    "docker-compose -p monumenten -f src/.jenkins/test/docker-compose.yml run -u root --rm tests"
 
