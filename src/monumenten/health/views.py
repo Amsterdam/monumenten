@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connection
+from django.db import DatabaseError
 
 import elasticsearch
 import elasticsearch_dsl
@@ -27,13 +28,15 @@ except:
 log = logging.getLogger(__name__)
 
 
-def health(request):
-    # check database
+def health(_request):
+    """
+    check database
+    """
     try:
         with connection.cursor() as cursor:
             cursor.execute("select 1")
             assert cursor.fetchone()
-    except:
+    except DatabaseError:    # noqa
         log.exception("Database connectivity failed")
         return HttpResponse(
             "Database connectivity failed",
