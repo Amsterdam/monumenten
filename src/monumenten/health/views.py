@@ -19,7 +19,7 @@ from django.http import HttpResponse
 
 try:
     model = get_model(settings.HEALTH_MODEL)
-except:
+except AttributeError:
     raise ImproperlyConfigured(
         'settings.HEALTH_MODEL {} doesn\'t resolve to '
         'a useable model'.format(settings.HEALTH_MODEL))
@@ -78,7 +78,7 @@ def check_data(request):
             "match_all").execute()
         assert x.hits.total > 3000
 
-    except:
+    except elasticsearch.TransportError:
         log.exception("Too few monumenten data in ES database")
         return HttpResponse(
             "Autocomplete failed", content_type="text/plain", status=500)
