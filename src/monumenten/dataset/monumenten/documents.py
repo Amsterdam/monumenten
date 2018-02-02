@@ -30,7 +30,7 @@ def from_monument(mon: models.Monument):
 
 
 def from_complex(comp: models.Complex):
-    #c = Monument(_id='c{}'.format(comp.id))
+    # c = Monument(_id='c{}'.format(comp.id))
     c = Monument(_id='{}'.format(comp.id))
     c.naam = comp.complexnaam
     c.type = 'complex'

@@ -195,7 +195,7 @@ class MonumentViewSet(DatapuntViewSet):
 
 
 class MapsMonumentFilter(FilterSet):
-    SELECT = filters.CharFilter(method="SELECT_filter")
+    SELECT = filters.CharFilter(method="select_filter")
 
     # verblijfs object filter
 
@@ -203,7 +203,7 @@ class MapsMonumentFilter(FilterSet):
         model = Monument
         fields = ('SELECT',)
 
-    def SELECT_filter(self, queryset, _filter_name, value):
+    def select_filter(self, queryset, _filter_name, value):
         """
         Filter based on the SELECT
         """
