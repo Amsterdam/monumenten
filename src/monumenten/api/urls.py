@@ -46,6 +46,8 @@ monumenten.register(r'complexen', api_views.ComplexViewSet,
 
 monumenten.register(r'poc/monumenten', api_views.SimpleMonumentViewSet,
                     base_name='poc/monumenten')
+monumenten.register(r'poc/unesco', api_views.SimpleUnescoViewSet,
+                    base_name='poc/unesco')
 
 monumenten.register(r'typeahead', search_views.TypeaheadViewSet,
                     base_name='typeahead')

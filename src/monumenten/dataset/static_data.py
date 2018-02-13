@@ -37,4 +37,5 @@ UNESCO = '''{"type": "Polygon", "coordinates": [
      [121876.541, 486607.417]]]}'''
 
 UNESCO_GEBIED = GEOSGeometry(UNESCO)
-# UNESCO_GEBIED.transform(4326)
+UNESCO_GEBIED.srid = 28992
+UNESCO_GEBIED.transform(4326)

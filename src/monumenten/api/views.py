@@ -1,19 +1,19 @@
 # Create your views here.
+import logging
+
 import authorization_levels
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
-
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.measure import D
-from django.contrib.gis.geos import Point
-
 from rest_framework import serializers as rest_serializers
+from rest_framework import response
 
 from monumenten.api import serializers
 from monumenten.dataset.models import Monument, Situering, Complex
+from monumenten.dataset.static_data import UNESCO_GEBIED
 from .rest import DatapuntViewSet
-
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -195,9 +195,10 @@ class MonumentViewSet(DatapuntViewSet):
 
 
 class MapsMonumentFilter(FilterSet):
+    """
+    Speciaal Filter voor POC koppeling maps.amsterdam.nl
+    """
     SELECT = filters.CharFilter(method="select_filter")
-
-    # verblijfs object filter
 
     class Meta(object):
         model = Monument
@@ -224,6 +225,28 @@ class SimpleMonumentViewSet(MonumentViewSet):
 
     def get_serializer_class(self):
         return serializers.MonumentSerializerMap
+
+
+class SimpleUnescoViewSet(DatapuntViewSet):
+    """
+    Speciale ViewSet voor POC koppeling maps.amsterdam.nl
+    """
+    pagination_class = None
+    queryset = Monument.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        polygon = UNESCO_GEBIED.coords[0]
+        coords = list(map((lambda coords: f"{coords[0]:.7f},{coords[1]:.7f}"), polygon))
+        coord_str = '|'.join(coords)
+        return response.Response([{
+            "VOLGNR": 9,
+            "LABEL": "Grachtengordel Amsterdam Werelderfgoed (kerngebied)",
+            "SELECTIE": "KERN",
+            "TYPE": "vlak",
+            "COORDS": f"{coord_str}||",
+            "LATMAX": 52.3719254,
+            "LNGMAX": 4.895345
+        }])
 
 
 class SitueringFilter(FilterSet):

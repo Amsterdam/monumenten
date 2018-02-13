@@ -30,6 +30,8 @@ def in_docker():
         return ':/docker/' in cgroup or ':/docker-ce/' in cgroup
     except AttributeError:
         return False
+    except  FileNotFoundError:
+        return False
 
 
 OVERRIDE_HOST_ENV_VAR = 'DATABASE_HOST_OVERRIDE'
