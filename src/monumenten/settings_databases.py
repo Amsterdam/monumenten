@@ -30,7 +30,7 @@ def in_docker():
         return ':/docker/' in cgroup or ':/docker-ce/' in cgroup
     except AttributeError:
         return False
-    except  FileNotFoundError:
+    except FileNotFoundError:
         return False
 
 
