@@ -20,11 +20,10 @@ where s1.id = s2.id
 def update_landelijk_id_pand():
     with connection.cursor() as cursor:
         cursor.execute("""
-update dataset_monument m1
-set betreft_pand = m2.landelijk_id
-from (
-select m.id, p.landelijk_id from dataset_monument m join bag_pand p on m.betreft_pand = p.id
-) as m2
-where m1.id = m2.id
-        """)
-
+UPDATE dataset_pandrelatie pandrelatie
+SET pand_id = monument_pand.landelijk_id
+FROM (
+  SELECT m.id, p.landelijk_id FROM dataset_monument m, dataset_pandrelatie pr, bag_pand p 
+  WHERE m.id=pr.monument_id AND pr.pand_id=p.id
+) AS monument_pand
+WHERE pandrelatie.monument_id = monument_pand.id """)
