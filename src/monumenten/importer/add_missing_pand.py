@@ -1,16 +1,19 @@
-import logging
 import datetime
-import time
+import logging
 import re
-import grequests
+import time
+
 import gevent
-from requests import Session
-from gevent.queue import JoinableQueue
+import grequests
 from django.db.models import Q
-from monumenten.dataset.models import Monument
 # NOTE : The previous two lines should also be set in manage.py
 # Other we get unpredictable recursion overflow errors
 from gevent import monkey
+from gevent.queue import JoinableQueue
+from requests import Session
+
+from monumenten.dataset.models import Monument, PandRelatie
+
 monkey.patch_all(thread=False, select=False)
 
 # this module should be run with a special version of manage_gevent.py that does the monkey patching right at the start
@@ -47,15 +50,18 @@ def add_missing_pand():
     Do  a search with the address of monument where type is Pand betreft_pand is missing
     """
     status_job = gevent.spawn(fix_counter)
-    missing_pand_monuments = list(Monument.objects.all().filter(Q(monumenttype='Pand') | Q(monumenttype='Bouwblok'),
-                                                                betreft_pand__isnull=True))
+    missing_pand_monuments = list(Monument.objects.filter(
+        Q(monumenttype='Pand') | Q(monumenttype='Bouwblok'),
+        betreft_pand__isnull=True))
 
     count = len(missing_pand_monuments)
     if count == 0:
         return
-    log.info('Start Finding and correct missing panden for {} monuments'.format(count))
+    log.info('Start Finding and correct missing panden for {} monuments'.format(
+        count))
     STATS['total'] = count
-    jobs = [gevent.spawn(create_search_verblijfsobject_tasks, missing_pand_monuments)]
+    jobs = [gevent.spawn(create_search_verblijfsobject_tasks,
+                         missing_pand_monuments)]
     for _ in range(WORKERS):
         jobs.append(
             gevent.spawn(async_get_verblijfsobject))
@@ -136,7 +142,8 @@ class SearchAddressTask:
                     results[0]['_links']['self']['href'])
                 if m:
                     verblijfsobject_id = m.group(1)
-                    corrected = self.determine_verblijfsobject_pand(verblijfsobject_id)
+                    corrected = self.determine_verblijfsobject_pand(
+                        verblijfsobject_id)
         if corrected:
             STATS['correcties'] += 1
         else:
@@ -151,8 +158,10 @@ class SearchAddressTask:
             if len(results) > 0:
                 pand = results[0]['landelijk_id']
                 if pand is not None:
-                    self.monument.betreft_pand = pand
-                    self.monument.save()
+                    PandRelatie(
+                        monument=self,
+                        pand_id=pand
+                    ).save()
                     return True
         return False
 

@@ -5,11 +5,10 @@ from rest_framework import serializers
 
 from monumenten.api.rest import DisplayField
 from monumenten.api.rest import HALSerializer
-from monumenten.dataset.models import Situering, Monument, Complex
+from monumenten.dataset.models import Situering, Monument, Complex, PandRelatie
 from monumenten.dataset.static_data import UNESCO_GEBIED
 
 log = logging.getLogger(__name__)
-
 
 OPENFIELDS_MONUMENT = [
     '_links',
@@ -68,14 +67,14 @@ class BaseSerializer(object):
             }
         }
 
-    def dict_with__links_self_href_id(self, path, id, id_name):
+    def dict_with__links_self_href_id(self, path, link_id, id_name):
         return {
             "_links": {
                 "self": {
-                    "href": self.href_url(path.format(id))
+                    "href": self.href_url(path.format(link_id))
                 }
             },
-            id_name: id
+            id_name: link_id
         }
 
     def dict_with_count_href(self, count, path):
@@ -83,6 +82,23 @@ class BaseSerializer(object):
             "count": count,
             "href": self.href_url(path)
         }
+
+
+class PandRelatieSerializer(serializers.ModelSerializer, BaseSerializer):
+    class Meta(object):
+        model = PandRelatie
+        fields = ['pandidentificatie', '_links']
+
+    pandidentificatie = serializers.CharField(source='pand_id', read_only=True)
+    _links = serializers.SerializerMethodField()
+
+    def get__links(self, obj):
+        if obj.pand_id:
+            return {
+                "self": {
+                    "href": self.href_url('/bag/pand/{}/'.format(obj.pand_id))
+                }
+            }
 
 
 class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
@@ -99,8 +115,10 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
         return self.dict_with_self_href(
             '/monumenten/complexen/{}/'.format(obj.id))
 
-    def get_identificerende_sleutel_complex(self, obj):
-        return obj.id
+    @staticmethod
+    def get_identificerende_sleutel_complex(obj):
+        if obj:
+            return obj.id
 
     def get_monumenten(self, obj):
         nr_monumenten = obj.monumenten.count()
@@ -109,18 +127,16 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
 
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
-
     class Meta(object):
         model = Complex
         fields = OPENFIELDS_COMPLEX + NON_OPENFIELDS_COMPLEX
 
 
 class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
-
     _links = serializers.SerializerMethodField()
     _display = DisplayField()
     ligt_in_complex = serializers.SerializerMethodField()
-    betreft_pand = serializers.SerializerMethodField()
+    betreft_pand = PandRelatieSerializer(many=True, required=False)
     heeft_situeringen = serializers.SerializerMethodField()
     heeft_als_grondslag_beperking = serializers.SerializerMethodField()
     identificerende_sleutel_monument = serializers.SerializerMethodField()
@@ -129,14 +145,15 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
         model = Monument
         fields = OPENFIELDS_MONUMENT
 
-    def get_identificerende_sleutel_monument(self, obj):
+    @staticmethod
+    def get_identificerende_sleutel_monument(obj):
         return obj.id
 
     def get_ligt_in_complex(self, obj):
         if obj.complex:
             return self.dict_with__links_self_href_id(
                 path='/monumenten/complexen/{}/',
-                id=obj.complex.id,
+                link_id=obj.complex.id,
                 id_name='identificerende_sleutel_complex')
 
     def get_heeft_situeringen(self, obj):
@@ -145,17 +162,11 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
             str(obj.id))
         return self.dict_with_count_href(nr_of_situeringen, path)
 
-    def get_betreft_pand(self, obj):
-        if obj.betreft_pand:
-            return self.dict_with__links_self_href_id(path='/bag/pand/{}/',
-                                                      id=obj.betreft_pand,
-                                                      id_name='pandidentificatie')
-
     def get_heeft_als_grondslag_beperking(self, obj):
         if obj.heeft_als_grondslag_beperking:
             return self.dict_with__links_self_href_id(
                 path='/wkpb/beperking/{}/',
-                id=obj.heeft_als_grondslag_beperking,
+                link_id=obj.heeft_als_grondslag_beperking,
                 id_name='id')
 
     def get__links(self, obj):
@@ -164,6 +175,7 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
                 obj.id))
 
 
+# noinspection PyPep8Naming,PyMethodMayBeStatic,PyUnusedLocal
 class MonumentSerializerMap(serializers.ModelSerializer):
     """
     Speciale Serializer voor POC koppeling maps.amsterdam.nl
@@ -179,11 +191,13 @@ class MonumentSerializerMap(serializers.ModelSerializer):
 
     class Meta(object):
         model = Monument
-        fields = ['COORDS', 'FILTER', 'LABEL', 'LATMAX', 'LNGMAX', 'SELECTIE', 'TYPE', 'VOLGNR']
+        fields = ['COORDS', 'FILTER', 'LABEL', 'LATMAX', 'LNGMAX', 'SELECTIE',
+                  'TYPE', 'VOLGNR']
 
     def get_COORDS(self, obj):
         obj.monumentcoordinaten.transform(4326)
-        return f'{obj.monumentcoordinaten.x:.7f},{obj.monumentcoordinaten.y:.7f}||'
+        return f'{obj.monumentcoordinaten.x:.7f},' \
+               f'{obj.monumentcoordinaten.y:.7f}||'
 
     def get_FILTER(self, obj):
         obj.monumentcoordinaten.transform(4326)
@@ -202,7 +216,8 @@ class MonumentSerializerMap(serializers.ModelSerializer):
         return f"{obj.monumentcoordinaten.x:.7f}"
 
     def get_SELECTIE(self, obj):
-        selectie = "RIJKS" if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
+        selectie = "RIJKS" \
+            if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
         if obj.redengevende_omschrijving_monument is not None:
             selectie += "_PLUS"
         return selectie
@@ -241,7 +256,7 @@ class SitueringSerializer(BaseSerializer, HALSerializer):
     hoort_bij_monument = serializers.SerializerMethodField()
     identificerende_sleutel_situering = serializers.SerializerMethodField()
 
-    filter_fields = ('monument_id')
+    filter_fields = ('monument_id', )
 
     class Meta(object):
         model = Situering
@@ -255,21 +270,22 @@ class SitueringSerializer(BaseSerializer, HALSerializer):
             'hoort_bij_monument',
         ]
 
-    def get_identificerende_sleutel_situering(self, obj):
+    @staticmethod
+    def get_identificerende_sleutel_situering(obj):
         return obj.id
 
     def get_betreft_nummeraanduiding(self, obj):
         if obj.betreft_nummeraanduiding:
             return self.dict_with__links_self_href_id(
                 path='/bag/nummeraanduiding/{}/',
-                id=obj.betreft_nummeraanduiding,
+                link_id=obj.betreft_nummeraanduiding,
                 id_name='nummeraanduidingidentificatie')
 
     def get_hoort_bij_monument(self, obj):
         if obj.hoort_bij_monument:
             return self.dict_with__links_self_href_id(
                 path='/monumenten/monumenten/{}/',
-                id=obj.hoort_bij_monument,
+                link_id=obj.hoort_bij_monument,
                 id_name='identificerende_sleutel_monument')
 
     def get__links(self, obj):

@@ -58,8 +58,8 @@ class TestAPIEndpoints(APITestCase):
     invalid_urls = [
         ('monumenten', (
             # location not in amsterdam should raise error 400
-            ('?locatie=100144.32,417722.88,10'),
-            ('?locatie=51.39638,3.90177,10')
+            '?locatie=100144.32,417722.88,10',
+            '?locatie=51.39638,3.90177,10'
         ))
     ]
 
@@ -94,15 +94,16 @@ class TestAPIEndpoints(APITestCase):
         self.assertEqual(
             200, response.status_code,
             'Expected response code {} '
-            'received {} for {}'.format(200,
-                                        response.status_code,
-                                        url))
+            'received {} for {}'.format(
+                200,
+                response.status_code,
+                url))
 
         self.assertEqual(
             'application/json', response['Content-Type'],
             'Wrong Content-Type for {}'.format(url))
 
-        if isinstance((nr_of_rows), int):
+        if isinstance(nr_of_rows, int):
             self.assertEqual(
                 response.data['count'],
                 nr_of_rows,
@@ -151,5 +152,5 @@ class TestAPIEndpoints(APITestCase):
         self.assertIn('monumenten', response.data)
         self.assertIn('count', response.data['monumenten'])
         self.assertIn('href', response.data['monumenten'])
-        self.assertIn('/monumenten/monumenten/?complex_id=', response.data['monumenten']['href'])
-
+        self.assertIn('/monumenten/monumenten/?complex_id=',
+                      response.data['monumenten']['href'])

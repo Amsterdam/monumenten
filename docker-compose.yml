@@ -14,6 +14,8 @@ services:
   elasticsearch:
     image: amsterdam/elasticsearch6
     command:  elasticsearch -Ehttp.host=0.0.0.0 -Etransport.host=127.0.0.1
+    volumes:
+      - "~/.ssh/datapunt.key:/root/.ssh/datapunt.key"
     ports:
       - "9200:9200"
       - "9300:9300"

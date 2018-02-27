@@ -1,25 +1,14 @@
 from collections import OrderedDict
 
 import django_filters
-
 from rest_framework import renderers, pagination, response, \
     viewsets
 from rest_framework import serializers
 from rest_framework.utils.urls import replace_query_param
-
 from rest_framework_extensions.mixins import DetailSerializerMixin
 
 DEFAULT_RENDERERS = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer)
 FORMATS = [dict(format=r.format, type=r.media_type) for r in DEFAULT_RENDERERS]
-
-
-#
-# class DataSetSerializerMixin(object):
-#     def to_representation(self, obj):
-#         result = super().to_representation(obj)
-#         result['dataset'] = self.dataset
-#         return result
-#
 
 
 class LinksField(serializers.HyperlinkedIdentityField):

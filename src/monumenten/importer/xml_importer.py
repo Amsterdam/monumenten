@@ -1,11 +1,10 @@
-import time
 import logging
+import time
 
 import xmltodict
-
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection, MultiPoint
 
-from monumenten.dataset.models import Monument, Complex, Situering
+from monumenten.dataset.models import Monument, Complex, Situering, PandRelatie
 
 log = logging.getLogger(__name__)
 
@@ -94,7 +93,8 @@ def update_create_complex(item, monument_id=None):
         return Complex.objects.create(
             id=complex_id,
             external_id=complex_id,
-            beschrijving_complex=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            beschrijving_complex=get_note(
+                item, 'Tekst', 'Beschrijving', 'Afgerond'),
             monumentnummer_complex=item.get('Monumentnummer', None),
             complexnaam=item.get('Naam', None),
             complexstatus=item.get('Status', None)
@@ -130,7 +130,8 @@ def get_functie(functie, id1):
     """Alleen functies met _ zijn valide"""
 
     if type(functie) == list:
-        functional_errors.append('Multiple tag "functie" for Object id: {}'.format(id1))
+        functional_errors.append(
+            'Multiple tag "functie" for Object id: {}'.format(id1))
         return get_functie(functie[0], id1)
     if functie.startswith('_'):
         return functie.replace('_', '', 1)
@@ -146,6 +147,7 @@ def get_koppel_status(koppel_status):
 # Global variable for batch creation
 batch_size = 50
 monuments_batch = []
+pandrelatie_batch = []
 situeringen_batch = []
 
 
@@ -155,8 +157,9 @@ def update_create_adress(monument, adress):
         monument=monument,
         betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_verzendsleutel(
             adress['VerzendSleutel']) or None,
-        situering_nummeraanduiding='KoppelStatus' in adress and get_koppel_status(adress[
-            'KoppelStatus']) or None,
+        situering_nummeraanduiding='KoppelStatus' in adress and get_koppel_status(
+            adress[
+                'KoppelStatus']) or None,
         eerste_situering='KoppelEerste' in adress and
                          adress['KoppelEerste'] == 'true' and 'J' or 'N',
         huisnummer='Huisnummer' in adress and adress['Huisnummer'] or None,
@@ -205,6 +208,11 @@ def format_address(a):
 
 
 def update_create_monument(item, created_complex):
+    global monuments_batch
+    global pandrelatie_batch
+    global situeringen_batch
+    global batch_size
+
     monument = Monument(
         id=item['Id'],
         external_id=item['Id'],
@@ -212,10 +220,13 @@ def update_create_monument(item, created_complex):
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
                    item['Afbeelding']['Id'] or None,
         architect_ontwerp_monument=item.get('Architect', None),
-        beschrijving_monument=get_note(item, 'Tekst', 'Beschrijving', 'Afgerond'),
+        beschrijving_monument=get_note(
+            item, 'Tekst', 'Beschrijving', 'Afgerond'),
         complex=created_complex,
-        monumentcoordinaten='Punt' in item and get_coordinates(item['Punt'], item['Id']) or None,
-        oorspronkelijke_functie_monument='Functie' in item and get_functie(item['Functie'], item['Id']) or None,
+        monumentcoordinaten='Punt' in item and get_coordinates(
+            item['Punt'], item['Id']) or None,
+        oorspronkelijke_functie_monument='Functie' in item and get_functie(
+            item['Functie'], item['Id']) or None,
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
             item['Tag']) and 'J' or 'N',
@@ -223,22 +234,28 @@ def update_create_monument(item, created_complex):
         monumentnaam=item.get('Naam', None),
         display_naam=item.get('Naam', None),
         opdrachtgever_bouw_monument=item.get('Opdrachtgever', None),
-        betreft_pand='PandSleutel' in item and convert_to_verzendsleutel(
-            item['PandSleutel']) or None,
         bouwjaar_start_bouwperiode_monument=item.get('PeriodeStart', None),
         bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),
-        redengevende_omschrijving_monument=get_note(item, 'Tekst', 'Redengevende omschrijving', 'Vastgesteld'),
+        redengevende_omschrijving_monument=get_note(item, 'Tekst',
+                                                    'Redengevende omschrijving',
+                                                    'Vastgesteld'),
         monumentstatus=item.get('Status', None),
         monumenttype=item.get('Type', None),
         heeft_als_grondslag_beperking=item.get('WkpbInschrijfnummer', None))
+
     if 'Adres' in item:
         main_address = update_create_adresses(monument, item['Adres'])
         if monument.display_naam is None:
             monument.display_naam = format_address(main_address)
 
-    global monuments_batch
-    global situeringen_batch
-    global batch_size
+    if 'PandSleutel' in item:
+        pandsleutels = item['PandSleutel']
+        if type(item['PandSleutel']) != list:
+            pandsleutels = [pandsleutels]
+
+        for pandsleutel in pandsleutels:
+            add_pandrelatie(pandsleutel, monument, pandrelatie_batch)
+
     monuments_batch.append(monument)
     if len(monuments_batch) > batch_size:
         Monument.objects.bulk_create(monuments_batch)
@@ -246,7 +263,29 @@ def update_create_monument(item, created_complex):
         if len(situeringen_batch) > 0:
             Situering.objects.bulk_create(situeringen_batch)
             situeringen_batch = []
+        if len(pandrelatie_batch) > 0:
+            PandRelatie.objects.bulk_create(pandrelatie_batch)
+            pandrelatie_batch = []
     return monument
+
+
+def add_pandrelatie(id, monument, relaties):
+    """
+    Create a new pandrelatie bases on a Monument and a PandId
+    :param id: The pandId
+    :param monument: The monument the pand is related to
+    :param relaties: The batch of pand<>Monument relations
+    :return: None
+    """
+
+    assert id.__len__() == 13
+    pandid = '0' + id
+    relaties.append(
+        PandRelatie(
+            monument=monument,
+            pand_id=pandid
+        )
+    )
 
 
 def handle(_, item):
@@ -255,7 +294,8 @@ def handle(_, item):
         update_create_complex(item)
     else:
         if 'ParentObject' in item:
-            created_complex = update_create_complex(item['ParentObject'], item['Id'])
+            created_complex = update_create_complex(item['ParentObject'],
+                                                    item['Id'])
             update_create_monument(item, created_complex)
         else:
             update_create_monument(item, None)
@@ -267,6 +307,7 @@ def import_file(filename):
     log.info('Clean database')
     Situering.objects.all().delete()
     Monument.objects.all().delete()
+    PandRelatie.objects.all().delete()
     Complex.objects.all().delete()
 
     log.info('Start import')
@@ -274,9 +315,14 @@ def import_file(filename):
         xmltodict.parse(fd.read(), item_depth=2, item_callback=handle)
 
     global monuments_batch
+    global pandrelatie_batch
     if len(monuments_batch) > 0:
         Monument.objects.bulk_create(monuments_batch)
         monuments_batch = []
+        if len(pandrelatie_batch) > 0:
+            PandRelatie.objects.bulk_create(pandrelatie_batch)
+            pandrelatie_batch = []
+
     global situeringen_batch
     if len(situeringen_batch) > 0:
         Situering.objects.bulk_create(situeringen_batch)

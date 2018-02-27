@@ -131,6 +131,8 @@ class MonumentFilter(FilterSet):
     id = filters.CharFilter()
 
     locatie = filters.CharFilter(method="locatie_filter")
+    betreft_pand = filters.CharFilter(field_name='betreft_pand__pand_id')
+
 
     # verblijfs object filter
 

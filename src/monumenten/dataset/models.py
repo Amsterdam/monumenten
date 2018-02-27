@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.db.models import CASCADE
 
 
 class Complex(models.Model):
@@ -50,7 +51,6 @@ class Monument(models.Model):
     monumentnaam = models.CharField(max_length=255, null=True)
     display_naam = models.CharField(max_length=255, null=True)
     opdrachtgever_bouw_monument = models.CharField(max_length=128, null=True)
-    betreft_pand = models.CharField(max_length=16, null=True)
     bouwjaar_start_bouwperiode_monument = models.IntegerField(null=True)
     bouwjaar_eind_bouwperiode_monument = models.IntegerField(null=True)
     redengevende_omschrijving_monument = models.TextField(null=True)
@@ -69,6 +69,21 @@ class Monument(models.Model):
         if self.situeringen:
             return repr(self.situeringen.first())
         return "Monument {}".format(self.id)
+
+    class Meta:
+        ordering = ('external_id', )
+
+
+class PandRelatie(models.Model):
+    id = models.AutoField(primary_key=True)
+    monument = models.ForeignKey(Monument,
+                                 related_name='betreft_pand',
+                                 on_delete=CASCADE,
+                                 primary_key=False,
+                                 unique=False)
+
+    # Kan dit een foreign key zijn in dit model?
+    pand_id = models.CharField(max_length=16, null=True)
 
 
 class Situering(models.Model):
@@ -96,7 +111,10 @@ class Situering(models.Model):
     postcode = models.CharField(max_length=6, null=True)
     straat = models.CharField(max_length=80, null=True)
 
-    monument = models.ForeignKey(Monument, models.DO_NOTHING, related_name='situeringen')
+    monument = models.ForeignKey(
+        Monument,
+        on_delete=models.DO_NOTHING,
+        related_name='situeringen')
 
     @property
     def hoort_bij_monument(self):

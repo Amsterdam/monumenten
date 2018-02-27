@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import factory
 from django.contrib.gis.geos import Point
 from factory import fuzzy
+
 from monumenten.dataset import models
 
 
@@ -13,7 +14,6 @@ def gen_janee():
 
 
 def create_testset(nr=10):
-
     point = Point(121944.32, 487722.88)
 
     for n0 in range(nr):
@@ -46,6 +46,12 @@ class SitueringFactory(factory.DjangoModelFactory):
     straat = fuzzy.FuzzyText(length=80)
 
 
+class PandrelatieDataFactory(factory.DjangoModelFactory):
+    class Meta(object):
+        model = models.PandRelatie
+
+    pand_id = factory.sequence(lambda n: n)
+
 class MonumentenDataFactory(factory.DjangoModelFactory):
     class Meta(object):
         model = models.Monument
@@ -63,19 +69,19 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     in_onderzoek = fuzzy.FuzzyText(length=3)
     monumentnummer = factory.sequence(lambda n: n)
     monumentnaam = fuzzy.FuzzyText(length=255)
-    monumentnaam = fuzzy.FuzzyText(length=255)
     opdrachtgever_bouw_monument = fuzzy.FuzzyText(length=128)
-    betreft_pand = factory.sequence(lambda n: n)
     if random.randint(0, 50) % 4:
         redengevende_omschrijving_monument = fuzzy.FuzzyText()
     if random.randint(0, 50) % 4:
         monumentstatus = fuzzy.FuzzyText(length=128)
     monumenttype = fuzzy.FuzzyText(length=128)
+    betreft_pand = factory.RelatedFactory(PandrelatieDataFactory, 'monument')
 
 
 class ComplexFactory(factory.DjangoModelFactory):
     class Meta(object):
         model = models.Complex
+
     external_id = fuzzy.FuzzyText(length=36)
 
     beschrijving_complex = fuzzy.FuzzyText()
