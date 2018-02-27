@@ -159,7 +159,7 @@ class SearchAddressTask:
                 pand = results[0]['landelijk_id']
                 if pand is not None:
                     PandRelatie(
-                        monument=self,
+                        monument=self.monument,
                         pand_id=pand
                     ).save()
                     return True
