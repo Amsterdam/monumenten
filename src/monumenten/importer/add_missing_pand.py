@@ -155,14 +155,17 @@ class SearchAddressTask:
         data = self.get_response(parameters, url=SEARCH_PAND_URL)
         if 'results' in data:
             results = data['results']
+            found_and_saved_pand = False
             if len(results) > 0:
-                pand = results[0]['landelijk_id']
-                if pand is not None:
-                    PandRelatie(
-                        monument=self.monument,
-                        pand_id=pand
-                    ).save()
-                    return True
+                for result in results:
+                    pand = result['landelijk_id']
+                    if pand is not None:
+                        PandRelatie(
+                            monument=self.monument,
+                            pand_id=pand
+                        ).save()
+                        found_and_saved_pand = True
+                return found_and_saved_pand
         return False
 
 
