@@ -85,6 +85,9 @@ class PandRelatie(models.Model):
     # Kan dit een foreign key zijn in dit model?
     pand_id = models.CharField(max_length=16, null=True)
 
+    class Meta:
+        unique_together = ('monument', 'pand_id',)
+
 
 class Situering(models.Model):
     """

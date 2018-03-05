@@ -19,17 +19,14 @@ class Migration(migrations.Migration):
             name='monument',
             options={'ordering': ('external_id',)},
         ),
-        migrations.RemoveField(
-            model_name='monument',
-            name='betreft_pand',
-        ),
         migrations.AlterField(
             model_name='monument',
             name='complex',
-            field=models.ForeignKey(null=True,
-                                    on_delete=django.db.models.deletion.DO_NOTHING,
-                                    related_name='monumenten',
-                                    to='dataset.Complex'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name='monumenten',
+                to='dataset.Complex'),
         ),
         migrations.AlterField(
             model_name='situering',
@@ -41,8 +38,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pandrelatie',
             name='monument',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                    related_name='betreft_pand',
-                                    to='dataset.Monument'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='betreft_pand',
+                to='dataset.Monument'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='pandrelatie',
+            unique_together={('monument', 'pand_id')},
         ),
     ]

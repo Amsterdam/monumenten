@@ -9,7 +9,7 @@ source /.jenkins/docker-wait.sh
 # load data in database
 python manage.py migrate
 python manage.py run_import
-python manage_gevent.py run_add_missing_pand
 python manage.py run_bag_key_conversions
+python manage_gevent.py run_add_missing_pand
 python manage.py run_import_validation
 python manage.py run_refresh_materialized_views

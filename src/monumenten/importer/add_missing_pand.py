@@ -85,12 +85,13 @@ def add_missing_pand():
 
 def create_search_verblijfsobject_tasks(missing_pand_monuments):
     for mpm in missing_pand_monuments:
-        s = mpm.situeringen.all().filter(eerste_situering='J')
-        if s and len(s) > 0:
-            address = str(s[0]).lower()
-            while SEARCHES_QUEUE.full():
-                gevent.sleep(2)
-            SEARCHES_QUEUE.put([mpm, address])
+        situeringen = mpm.situeringen.all()
+        if situeringen and len(situeringen) > 0:
+            for situering in situeringen:
+                address = str(situering).lower()
+                while SEARCHES_QUEUE.full():
+                    gevent.sleep(2)
+                SEARCHES_QUEUE.put([mpm, address])
         else:
             log.error("Missing address for monument %s", mpm)
 
@@ -160,10 +161,10 @@ class SearchAddressTask:
                 for result in results:
                     pand = result['landelijk_id']
                     if pand is not None:
-                        PandRelatie(
+                        PandRelatie.objects.update_or_create(
                             monument=self.monument,
                             pand_id=pand
-                        ).save()
+                        )
                         found_and_saved_pand = True
                 return found_and_saved_pand
         return False
