@@ -16,8 +16,9 @@ from monumenten.dataset.models import Monument, PandRelatie
 
 monkey.patch_all(thread=False, select=False)
 
-# this module should be run with a special version of manage_gevent.py that does the monkey patching right at the start
-# Ie. python manage_gevent.py run_add_missing_pand
+# this module should be run with a special version of manage_gevent.py
+# that does the monkey patching right at the start Ie. python manage_gevent.py
+# run_add_missing_pand
 log = logging.getLogger(__name__)
 
 STATS = dict(
@@ -47,7 +48,8 @@ SEARCHES_QUEUE = JoinableQueue(maxsize=500)
 
 def add_missing_pand():
     """
-    Do  a search with the address of monument where type is Pand betreft_pand is missing
+    Do  a search with the address of monument where
+    type is Pand betreft_pand is missing
     """
     status_job = gevent.spawn(fix_counter)
     missing_pand_monuments = list(Monument.objects.filter(
@@ -110,13 +112,19 @@ def async_get_verblijfsobject():
 
 
 class SearchAddressTask:
+    vbo_matcher = r'https://(?:acc.)?api.data.amsterdam.nl/' \
+                  r'bag/verblijfsobject/(\d+)/'
+
     def __init__(self, monument, query_string):
         self.monument = monument
         # originele input
         self.query_string = query_string
         self.session = Session()
 
-    def get_response(self, parameters={}, url=SEARCH_ADRES_URL):
+    def get_response(self, parameters=None, url=SEARCH_ADRES_URL):
+        if parameters is None:
+            parameters = {}
+
         async_r = grequests.get(url, params=parameters, session=self.session)
         gevent.spawn(async_r.send).join()
         # Do something with the result count?
@@ -138,12 +146,12 @@ class SearchAddressTask:
         if 'results' in data:
             results = data['results']
             if len(results) > 0:
-                m = re.match(
-                    r'https://(?:acc.)?api.data.amsterdam.nl/bag/verblijfsobject/(\d+)/',
-                    results[0]['_links']['self']['href'])
+
+                m = re.match(self.vbo_matcher,
+                             results[0]['_links']['self']['href'])
                 if m:
                     verblijfsobject_id = m.group(1)
-                    corrected = self.determine_verblijfsobject_pand(
+                    corrected = self._update_or_create_pandrelatie(
                         verblijfsobject_id)
         if corrected:
             STATS['correcties'] += 1
@@ -151,23 +159,22 @@ class SearchAddressTask:
             STATS['onbekend'] += 1
             log.error("Missing result for {}".format(self.query_string))
 
-    def determine_verblijfsobject_pand(self, verblijfsobject_id):
+    def _update_or_create_pandrelatie(self, verblijfsobject_id):
         parameters = {'verblijfsobjecten__id': verblijfsobject_id}
         data = self.get_response(parameters, url=SEARCH_PAND_URL)
+        found_and_saved_pand = False
+
         if 'results' in data:
             results = data['results']
-            found_and_saved_pand = False
             if len(results) > 0:
                 for result in results:
                     pand = result['landelijk_id']
                     if pand is not None:
                         PandRelatie.objects.update_or_create(
                             monument=self.monument,
-                            pand_id=pand
-                        )
+                            pand_id=pand)
                         found_and_saved_pand = True
-                return found_and_saved_pand
-        return False
+        return found_and_saved_pand
 
 
 def make_status_line():
