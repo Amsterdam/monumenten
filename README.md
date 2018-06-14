@@ -68,7 +68,6 @@ Check out the database tool pgadmin on host 'localhost' , port 5412.
 #### Run the tests
 
     cd src
-    export JWT_SHARED_SECRET_KEY=testing1234testing1234
     ./manage.py test
 
 ### endpoints
