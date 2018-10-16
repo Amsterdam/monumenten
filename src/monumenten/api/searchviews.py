@@ -28,6 +28,9 @@ _details = {
 }
 
 
+sort_fields = ['type', '_score', 'naam.keyword']
+
+
 def get_url(request, hit):
     """
     Get a detail API url for hit
@@ -107,8 +110,6 @@ def multimatch_complexen_monumenten_q_wrapper(query) -> ElasticQueryWrapper:
     #
     # Voorbeelden: Zoeken op hort, geeft eerst Hortus Botanicus, dan pas BRUG 232, HORTUS
     log.debug('%20s %s', multimatch_complexen_monumenten_q_wrapper.__name__, query)
-
-    sort_fields = ['_score', 'naam.keyword']
 
     return ElasticQueryWrapper(
         query=multimatch_complexen_monumenten_q(query),
@@ -351,43 +352,31 @@ def autocomplete_query(client, query):
     """
 
     return (
-        MultiSearch()
-        .using(client).index(MONUMENTEN)
-        .add(
-            Search()
-            .query(
-                multimatch_complexen_monumenten_q(
-                    query, _type='monument'))
-            .sort('_score', 'naam.raw')[0:3]
-        )
-        .add(
-            Search().query(
-                multimatch_complexen_monumenten_q(
-                    query, _type='complex'))
-            .sort('_score', 'naam.raw')[0:3])
+        Search()
+            .using(client).index(MONUMENTEN)
+            .query( multimatch_complexen_monumenten_q(query))
+            .sort(*sort_fields)[0:3]
     )
 
 
 def get_autocomplete_response(client, query):
-    results = autocomplete_query(client, query).execute()
+    result = autocomplete_query(client, query).execute()
 
     content = []
-    total_results = 0
-    for result in results:
-        total_results += result.hits.total
-        for hit in result.hits:
-            if hit.type == 'complex':
-                uri_part = 'complexen'
-                name = 'naam'
-                name_extension = ' (complex)'
-            else:
-                uri_part = 'monumenten'
-                name = 'naam'
-                name_extension = ''
-            content.append({
-                '_display': '{v}{e}'.format(v=hit[name], e=name_extension),
-                'uri': 'monumenten/{u}/{v}/'.format(u=uri_part, v=hit.meta.id)
-            })
+    total_results = result.hits.total
+    for hit in result.hits:
+        if hit.type == 'complex':
+            uri_part = 'complexen'
+            name = 'naam'
+            name_extension = ' (complex)'
+        else:
+            uri_part = 'monumenten'
+            name = 'naam'
+            name_extension = ''
+        content.append({
+            '_display': '{v}{e}'.format(v=hit[name], e=name_extension),
+            'uri': 'monumenten/{u}/{v}/'.format(u=uri_part, v=hit.meta.id)
+        })
 
     return [{
         'label': 'Monumenten',
