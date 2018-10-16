@@ -372,7 +372,9 @@ def get_autocomplete_response(client, query):
     results = autocomplete_query(client, query).execute()
 
     content = []
+    total_results = 0
     for result in results:
+        total_results += result.hits.total
         for hit in result.hits:
             if hit.type == 'complex':
                 uri_part = 'complexen'
@@ -382,7 +384,6 @@ def get_autocomplete_response(client, query):
                 uri_part = 'monumenten'
                 name = 'naam'
                 name_extension = ''
-
             content.append({
                 '_display': '{v}{e}'.format(v=hit[name], e=name_extension),
                 'uri': 'monumenten/{u}/{v}/'.format(u=uri_part, v=hit.meta.id)
@@ -390,7 +391,8 @@ def get_autocomplete_response(client, query):
 
     return [{
         'label': 'Monumenten',
-        'content': content
+        'content': content,
+        'total_results': total_results
     }]
 
 
