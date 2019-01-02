@@ -65,7 +65,7 @@ python-keystoneclient==3.14.0
 python-swiftclient==3.4.0
 pytz==2017.3
 PyYAML==3.12
-requests==2.18.4
+requests==2.20.0
 rfc3986==1.1.0
 sentry-sdk==0.6.4
 simplejson==3.13.2
@@ -75,6 +75,6 @@ stevedore==1.28.0
 text-unidecode==1.1
 typing==3.6.2
 uritemplate==3.0.0
-urllib3==1.22
+urllib3==1.23
 wrapt==1.10.11
 xmltodict==0.11.0
