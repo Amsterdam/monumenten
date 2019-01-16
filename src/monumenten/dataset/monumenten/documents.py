@@ -2,6 +2,7 @@ import logging
 
 import elasticsearch_dsl as es
 
+from monumenten import settings
 from monumenten.dataset import models
 from monumenten.dataset.generic import analyzers
 
@@ -21,6 +22,9 @@ class Monument(es.DocType):
             'keyword': es.Text(
                 fielddata=True, analyzer=analyzers.subtype)})
 
+    class Index:
+        name = settings.ELASTIC_INDICES['MONUMENTEN']
+
 
 def from_monument(mon: models.Monument):
     m = Monument(_id='{}'.format(mon.id))
@@ -30,7 +34,6 @@ def from_monument(mon: models.Monument):
 
 
 def from_complex(comp: models.Complex):
-    # c = Monument(_id='c{}'.format(comp.id))
     c = Monument(_id='{}'.format(comp.id))
     c.naam = comp.complexnaam
     c.type = 'complex'

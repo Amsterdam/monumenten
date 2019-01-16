@@ -51,7 +51,7 @@ class TestAPIEndpoints(APITestCase):
             ('', '3'),
             ('2/', 'nr=6'),
             ('?monumentnummer_complex=8392183', 10),
-            ('?monumentnummer_complex=nietbestaand', 0)
+            ('?monumentnummer_complex=1234567', 0)  # Niet bestaand
         )),
     ]
 
