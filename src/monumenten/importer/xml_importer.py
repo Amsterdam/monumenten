@@ -133,9 +133,7 @@ def get_functie(functie, id1):
         functional_errors.append(
             'Multiple tag "functie" for Object id: {}'.format(id1))
         return get_functie(functie[0], id1)
-    if functie.startswith('_'):
-        return functie.replace('_', '', 1)
-    return None
+    return functie
 
 
 def get_koppel_status(koppel_status):
@@ -225,8 +223,8 @@ def update_create_monument(item, created_complex):
         complex=created_complex,
         monumentcoordinaten='Punt' in item and get_coordinates(
             item['Punt'], item['Id']) or None,
-        oorspronkelijke_functie_monument='Functie' in item and get_functie(
-            item['Functie'], item['Id']) or None,
+        oorspronkelijke_functie_monument='Functies' in item and get_functie(
+            item['Functies'], item['Id']) or None,
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
             item['Tag']) and 'J' or 'N',
