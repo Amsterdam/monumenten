@@ -127,12 +127,11 @@ def convert_to_verzendsleutel(id1):
 
 
 def get_functie(functie, id1):
-    """Alleen functies met _ zijn valide"""
-
     if type(functie) == list:
         functional_errors.append(
             'Multiple tag "functie" for Object id: {}'.format(id1))
         return get_functie(functie[0], id1)
+    functie = functie.lstrip('_')  # Remove optional underscore at start
     return functie
 
 
@@ -223,8 +222,8 @@ def update_create_monument(item, created_complex):
         complex=created_complex,
         monumentcoordinaten='Punt' in item and get_coordinates(
             item['Punt'], item['Id']) or None,
-        oorspronkelijke_functie_monument='Functies' in item and get_functie(
-            item['Functies'], item['Id']) or None,
+        oorspronkelijke_functie_monument='Functie' in item and get_functie(
+            item['Functie'], item['Id']) or None,
         monumentgeometrie=get_geometry(item),
         in_onderzoek='Tag' in item and get_in_onderzoek(
             item['Tag']) and 'J' or 'N',

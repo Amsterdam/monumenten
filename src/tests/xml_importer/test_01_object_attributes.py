@@ -79,9 +79,9 @@ class TestObjectStore(TestCase):
 
         # Oorspronkelijke functie monument_1
         self.assertEqual(monument_1.oorspronkelijke_functie_monument,
-                         'Gebouwen, woonhuizen', 'Functies')
+                         'Gebouwen, woonhuizen', 'Functie')
         self.assertEqual(monument_2.oorspronkelijke_functie_monument, 'Functie zonder underscore',
-                         'Functies')
+                         'Functie')
 
         # Betreft (BAG verwijzing - Pand)
         self.assertEqual(monument_1.betreft_pand.get().pand_id,
