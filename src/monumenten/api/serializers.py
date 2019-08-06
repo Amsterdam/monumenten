@@ -6,7 +6,6 @@ from rest_framework import serializers
 from monumenten.api.rest import DisplayField
 from monumenten.api.rest import HALSerializer
 from monumenten.dataset.models import Situering, Monument, Complex, PandRelatie
-from monumenten.dataset.static_data import UNESCO_GEBIED
 
 log = logging.getLogger(__name__)
 
@@ -173,60 +172,6 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
         return self.dict_with_self_href(
             '/monumenten/monumenten/{}/'.format(
                 obj.id))
-
-
-# noinspection PyPep8Naming,PyMethodMayBeStatic,PyUnusedLocal
-class MonumentSerializerMap(serializers.ModelSerializer):
-    """
-    Speciale Serializer voor POC koppeling maps.amsterdam.nl
-    """
-    COORDS = serializers.SerializerMethodField()
-    FILTER = serializers.SerializerMethodField()
-    LABEL = serializers.SerializerMethodField()
-    LATMAX = serializers.SerializerMethodField()
-    LNGMAX = serializers.SerializerMethodField()
-    SELECTIE = serializers.SerializerMethodField()
-    TYPE = serializers.SerializerMethodField()
-    VOLGNR = serializers.SerializerMethodField()
-
-    class Meta(object):
-        model = Monument
-        fields = ['COORDS', 'FILTER', 'LABEL', 'LATMAX', 'LNGMAX', 'SELECTIE',
-                  'TYPE', 'VOLGNR']
-
-    def get_COORDS(self, obj):
-        obj.monumentcoordinaten.transform(4326)
-        return f'{obj.monumentcoordinaten.x:.7f},' \
-               f'{obj.monumentcoordinaten.y:.7f}||'
-
-    def get_FILTER(self, obj):
-        obj.monumentcoordinaten.transform(4326)
-        in_unesco = obj.monumentcoordinaten.intersects(UNESCO_GEBIED)
-        return f"{obj.monumenttype}||{'J' if in_unesco else 'N'}"
-
-    def get_LABEL(self, obj):
-        return obj.monumentstatus
-
-    def get_LATMAX(self, obj):
-        obj.monumentcoordinaten.transform(4326)
-        return f"{obj.monumentcoordinaten.y:.7f}"
-
-    def get_LNGMAX(self, obj):
-        obj.monumentcoordinaten.transform(4326)
-        return f"{obj.monumentcoordinaten.x:.7f}"
-
-    def get_SELECTIE(self, obj):
-        selectie = "RIJKS" \
-            if obj.monumentstatus == 'Rijksmonument' else 'GEMEENTE'
-        if obj.redengevende_omschrijving_monument is not None:
-            selectie += "_PLUS"
-        return selectie
-
-    def get_TYPE(self, obj):
-        return "punt"
-
-    def get_VOLGNR(self, obj):
-        return obj.monumentnummer
 
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
