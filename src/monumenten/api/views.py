@@ -8,11 +8,10 @@ from django.contrib.gis.measure import D
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework import filters
 from rest_framework import serializers as rest_serializers
-from rest_framework import response
 
 from monumenten.api import serializers
 from monumenten.dataset.models import Monument, Situering, Complex
-from monumenten.dataset.static_data import UNESCO_GEBIED
+
 from .rest import DatapuntViewSet
 
 log = logging.getLogger(__name__)
@@ -191,61 +190,6 @@ class MonumentViewSet(DatapuntViewSet):
         if self.request.is_authorized_for(authorization_levels.SCOPE_MON_RDM):
             return serializers.MonumentSerializerAuth
         return serializers.MonumentSerializerNonAuth
-
-
-class MapsMonumentFilter(FilterSet):
-    """
-    Speciaal Filter voor POC koppeling maps.amsterdam.nl
-    """
-    SELECT = filters.CharFilter(method="select_filter")
-
-    class Meta(object):
-        model = Monument
-        fields = ('SELECT',)
-
-    def select_filter(self, queryset, _filter_name, value):
-        """
-        Filter based on the SELECT
-        """
-        status = 'Rijksmonument' if 'RIJKS' in value else 'Gemeentelijk monument'
-        omschrijving_is_null = '_PLUS' not in value
-        return queryset.filter(monumentstatus=status,
-                               redengevende_omschrijving_monument__isnull=omschrijving_is_null)
-
-
-class SimpleMonumentViewSet(MonumentViewSet):
-    """
-    Speciale ViewSet voor POC koppeling maps.amsterdam.nl
-    """
-    pagination_class = None
-    serializer_detail_class = serializers.MonumentSerializerMap
-    queryset = Monument.objects.filter(monumentnummer__isnull=False, monumentcoordinaten__isnull=False)
-    filter_class = MapsMonumentFilter
-
-    def get_serializer_class(self):
-        return serializers.MonumentSerializerMap
-
-
-class SimpleUnescoViewSet(DatapuntViewSet):
-    """
-    Speciale ViewSet voor POC koppeling maps.amsterdam.nl
-    """
-    pagination_class = None
-    queryset = Monument.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        polygon = UNESCO_GEBIED.coords[0]
-        coords = list(map((lambda coords: f"{coords[0]:.7f},{coords[1]:.7f}"), polygon))
-        coord_str = '|'.join(coords)
-        return response.Response([{
-            "VOLGNR": 9,
-            "LABEL": "Grachtengordel Amsterdam Werelderfgoed (kerngebied)",
-            "SELECTIE": "KERN",
-            "TYPE": "vlak",
-            "COORDS": f"{coord_str}||",
-            "LATMAX": 52.3719254,
-            "LNGMAX": 4.895345
-        }])
 
 
 class SitueringFilter(FilterSet):
