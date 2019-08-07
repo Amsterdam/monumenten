@@ -345,7 +345,7 @@ class SearchComplexenMonumentenViewSet(SearchViewSet):
     filter_backends = [QSearchFilter]
 
 
-def autocomplete_query(client, query):
+def autocomplete_query(client, query, limit):
     """
     :return: Ordered sets of responses for monuments
     and complexes closest to the requested query
@@ -355,12 +355,12 @@ def autocomplete_query(client, query):
         Search()
             .using(client).index(MONUMENTEN)
             .query( multimatch_complexen_monumenten_q(query))
-            .sort(*sort_fields)[0:3]
+            .sort(*sort_fields)[0:limit]
     )
 
 
-def get_autocomplete_response(client, query):
-    result = autocomplete_query(client, query).execute()
+def get_autocomplete_response(client, query, limit):
+    result = autocomplete_query(client, query, limit).execute()
 
     content = []
     total_results = result.hits.total
@@ -390,6 +390,9 @@ class QTypeAheadFilter(QFilter):
     search_title = 'Complex/monument'
 
 
+DEFAULT_TYPEAHEAD_LIMIT = '3'
+
+
 class TypeaheadViewSet(viewsets.ViewSet):
     """
     Given a query parameter `q`, this function returns a
@@ -406,8 +409,8 @@ class TypeaheadViewSet(viewsets.ViewSet):
 
     filter_backends = [QTypeAheadFilter]
 
-    def get_autocomplete_response(self, client, query):
-        return get_autocomplete_response(client, query)
+    def get_autocomplete_response(self, client, query, limit):
+        return get_autocomplete_response(client, query, limit)
 
     metadata_class = QueryMetadata
 
@@ -424,5 +427,8 @@ class TypeaheadViewSet(viewsets.ViewSet):
         if len(query) < 3:
             return Response([])
 
-        response = self.get_autocomplete_response(self.client, query)
+        limit = request.query_params.get('limit', DEFAULT_TYPEAHEAD_LIMIT)
+        limit = int(limit) if limit.isdigit() else int(DEFAULT_TYPEAHEAD_LIMIT)
+
+        response = self.get_autocomplete_response(self.client, query, limit)
         return Response(response)
