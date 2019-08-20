@@ -1,13 +1,13 @@
 import jwt
 import time
 
-from authorization_django.config import get_settings
+from authorization_django.jwks import get_keyset
 
 
 class JWTMixin(object):
 
     # VERY NEW STYLE AUTH. JWKS public/private keys are defined in settings
-    jwks = get_settings()['JWKS'].signers
+    jwks = get_keyset()['signers']
 
     assert len(jwks) > 0
     (kid, key) = list(jwks.items())[0]
