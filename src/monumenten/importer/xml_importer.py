@@ -5,6 +5,7 @@ import xmltodict
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection, MultiPoint
 
 from monumenten.dataset.models import Monument, Complex, Situering, PandRelatie
+from monumenten.importer import landelijk_id_mapping
 
 log = logging.getLogger(__name__)
 
@@ -149,11 +150,18 @@ situeringen_batch = []
 
 
 def update_create_adress(monument, adress):
+    verzend_sleutel = convert_to_verzendsleutel(adress.get('VerzendSleutel'))
+    if verzend_sleutel:
+        landelijk_id = landelijk_id_mapping.get_landelijk_id(verzend_sleutel)
+        if not landelijk_id:
+            log.warning(f'Missing landelijk id for address {verzend_sleutel}')
+    else:
+        landelijk_id = None
+
     situering = Situering(
         external_id=adress['Id'],
         monument=monument,
-        betreft_nummeraanduiding='VerzendSleutel' in adress and convert_to_verzendsleutel(
-            adress['VerzendSleutel']) or None,
+        betreft_nummeraanduiding=landelijk_id,
         situering_nummeraanduiding='KoppelStatus' in adress and get_koppel_status(
             adress[
                 'KoppelStatus']) or None,
@@ -277,10 +285,14 @@ def add_pandrelatie(id, monument, relaties):
 
     assert id.__len__() == 13
     pandid = '0' + id
+    landelijk_id = landelijk_id_mapping.get_landelijk_id(pandid)
+    if not landelijk_id:
+        log.warning(f'Missing landelijk_id voor pand {pandid}')
+        return
     relaties.append(
         PandRelatie(
             monument=monument,
-            pand_id=pandid
+            pand_id=landelijk_id
         )
     )
 
