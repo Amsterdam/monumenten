@@ -6,10 +6,19 @@ from rest_framework.test import APITestCase
 from monumenten.dataset.models import Monument, Complex
 from monumenten.dataset.monumenten.batch import DeleteMonumentenIndexTask, \
     IndexMonumentenTask, IndexComplexenTask
+from monumenten.importer.landelijk_id_mapping import initialize_test
 from monumenten.importer.xml_importer import import_file
 
 
 def do_import():
+
+    landelijk_ids = {
+        '03630013072812': '0363100012102836',
+        '03630000177978': '0363200000177978',
+        '03630000177987': '0363200000177987',
+    }
+    initialize_test(landelijk_ids)
+
     import_file(filename='tests/files/01_object_attributes.xml')
     monument_1 = Monument.objects.get(
         external_id='d5cc6402-d211-4981-b965-08a559837218')
@@ -85,8 +94,8 @@ class TestObjectStore(TestCase):
 
         # Betreft (BAG verwijzing - Pand)
         self.assertEqual(monument_1.betreft_pand.get().pand_id,
-                         '0' + '3630013072812',
-                         'Pand Sleutel')
+                         '0363100012102836',
+                         'Pand Landelijk ID')
 
         # Monumentcoördinaten
         self.assertEqual(str(monument_1.monumentcoordinaten),
@@ -131,8 +140,8 @@ class TestObjectStore(TestCase):
         self.assertEqual(adresses[0].external_id,
                          '2f4546b5-7528-443b-9474-ef3c31a2f018', 'Adres id')
         self.assertEqual(adresses[0].betreft_nummeraanduiding,
-                         '0' + '3630000177987',
-                         'Adres betreft = BAG sleutel')
+                         '0363200000177987',
+                         'Adres betreft = BAG landelijk ID')
         self.assertEqual(adresses[0].situering_nummeraanduiding, 'Actueel',
                          'Adres situering')
         self.assertEqual(adresses[0].eerste_situering, 'J',
