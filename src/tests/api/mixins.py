@@ -1,31 +1,33 @@
-import jwt
 import time
 
+from jwcrypto.jwt import JWT
 from authorization_django.jwks import get_keyset
 
 
 class JWTMixin(object):
 
-    # VERY NEW STYLE AUTH. JWKS public/private keys are defined in settings
-    jwks = get_keyset()['signers']
+    jwks = get_keyset()
 
-    assert len(jwks) > 0
-    (kid, key) = list(jwks.items())[0]
+    assert len(jwks['keys']) > 0
+    key = next(iter(jwks['keys']))
+    kid = key.key_id
 
     def employee_credentials(self, scope=None):
         return dict(HTTP_AUTHORIZATION=('Bearer ' + self.jwt_token(scope)))
 
     def jwt_token(self, scope):
         now = int(time.time())
-        scopes = [ scope ] if isinstance(scope, str) else []
+        scopes = [scope] if isinstance(scope, str) else []
         payload = {
             'iat': now,
             'exp': now + 300,
             'scopes': scopes
         }
         headers = {
+            'alg': 'ES256',  # algorithm of the test key
             'kid': self.kid
         }
 
-        return jwt.encode(payload, self.key.key, algorithm=self.key.alg, headers=headers).decode("utf-8")
-
+        token = JWT(header=headers, claims=payload)
+        token.make_signed_token(self.key)
+        return token.serialize()
