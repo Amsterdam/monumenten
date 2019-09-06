@@ -51,7 +51,7 @@ developers or other users.)
 ### Monumenten import
 
 #### Location of the datafiles
-Login to Rattic and retrieve the objectstore user and password for CloudVPS Cultuur.
+Login to Rattic and retrieve the objectstore user and password for `CloudVPS Monumenten`.
 
 Login to https://stack.cloudvps.com/
 
@@ -69,4 +69,6 @@ Check out the database tool pgadmin on host 'localhost' , port 5412.
     ./manage.py test
 
 ### endpoints
-/Monumenten/monument
+- /monumenten/complexen
+- /monumenten/monumenten
+- /monumenten/situeringen

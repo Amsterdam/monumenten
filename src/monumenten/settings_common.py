@@ -206,6 +206,12 @@ LOGGING = {
             'propagate': False,
         },
 
+        'markdown': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
         # Log all unhandled exceptions
         'django.request': {
             'handlers': ['console'],
