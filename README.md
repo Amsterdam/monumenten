@@ -51,7 +51,7 @@ developers or other users.)
 ### Monumenten import
 
 #### Location of the datafiles
-Login to Rattic and retrieve the objectstore user and password for `CloudVPS Monumenten` (username is `cultuur`).
+Login to Rattic and retrieve the objectstore user and password for `CloudVPS Monumenten`.
 
 Login to https://stack.cloudvps.com/
 
