@@ -2,7 +2,7 @@ import logging
 
 from django.core.management import BaseCommand
 
-from monumenten.importer import xml_importer
+from monumenten.importer import xml_importer, landelijk_id_mapping
 from monumenten.objectstore import objectstore
 from monumenten.dataset.monumenten.batch import DeleteMonumentenIndexTask, IndexMonumentenTask, IndexComplexenTask
 
@@ -30,11 +30,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['run-import']:
-            self.stdout.write("Run import.")
+            log.info("Run import.")
+            log.info("Initialize landelijk_id mapping")
+            landelijk_id_mapping.initialize()
+
             for file_name in objectstore.fetch_import_file_names():
+                log.info(f'Import {file_name}')
                 local_file = objectstore.copy_file_from_objectstore(file_name)
                 xml_importer.import_file(local_file)
 
         if options['run-index']:
+            log.info('Run indexing')
             for job_class in self.indexes['monumenten']:
                 job_class().execute()

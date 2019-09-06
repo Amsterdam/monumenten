@@ -46,8 +46,6 @@ is only allowed for members of the Datapunt development team, not for external
 developers or other users.)
 
     docker-compose exec database update-db.sh monumenten <username>
-    docker-compose exec database update-table.sh bag bag_pand public monumenten <username>
-    docker-compose exec database update-table.sh bag bag_nummeraanduiding public monumenten <username>
 
 
 ### Monumenten import
