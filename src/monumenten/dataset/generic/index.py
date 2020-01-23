@@ -39,7 +39,7 @@ class DeleteIndexTask(object):
             log.warning("Could not delete index '%s', ignoring", self.index)
 
         for dt in self.doc_types:
-            idx.doc_type(dt)
+            idx.document(dt)
 
         idx.create()
 

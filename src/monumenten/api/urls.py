@@ -38,16 +38,16 @@ class MonumentenRouter(routers.DefaultRouter):
 monumenten = MonumentenRouter()
 
 monumenten.register(r'situeringen', api_views.SitueringList,
-                    base_name='situeringen')
+                    basename='situeringen')
 monumenten.register(r'monumenten', api_views.MonumentViewSet,
-                    base_name='monumenten')
+                    basename='monumenten')
 monumenten.register(r'complexen', api_views.ComplexViewSet,
-                    base_name='complexen')
+                    basename='complexen')
 
 monumenten.register(r'typeahead', search_views.TypeaheadViewSet,
-                    base_name='typeahead')
+                    basename='typeahead')
 monumenten.register(r'search', search_views.SearchComplexenMonumentenViewSet,
-                    base_name='search')
+                    basename='search')
 
 
 urls = monumenten.urls

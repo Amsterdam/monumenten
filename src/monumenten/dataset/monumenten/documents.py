@@ -9,7 +9,7 @@ from monumenten.dataset.generic import analyzers
 log = logging.getLogger(__name__)
 
 
-class Monument(es.DocType):
+class Monument(es.Document):
     """
     Elastic data for Monument
     """
