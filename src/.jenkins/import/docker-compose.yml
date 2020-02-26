@@ -16,7 +16,7 @@ services:
       - ./backups/elasticsearch:/tmp/backups
 
   importer:
-    image: ${DOCKER_REGISTRY_HOST}/datapunt/monumenten:${ENVIRONMENT}
+    image: docker-registry.data.amsterdam.nl/datapunt/monumenten:${ENVIRONMENT}
     links:
       - database
       - elasticsearch
