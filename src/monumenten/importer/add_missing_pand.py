@@ -41,7 +41,7 @@ ACC = "https://acc.api.data.amsterdam.nl"
 SEARCH_ADRES_URL = '{}/atlas/search/adres/'.format(ACC)
 
 # https://acc.api.data.amsterdam.nl/bag/pand/?verblijfsobjecten__id=0363010000696759
-SEARCH_PAND_URL = '{}/bag/pand/'.format(ACC)
+SEARCH_PAND_URL = '{}/bag/v1.1/pand/'.format(ACC)
 
 SEARCHES_QUEUE = JoinableQueue(maxsize=500)
 
@@ -113,7 +113,7 @@ def async_get_verblijfsobject():
 
 class SearchAddressTask:
     vbo_matcher = r'https://(?:acc.)?api.data.amsterdam.nl/' \
-                  r'bag/verblijfsobject/(\d+)/'
+                  r'bag/v1.1/verblijfsobject/(\d+)/'
 
     def __init__(self, monument, query_string):
         self.monument = monument

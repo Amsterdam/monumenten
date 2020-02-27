@@ -95,7 +95,7 @@ class PandRelatieSerializer(serializers.ModelSerializer, BaseSerializer):
         if obj.pand_id:
             return {
                 "self": {
-                    "href": self.href_url('/bag/pand/{}/'.format(obj.pand_id))
+                    "href": self.href_url('/bag/v1.1/pand/{}/'.format(obj.pand_id))
                 }
             }
 
@@ -222,7 +222,7 @@ class SitueringSerializer(BaseSerializer, HALSerializer):
     def get_betreft_nummeraanduiding(self, obj):
         if obj.betreft_nummeraanduiding:
             return self.dict_with__links_self_href_id(
-                path='/bag/nummeraanduiding/{}/',
+                path='/bag/v1.1/nummeraanduiding/{}/',
                 link_id=obj.betreft_nummeraanduiding,
                 id_name='nummeraanduidingidentificatie')
 
