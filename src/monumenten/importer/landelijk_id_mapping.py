@@ -1,11 +1,7 @@
 import csv
 import os
-import time
-import zipfile
 
-from dateutil import parser
-
-from monumenten.objectstore.objectstore_bag import find_sleutel_file, copy_file_from_objectstore, download_dir
+from monumenten.objectstore.objectstore_gob import download_dir, get_files
 
 _mapping = dict()
 _initialized = False
@@ -37,17 +33,6 @@ def _read_landelijk_id_mapping(path, file_code):
     return result
 
 
-def unzip_files(zipsource, directory, mtime):
-    """
-    Unzip single files to the right target directory
-    """
-    # Extract files to the expected location
-    for fullname in zipsource.namelist():
-        zipsource.extract(fullname, directory)
-        path = f"{directory}/{fullname}"
-        os.utime(path, (mtime, mtime))
-
-
 def initialize():
     """
     Read mapping from amsterdam sleutel to landelijk_id for Pand and Nummeraanduiding into dictionary
@@ -55,19 +40,13 @@ def initialize():
     global _initialized, _mapping
     if _initialized:
         return
-    sleutelzipfile = find_sleutel_file()
-    if not sleutelzipfile:
-        raise ValueError("sleutelfile not found")
-    copy_file_from_objectstore(sleutelzipfile)
 
-    zipsource = zipfile.ZipFile(download_dir + sleutelzipfile, 'r')
-    zip_date = sleutelzipfile.split('/')[-1].split('_')[0]
-    zip_date = parser.parse(zip_date)
-    zip_seconds = time.mktime(zip_date.timetuple())
-    unzip_files(zipsource, download_dir, zip_seconds)
+    prefixes = ('PND', 'NUM')
+    get_files(prefixes)
 
-    path = download_dir + 'Alle_Producten/BAG/BAG_LandelijkeSleutel/ASCII/'
-    for code in ('PND', 'NUM'):
+    path = download_dir + 'bag/BAG_LandelijkeSleutel'
+
+    for code in prefixes:
         d = _read_landelijk_id_mapping(path, code)
         _mapping.update(d)
 
