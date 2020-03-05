@@ -8,7 +8,7 @@ import grequests
 from django.db.models import Q
 # NOTE : The previous two lines should also be set in manage.py
 # Other we get unpredictable recursion overflow errors
-from gevent import monkey
+from gevent import monkey, os
 from gevent.queue import JoinableQueue
 from requests import Session
 
@@ -34,14 +34,13 @@ STATS = dict(
 # to the search api
 WORKERS = 10
 
-ACC = "https://acc.api.data.amsterdam.nl"
+BAG_API_URL_BASE = os.getenv("BAG_API_URL_BASE", "https://api.data.amsterdam.nl")
 
-# We search against ACC to not pollute graphs in kibana
 # https://api.data.amsterdam.nl/atlas/search/adres/?q=Kalverstraat%2028-H"
-SEARCH_ADRES_URL = '{}/atlas/search/adres/'.format(ACC)
+SEARCH_ADRES_URL = f'{BAG_API_URL_BASE}/atlas/search/adres/'
 
 # https://acc.api.data.amsterdam.nl/bag/pand/?verblijfsobjecten__id=0363010000696759
-SEARCH_PAND_URL = '{}/bag/v1.1/pand/'.format(ACC)
+SEARCH_PAND_URL = f'{BAG_API_URL_BASE}/bag/v1.1/pand/'
 
 SEARCHES_QUEUE = JoinableQueue(maxsize=500)
 
