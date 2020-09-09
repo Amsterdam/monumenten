@@ -150,11 +150,19 @@ situeringen_batch = []
 
 
 def update_create_adress(monument, adress):
-    verzend_sleutel = convert_to_verzendsleutel(adress.get('VerzendSleutel'))
+    verzend_sleutel = adress.get('VerzendSleutel')
     if verzend_sleutel:
-        landelijk_id = landelijk_id_mapping.get_landelijk_id(verzend_sleutel)
-        if not landelijk_id:
-            log.warning(f'Missing landelijk id for address {verzend_sleutel}')
+        len1 = verzend_sleutel.__len__()
+        assert len1 == 13 or len1 == 15 or len1 == 16
+        if len1 == 13:
+            verzend_sleutel = convert_to_verzendsleutel(adress.get('VerzendSleutel'))
+            landelijk_id = landelijk_id_mapping.get_landelijk_id(verzend_sleutel)
+            if not landelijk_id:
+                log.warning(f'Missing landelijk id for address {verzend_sleutel}')
+        elif len1 == 15:
+            landelijk_id = '0' + verzend_sleutel
+        else:
+            landelijk_id = verzend_sleutel
     else:
         landelijk_id = None
 
@@ -283,12 +291,18 @@ def add_pandrelatie(id, monument, relaties):
     :return: None
     """
 
-    assert id.__len__() == 13
-    pandid = '0' + id
-    landelijk_id = landelijk_id_mapping.get_landelijk_id(pandid)
-    if not landelijk_id:
-        log.warning(f'Missing landelijk_id voor pand {pandid}')
-        return
+    len1 = id.__len__()
+    assert len1 == 13 or len1 == 15 or len1 == 16
+    if len1 == 13:
+        pandid = '0' + id
+        landelijk_id = landelijk_id_mapping.get_landelijk_id(pandid)
+        if not landelijk_id:
+            log.warning(f'Missing landelijk_id voor pand {pandid}')
+            return
+    elif len1 == 15:
+        landelijk_id = '0' + id
+    else:
+        landelijk_id = id
     relaties.append(
         PandRelatie(
             monument=monument,

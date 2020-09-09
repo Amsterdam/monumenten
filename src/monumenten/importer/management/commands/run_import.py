@@ -35,6 +35,8 @@ class Command(BaseCommand):
             landelijk_id_mapping.initialize()
 
             for file_name in objectstore.fetch_import_file_names():
+                if file_name.lower().find("old") >= 0:
+                    continue
                 log.info(f'Import {file_name}')
                 local_file = objectstore.copy_file_from_objectstore(file_name)
                 xml_importer.import_file(local_file)
