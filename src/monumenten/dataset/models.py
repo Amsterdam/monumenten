@@ -21,7 +21,7 @@ class Complex(models.Model):
         if self.complexnaam:
             return self.complexnaam
         if self.monumentnummer_complex:
-            return self.monumentnummer_complex
+            return str(self.monumentnummer_complex)
         # Above as per be-1261 - fallback below (self.id is never null):
         return 'Complex {}'.format(self.id)
 
