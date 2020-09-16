@@ -6,19 +6,10 @@ from rest_framework.test import APITestCase
 from monumenten.dataset.models import Monument, Complex
 from monumenten.dataset.monumenten.batch import DeleteMonumentenIndexTask, \
     IndexMonumentenTask, IndexComplexenTask
-from monumenten.importer.landelijk_id_mapping import initialize_test
 from monumenten.importer.xml_importer import import_file
 
 
 def do_import():
-
-    landelijk_ids = {
-        '03630013072812': '0363100012102836',
-        '03630000177978': '0363200000177978',
-        '03630000177987': '0363200000177987',
-    }
-    initialize_test(landelijk_ids)
-
     import_file(filename='tests/files/01_object_attributes.xml')
     monument_1 = Monument.objects.get(
         external_id='d5cc6402-d211-4981-b965-08a559837218')
