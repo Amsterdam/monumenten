@@ -5,7 +5,6 @@ import xmltodict
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection, MultiPoint
 
 from monumenten.dataset.models import Monument, Complex, Situering, PandRelatie
-from monumenten.importer import landelijk_id_mapping
 
 log = logging.getLogger(__name__)
 
@@ -115,18 +114,6 @@ def get_coordinates(point, id1):
     return point
 
 
-def convert_to_verzendsleutel(id1):
-    """
-        prepend '0' 3630000092647 --> 03630000092647
-    """
-    if type(id1) == list:
-        functional_errors.append(
-            'Object has more than 1 Pandsleutel:' + ' '.join(id1))
-        id1 = id1[0]
-    assert id1.__len__() == 13
-    return '0' + id1
-
-
 def get_functie(functie, id1):
     if type(functie) == list:
         functional_errors.append(
@@ -155,10 +142,8 @@ def update_create_adress(monument, adress):
         len1 = verzend_sleutel.__len__()
         assert len1 == 13 or len1 == 15 or len1 == 16
         if len1 == 13:
-            verzend_sleutel = convert_to_verzendsleutel(adress.get('VerzendSleutel'))
-            landelijk_id = landelijk_id_mapping.get_landelijk_id(verzend_sleutel)
-            if not landelijk_id:
-                log.warning(f'Missing landelijk id for address {verzend_sleutel}')
+            log.warning(f'Invalid landelijk id for address {verzend_sleutel}')
+            landelijk_id = None
         elif len1 == 15:
             landelijk_id = '0' + verzend_sleutel
         else:
@@ -282,27 +267,24 @@ def update_create_monument(item, created_complex):
     return monument
 
 
-def add_pandrelatie(id, monument, relaties):
+def add_pandrelatie(id1, monument, relaties):
     """
     Create a new pandrelatie bases on a Monument and a PandId
-    :param id: The pandId
+    :param id1: The pandId
     :param monument: The monument the pand is related to
     :param relaties: The batch of pand<>Monument relations
     :return: None
     """
 
-    len1 = id.__len__()
+    len1 = id1.__len__()
     assert len1 == 13 or len1 == 15 or len1 == 16
     if len1 == 13:
-        pandid = '0' + id
-        landelijk_id = landelijk_id_mapping.get_landelijk_id(pandid)
-        if not landelijk_id:
-            log.warning(f'Missing landelijk_id voor pand {pandid}')
-            return
+        log.warning(f'Invalid landelijk id for pandsleutel {id1}')
+        return
     elif len1 == 15:
-        landelijk_id = '0' + id
+        landelijk_id = '0' + id1
     else:
-        landelijk_id = id
+        landelijk_id = id1
     relaties.append(
         PandRelatie(
             monument=monument,

@@ -2,7 +2,7 @@ import logging
 
 from django.core.management import BaseCommand
 
-from monumenten.importer import xml_importer, landelijk_id_mapping
+from monumenten.importer import xml_importer
 from monumenten.objectstore import objectstore
 from monumenten.dataset.monumenten.batch import DeleteMonumentenIndexTask, IndexMonumentenTask, IndexComplexenTask
 
@@ -31,8 +31,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['run-import']:
             log.info("Run import.")
-            log.info("Initialize landelijk_id mapping")
-            landelijk_id_mapping.initialize()
 
             for file_name in objectstore.fetch_import_file_names():
                 if file_name.lower().find("old") >= 0:
