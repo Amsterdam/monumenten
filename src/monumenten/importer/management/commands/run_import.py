@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.core.management import BaseCommand
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
             log.info("Run import.")
 
             for file_name in objectstore.fetch_import_file_names():
-                if file_name.lower().find("old") >= 0:
+                if re.search(r"(old|new|test)", file_name, re.IGNORECASE):
                     continue
                 log.info(f'Import {file_name}')
                 local_file = objectstore.copy_file_from_objectstore(file_name)
