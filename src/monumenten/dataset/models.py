@@ -13,6 +13,7 @@ class Complex(models.Model):
     external_id = models.CharField(max_length=36, null=True, db_index=True)
 
     beschrijving_complex = models.TextField(null=True)
+    beschrijving_complex_publiek = models.BooleanField(default=False)
     monumentnummer_complex = models.IntegerField(null=True)
     complexnaam = models.CharField(max_length=255, null=True)
     complexstatus = models.CharField(max_length=128, null=True)
@@ -41,6 +42,7 @@ class Monument(models.Model):
     monument_aanwijzingsdatum = models.DateField(null=True)
     architect_ontwerp_monument = models.CharField(max_length=128, null=True)
     beschrijving_monument = models.TextField(null=True)
+    beschrijving_monument_publiek = models.BooleanField(default=False)
     monumentcoordinaten = models.PointField(null=True, srid=28992)
     afbeelding = models.CharField(max_length=36, null=True)
     oorspronkelijke_functie_monument = models.CharField(
@@ -54,6 +56,7 @@ class Monument(models.Model):
     bouwjaar_start_bouwperiode_monument = models.IntegerField(null=True)
     bouwjaar_eind_bouwperiode_monument = models.IntegerField(null=True)
     redengevende_omschrijving_monument = models.TextField(null=True)
+    redengevende_omschrijving_monument_publiek = models.BooleanField(default=False)
     monumentstatus = models.CharField(max_length=128, null=True)
     monumenttype = models.CharField(max_length=128, null=True)
     heeft_als_grondslag_beperking = models.CharField(max_length=15, null=True)

@@ -33,12 +33,13 @@ class Command(BaseCommand):
         if options['run-import']:
             log.info("Run import.")
 
-            for file_name in objectstore.fetch_import_file_names():
-                if re.search(r"(old|new|test)", file_name, re.IGNORECASE):
-                    continue
-                log.info(f'Import {file_name}')
-                local_file = objectstore.copy_file_from_objectstore(file_name)
-                xml_importer.import_file(local_file)
+            # for file_name in objectstore.fetch_import_file_names():
+            #     if re.search(r"(old|new|test)", file_name, re.IGNORECASE):
+            #         continue
+            #     log.info(f'Import {file_name}')
+            #     local_file = objectstore.copy_file_from_objectstore(file_name)
+            #     xml_importer.import_file(local_file)
+            xml_importer.import_file('/Users/bart/Downloads/AMISExport.xml')
 
         if options['run-index']:
             log.info('Run indexing')

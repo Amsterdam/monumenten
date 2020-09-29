@@ -15,27 +15,44 @@ def match(dict1, attribute, value):
     return attribute in dict1 and dict1[attribute] == value
 
 
-def get_note(item, text_list, text_type, text_status):
-    if text_list not in item:
-        return None
-    return get_note_text(item[text_list], text_type, text_status)
+def match2(dict1, attribute1, attribute2, value):
+    return attribute1 in dict1 and attribute2 in dict1[attribute1] and dict1[attribute1][attribute2] == value
 
 
-def get_note_text(text_list, text_type, text_status):
+def get_note_text(item, text_list, text_type, text_status):
     def get_note(text):
-        if match(text, 'Type', text_type) and \
-                match(text, 'Status', text_status) and 'Notitie' in text:
+        if (match(text, 'Type', text_type) and
+                match(text, 'Status', text_status) and 'Notitie' in text):
             return text['Notitie']
         return None
 
+    if text_list not in item:
+        return None
+
+    text_list = item[text_list]
     if type(text_list) != list:
-        return get_note(text_list)
+        text_list = [text_list]
 
     for text_item in text_list:
         note = get_note(text_item)
         if note is not None:
             return note
     return None
+
+
+def get_note_tag_public(item, text_list, text_type, text_status):
+    if text_list not in item:
+        return False
+    tl1 = item[text_list]
+    if type(tl1) != list:
+        tl1 = [tl1]
+    result = False
+    for text_item in tl1:
+        if (match(text_item, 'Type', text_type) and
+                match2(text_item, 'Tag', 'Waarde', text_status)):
+            result = True
+            break
+    return result
 
 
 def get_in_onderzoek(tags):
@@ -93,8 +110,9 @@ def update_create_complex(item, monument_id=None):
         return Complex.objects.create(
             id=complex_id,
             external_id=complex_id,
-            beschrijving_complex=get_note(
+            beschrijving_complex=get_note_text(
                 item, 'Tekst', 'Beschrijving', 'Afgerond'),
+            beschrijving_complex_publiek=get_note_tag_public(item, 'Tekst', 'Beschrijving', 'tonen'),
             monumentnummer_complex=item.get('Monumentnummer', None),
             complexnaam=item.get('Naam', None),
             complexstatus=item.get('Status', None)
@@ -218,8 +236,9 @@ def update_create_monument(item, created_complex):
         afbeelding='Afbeelding' in item and 'Id' in item['Afbeelding'] and
                    item['Afbeelding']['Id'] or None,
         architect_ontwerp_monument=item.get('Architect', None),
-        beschrijving_monument=get_note(
+        beschrijving_monument=get_note_text(
             item, 'Tekst', 'Beschrijving', 'Afgerond'),
+        beschrijving_monument_publiek=get_note_tag_public(item, 'Tekst', 'Beschrijving', 'tonen'),
         complex=created_complex,
         monumentcoordinaten='Punt' in item and get_coordinates(
             item['Punt'], item['Id']) or None,
@@ -234,9 +253,10 @@ def update_create_monument(item, created_complex):
         opdrachtgever_bouw_monument=item.get('Opdrachtgever', None),
         bouwjaar_start_bouwperiode_monument=item.get('PeriodeStart', None),
         bouwjaar_eind_bouwperiode_monument=item.get('PeriodeEind', None),
-        redengevende_omschrijving_monument=get_note(item, 'Tekst',
-                                                    'Redengevende omschrijving',
-                                                    'Vastgesteld'),
+        redengevende_omschrijving_monument=get_note_text(item, 'Tekst',
+                                                         'Redengevende omschrijving',
+                                                         'Vastgesteld'),
+        redengevende_omschrijving_monument_publiek=get_note_tag_public(item, 'Tekst', 'Redengevende omschrijving', 'tonen'),
         monumentstatus=item.get('Status', None),
         monumenttype=item.get('Type', None),
         heeft_als_grondslag_beperking=item.get('WkpbInschrijfnummer', None))
