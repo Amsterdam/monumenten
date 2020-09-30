@@ -30,7 +30,8 @@ class TestAPIEndpoints(APITestCase):
             ('?betreft_pand=192048', 0),
             ('?betreft_pand=bla', 0),
             ('?nietbestaand=bla', '>'),
-            ('0-0/', 'nr=13'),
+            ('0-0/', 'nr=14'),
+            ('0-1/', 'nr=13'),
             ('?locatie=121944.32,487722.88,10', 50),
             ('?locatie=52.37638,4.90177,10', 50),
             # location far away should show up nothing

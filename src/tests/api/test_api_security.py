@@ -1,8 +1,10 @@
 import logging
+from operator import attrgetter
 
 import authorization_levels
 from rest_framework.test import APITestCase
 from monumenten.dataset import models
+
 
 from .factories import create_testset
 from .mixins import JWTMixin
@@ -27,6 +29,9 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         'heeft_situeringen',
         'monumentcoordinaten',
         'in_onderzoek',
+        'beschrijving_monument',
+        'redengevende_omschrijving_monument',
+        'beschrijving_complex',
     ]
 
     NON_OPENFIELDS_MONUMENT = [
@@ -37,27 +42,35 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
         'bouwjaar_eind_bouwperiode_monument',
         'oorspronkelijke_functie_monument',
         'monumentgeometrie',
-        'beschrijving_monument',
-        'redengevende_omschrijving_monument',
-        'beschrijving_complex',
     ]
 
     OPENFIELDS_COMPLEX = [
         'identificerende_sleutel_complex',
         'monumentnummer_complex',
         'complexnaam',
+        'beschrijving_complex',
     ]
 
     NON_OPENFIELDS_COMPLEX = [
-        'beschrijving_complex',
     ]
+
+    HALF_OPEN_FIELDS_MONUMENT = {
+        'redengevende_omschrijving_monument': 'redengevende_omschrijving_monument_publiek',
+        'beschrijving_complex': 'complex.beschrijving_complex_publiek',
+        'beschrijving_monument': 'beschrijving_monument_publiek',
+    }
+
+    HALF_OPEN_FIELDS_COMPLEX = {
+        'beschrijving_complex': 'beschrijving_complex_publiek',
+    }
 
     def setUp(self):
         create_testset()
 
     def test_security_monumenten(self):
+        monument0 = models.Monument.objects.all()[0]
         url = '/monumenten/monumenten/{}/'.format(
-            models.Monument.objects.all()[0].id)
+            monument0.id)
 
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
@@ -79,13 +92,21 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
             self.assertTrue(
                 f in fields_visible_by_employee,
                 'Field should be visible by employee: {}'.format(f))
-            self.assertTrue(
-                f in fields_visible_by_public,
-                'Field should be visible by public: {}'.format(f))
+
+            if f in self.HALF_OPEN_FIELDS_MONUMENT.keys():
+                if attrgetter(self.HALF_OPEN_FIELDS_MONUMENT[f])(monument0):
+                    self.assertTrue(
+                        f in fields_visible_by_public,
+                        'Field should be visible by public: {}'.format(f))
+                else:
+                    self.assertTrue(
+                        f not in fields_visible_by_public,
+                        'Field should be visible by public: {}'.format(f))
 
     def test_security_complexen(self):
+        complex0 = models.Complex.objects.all()[0]
         url = '/monumenten/complexen/{}/'.format(
-            models.Complex.objects.all()[0].id)
+            complex0.id)
 
         self.client.credentials()
         fields_visible_by_public = self.client.get(url).data
@@ -107,6 +128,13 @@ class TestAPIEndpoints(JWTMixin, APITestCase):
             self.assertTrue(
                 f in fields_visible_by_employee,
                 'Field should be visible by employee: {}'.format(f))
-            self.assertTrue(
-                f in fields_visible_by_public,
-                'Field should be visible by public: {}'.format(f))
+
+            if f in self.HALF_OPEN_FIELDS_COMPLEX.keys():
+                if attrgetter(self.HALF_OPEN_FIELDS_COMPLEX[f])(complex0):
+                    self.assertTrue(
+                        f in fields_visible_by_public,
+                        'Field should be visible by public: {}'.format(f))
+                else:
+                    self.assertTrue(
+                        f not in fields_visible_by_public,
+                        'Field should be visible by public: {}'.format(f))

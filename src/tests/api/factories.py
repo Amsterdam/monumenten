@@ -23,8 +23,8 @@ def create_testset(nr=10):
             monument = MonumentenDataFactory(
                 complex=_complex,
                 monumentcoordinaten=point,
-                id=pk)
-
+                id=pk,
+                beschrijving_monument_publiek=True if (n1 & 1) == 0 else False)
             for _ in range(5):
                 SitueringFactory(monument=monument)
 
@@ -64,6 +64,7 @@ class MonumentenDataFactory(factory.DjangoModelFactory):
     if random.randint(0, 50) % 3 == 0:
         heeft_als_grondslag_beperking = fuzzy.FuzzyInteger(low=0)
     beschrijving_monument = fuzzy.FuzzyText()
+
     monumentcoordinaten = fuzzy.FuzzyInteger(low=1)
     oorspronkelijke_functie_monument = fuzzy.FuzzyText(length=128)
     in_onderzoek = fuzzy.FuzzyText(length=3)

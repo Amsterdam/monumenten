@@ -23,6 +23,9 @@ OPENFIELDS_MONUMENT = [
     'monumentcoordinaten',
     'ligt_in_complex',
     'in_onderzoek',
+    'beschrijving_monument',
+    'redengevende_omschrijving_monument',
+    'beschrijving_complex'
 ]
 
 NON_OPENFIELDS_MONUMENT = [
@@ -33,9 +36,6 @@ NON_OPENFIELDS_MONUMENT = [
     'bouwjaar_eind_bouwperiode_monument',
     'oorspronkelijke_functie_monument',
     'monumentgeometrie',
-    'beschrijving_monument',
-    'redengevende_omschrijving_monument',
-    'beschrijving_complex',
 ]
 
 OPENFIELDS_COMPLEX = [
@@ -45,9 +45,10 @@ OPENFIELDS_COMPLEX = [
     'complexnaam',
     'monumenten',
     '_display',
+    'beschrijving_complex'
 ]
 
-NON_OPENFIELDS_COMPLEX = ['beschrijving_complex']
+NON_OPENFIELDS_COMPLEX = []
 
 
 class BaseSerializer(object):
@@ -104,6 +105,7 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
     _links = serializers.SerializerMethodField()
     identificerende_sleutel_complex = serializers.SerializerMethodField()
     monumenten = serializers.SerializerMethodField()
+    beschrijving_complex = serializers.SerializerMethodField()
     _display = DisplayField()
 
     class Meta(object):
@@ -124,11 +126,27 @@ class ComplexSerializerNonAuth(BaseSerializer, HALSerializer):
         path = '/monumenten/monumenten/?complex_id={}'.format(obj.id)
         return self.dict_with_count_href(nr_monumenten, path)
 
+    @staticmethod
+    def get_beschrijving_complex(obj):
+       if obj.beschrijving_complex and obj.beschrijving_complex_publiek:
+           return obj.beschrijving_complex
+
+    def to_representation(self, data):
+        result = super().to_representation(data)
+        if result['beschrijving_complex'] is None:
+            del result['beschrijving_complex']
+        return result
+
 
 class ComplexSerializerAuth(ComplexSerializerNonAuth):
     class Meta(object):
         model = Complex
-        fields = OPENFIELDS_COMPLEX + NON_OPENFIELDS_COMPLEX
+        fields = OPENFIELDS_COMPLEX
+
+    @staticmethod
+    def get_beschrijving_complex(obj):
+       if obj.beschrijving_complex:
+           return obj.beschrijving_complex
 
 
 class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
@@ -139,6 +157,9 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
     heeft_situeringen = serializers.SerializerMethodField()
     heeft_als_grondslag_beperking = serializers.SerializerMethodField()
     identificerende_sleutel_monument = serializers.SerializerMethodField()
+    beschrijving_complex = serializers.SerializerMethodField()
+    beschrijving_monument = serializers.SerializerMethodField()
+    redengevende_omschrijving_monument = serializers.SerializerMethodField()
 
     class Meta(object):
         model = Monument
@@ -168,15 +189,36 @@ class MonumentSerializerNonAuth(BaseSerializer, HALSerializer):
                 link_id=obj.heeft_als_grondslag_beperking,
                 id_name='id')
 
+    @staticmethod
+    def get_beschrijving_complex(obj):
+        if obj.complex and obj.complex.beschrijving_complex_publiek:
+            return str(obj.complex.beschrijving_complex)
+
+    @staticmethod
+    def get_beschrijving_monument(obj):
+       if obj.beschrijving_monument and obj.beschrijving_monument_publiek:
+           return obj.beschrijving_monument
+
+    @staticmethod
+    def get_redengevende_omschrijving_monument(obj):
+       if obj.redengevende_omschrijving_monument and obj.redengevende_omschrijving_monument_publiek:
+           return obj.redengevende_omschrijving_monument
+
     def get__links(self, obj):
         return self.dict_with_self_href(
             '/monumenten/monumenten/{}/'.format(
                 obj.id))
 
+    def to_representation(self, data):
+        result = super().to_representation(data)
+        for f in ('redengevende_omschrijving_monument', 'beschrijving_monument', 'beschrijving_complex'):
+            if result[f] is None:
+                del result[f]
+        return result
+
 
 class MonumentSerializerAuth(MonumentSerializerNonAuth):
     monumentgeometrie = serializers.SerializerMethodField()
-    beschrijving_complex = serializers.SerializerMethodField()
 
     class Meta(object):
         model = Monument
@@ -188,9 +230,27 @@ class MonumentSerializerAuth(MonumentSerializerNonAuth):
             return str(obj.complex.beschrijving_complex)
 
     @staticmethod
+    def get_redengevende_omschrijving_monument(obj):
+        if obj.redengevende_omschrijving_publiek:
+            return obj.redengevende_omschrijving_monument
+
+    @staticmethod
+    def get_beschrijving_monument(obj):
+        if obj.beschrijving_monument:
+            return obj.beschrijving_monument
+
+    @staticmethod
+    def get_redengevende_omschrijving_monument(obj):
+       if obj.redengevende_omschrijving_monument:
+           return obj.redengevende_omschrijving_monument
+
+    @staticmethod
     def get_monumentgeometrie(obj):
         if obj.monumentgeometrie:
             return json.loads(obj.monumentgeometrie.geojson)
+
+    def to_representation(self, data):
+        return HALSerializer.to_representation(self, data)
 
 
 class SitueringSerializer(BaseSerializer, HALSerializer):

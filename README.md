@@ -45,8 +45,12 @@ possible to download the most recent successfully imported databases. (This
 is only allowed for members of the Datapunt development team, not for external
 developers or other users.)
 
-    docker-compose exec database update-db.sh monumenten <username>
+    docker-compose exec database update-db.sh monumenten
 
+To import the latest elastic index from acceptance:
+
+	docker-compose exec elasticsearch clean-el.sh
+	docker-compose exec elasticsearch update-el.sh monumenten <username>
 
 ### Monumenten import
 
