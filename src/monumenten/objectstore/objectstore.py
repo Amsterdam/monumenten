@@ -1,5 +1,5 @@
 import logging
-import os
+import os, time, stat
 from functools import lru_cache
 
 from swiftclient.client import Connection
@@ -63,12 +63,17 @@ def split_prefix(lst):
     return '_'.join(lst.split('_')[:-1])
 
 
+def file_age_in_seconds(pathname):
+    return time.time() - os.stat(pathname)[stat.ST_MTIME]
+
+
 def copy_file_from_objectstore(file_name):
     os.makedirs(download_dir + import_folder, exist_ok=True)
     destination = download_dir + file_name
-    log.info("Download file {} to {}".format(file_name, destination))
-    with open(destination, 'wb') as f:
-        f.write(get_conn().get_object(container, file_name)[1])
+    if not os.path.isfile(destination) or file_age_in_seconds(destination) > 60 * 60 * 24:
+        log.info("Download file {} to {}".format(file_name, destination))
+        with open(destination, 'wb') as f:
+            f.write(get_conn().get_object(container, file_name)[1])
     return destination
 
 
