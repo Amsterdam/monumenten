@@ -20,9 +20,12 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
+RUN mkdir -p /static && chown datapunt /static
+
 USER datapunt
 
 RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
+RUN ./manage.py collectstatic
 
 CMD uwsgi
 
