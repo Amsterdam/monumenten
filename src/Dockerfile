@@ -1,4 +1,4 @@
-FROM amsterdam/python
+FROM amsterdam/python:3.9-buster
 MAINTAINER datapunt@amsterdam.nl
 
 ENV PYTHONUNBUFFERED 1
@@ -28,4 +28,3 @@ RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
 RUN ./manage.py collectstatic
 
 CMD uwsgi
-

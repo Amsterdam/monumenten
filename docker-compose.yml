@@ -37,3 +37,4 @@ services:
       - UWSGI_STATIC_MAP=/monumenten/static=/static
       - UWSGI_CALLABLE=application
       - UWSGI_MASTER=1
+      - test=test
