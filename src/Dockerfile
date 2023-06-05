@@ -12,6 +12,10 @@ EXPOSE 8000
 
 WORKDIR /app
 
+# CI hook - see .jenkins/README.TXT
+COPY .jenkins /.jenkins
+COPY .jenkins/docker-migrate.sh /app/
+
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
@@ -24,4 +28,3 @@ RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
 RUN ./manage.py collectstatic
 
 CMD uwsgi
-
