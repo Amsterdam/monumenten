@@ -1,6 +1,7 @@
 import logging
 import os, time, stat
 from functools import lru_cache
+from pathlib import Path
 
 from swiftclient.client import Connection
 
@@ -10,11 +11,17 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("swiftclient").setLevel(logging.WARNING)
 
+def get_objectstore_password():
+    if os.getenv("CULTUUR_OBJECTSTORE_PW_LOCATION"):
+        return Path(os.environ["CULTUUR_OBJECTSTORE_PW_LOCATION"]).open().read()
+
+    return os.getenv("CULTUUR_OBJECTSTORE_PASSWORD", 'insecure')
+
 os_connect = {
     'auth_version': '2.0',
     'authurl': 'https://identity.stack.cloudvps.com/v2.0',
     'user': 'cultuur',
-    'key': os.getenv('CULTUUR_OBJECTSTORE_PASSWORD', 'insecure'),
+    'key': get_objectstore_password() ,
     'tenant_name': 'BGE000081_Cultuur',
     'os_options': {
         'tenant_id': '77c5b109f1da4136a070179683befe87',
@@ -31,7 +38,6 @@ download_dir = '/tmp/cultuur/'
 
 @lru_cache(maxsize=None)
 def get_conn():
-    assert os.getenv('CULTUUR_OBJECTSTORE_PASSWORD')
     return Connection(**os_connect)
 
 
