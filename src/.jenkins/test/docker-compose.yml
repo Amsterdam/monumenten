@@ -21,4 +21,5 @@ services:
       DATABASE_USER: monumenten
       DATABASE_PASSWORD: insecure
       PLATFORM: docker
+      SECRET_KEY: insecure
     command: bash -c "/app/.jenkins/docker-wait.sh && cd /app/.jenkins/test/ && ./docker-test.sh"
