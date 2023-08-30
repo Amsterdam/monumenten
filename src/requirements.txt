@@ -26,3 +26,4 @@ requests==2.31.0
 sentry-sdk==1.22.2
 urllib3==1.26.16
 xmltodict==0.13.0
+azure-identity==1.14.0
