@@ -24,6 +24,6 @@ python-swiftclient==4.3.0
 python-keystoneclient==5.1.0
 requests==2.31.0
 sentry-sdk==1.22.2
-urllib3==1.26.16
+urllib3==1.26.17
 xmltodict==0.13.0
 azure-identity==1.14.0
