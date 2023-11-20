@@ -29,5 +29,5 @@ RUN export DJANGO_SETTINGS_MODULE=monumenten.settings
 ENV SECRET_KEY=insecure
 RUN ./manage.py collectstatic
 ENV SECRET_KEY=
-
+##
 CMD uwsgi
